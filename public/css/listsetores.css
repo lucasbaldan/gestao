@@ -1,0 +1,63 @@
+.dataTables_filter {
+    display: none;
+}
+
+.custom-modal .field {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.button-container {
+    display: flex;
+    /* Cria um container flexível */
+    justify-content: center;
+    /* Centraliza horizontalmente os itens do container */
+}
+
+.ui.negative.message {
+    position: fixed;
+    top: 50%;
+    /* Ajuste a posição vertical conforme necessário */
+    left: 50%;
+    /* Ajuste a posição horizontal conforme necessário */
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    /* Defina um valor alto para garantir que fique acima dos outros elementos */
+    background-color: #ff0000;
+    /* Personalize a cor de fundo conforme desejado */
+    color: #fff;
+    /* Personalize a cor do texto conforme desejado */
+    padding: 55px;
+    border-radius: 5px;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+    /* Opcional: Adicione sombra para realçar o elemento */
+}
+.ui.negative.message .header i {
+    font-size: 24px;
+}
+.ui.negative.message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px; /* Defina uma altura para o elemento para centralizar verticalmente */
+    background-color: #f44336; /* Personalize a cor de fundo conforme desejado */
+    color: #fff; /* Personalize a cor do texto conforme desejado */
+}
+
+.ui.negative.message .header {
+    margin-bottom: 10px;
+}
+.responsive-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* Estilo para o cabeçalho da coluna */
+  th {
+    white-space: nowrap;
+  }

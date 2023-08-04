@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.css"
+    integrity="sha512-KXol4x3sVoO+8ZsWPFI/r5KBVB/ssCGB5tsv2nVOKwLg33wTFP3fmnXa47FdSVIshVTgsYk/1734xSk9aFIa4A=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interface</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+      integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.5.0/semantic.min.js"
+      integrity="sha512-Xo0Jh8MsOn72LGV8kU5LsclG7SUzJsWGhXbWcYs2MAmChkQzwiW/yTQwdJ8w6UA9C6EVG18GHb/TrYpYCjyAQw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+
+  <body>
+
+    <h1>Olá</h1>
+    <div class="ui container">
+      <div class="ui modal">
+        <div class="center header">Tem certeza que deseja realizar a operação?</div>
+      </br>
+        <div class="ui button blue" id="confirmar">Sim</div>
+        <div class="ui button red" id="naoconfirmar">Não</div>
+
+      </div>
+    </div>
+
+    <div class="ui page dimmer">
+      <div class="center">
+        <i class="ui text loader">Carregando...</i>
+      </div>
+  </div>
+
+
+
+  </body>
+
+  <footer>
+    <div class="ui button blue" id="salvar">Salvar</div>
+
+    <script>
+      function bloquearTela() {
+  $('.ui.dimmer').addClass('wait-cursor');
+  $('body').addClass('disable-interaction');
+}
+
+function desbloquearTela() {
+  $('.ui.dimmer').removeClass('wait-cursor');
+  $('body').removeClass('disable-interaction');
+}
+
+      function primeiraFuncao() {
+        $('.ui.modal').modal("hide");
+      }
+      function segundaFuncao(){
+        setTimeout(function() {
+        $('.ui.dimmer').dimmer("show");
+        $('.ui.dimmer').dimmer({
+  closable: false
+});
+      }, 550)
+      }
+      
+      $('#salvar').click(function(){ $('.ui.modal').modal("show")});
+      $('#naoconfirmar').click(function(){primeiraFuncao()})
+      $('#confirmar').click(function(){primeiraFuncao(); segundaFuncao()})
+    </script>
+</footer>
+</html>

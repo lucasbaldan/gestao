@@ -1,0 +1,17 @@
+{
+    "name": "lucas/gestao",
+    "description": "sistema de gestão de algumas coisas feitas especialmente pelo lucas baldan para fins de aprendizado e quem sabe a produção de grandes arquiteturas de software",
+    "autoload": {
+        "psr-4": {
+            "App\\": "App/"
+        },
+        "files":[
+            "configurations.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "lucas baldan"
+        }
+    ]
+}
