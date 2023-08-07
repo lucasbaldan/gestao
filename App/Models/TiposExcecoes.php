@@ -27,14 +27,17 @@ class TiposExcecoes
             if (empty($cdTipoExcecao) && empty($nmTipoExcecao)) {
                 $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T");
-            } if (empty($nmTipoExcecao)) {
-                $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
+            } else {
+
+                if ($nmTipoExcecao == null) {
+                    $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T WHERE T.CD_TIPO_EXCECAO =:C", "C=$cdTipoExcecao");
+                } else {
+                    $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
+        FROM TIPO_EXCECOES T WHERE T.NM_TIPO_EXCECAO LIKE '%" . $nmTipoExcecao . "%'");
+                }
             }
-            else{
-                $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
-        FROM TIPO_EXCECOES T WHERE T.NM_TIPO_EXCECAO LIKE '%".$nmTipoExcecao."%'");
-            }
+
             return $read->getResult();
         } catch (Exception $th) {
             header("Location: /gestao/public/pages/generalError.php");

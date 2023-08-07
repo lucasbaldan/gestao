@@ -86,7 +86,7 @@ $dados = $pegaExcecao->list();
                     </div>
                     <div class="twelve wide column">
                         <div class="ui input">
-                            <input type="date" name="dataInicial" id="dataInicial" placeholder="Data inicial...">
+                            <input type="date" name="dataExcecao" id="dataExcecao" placeholder="Data">
                         </div>
                     </div>
                 </div>

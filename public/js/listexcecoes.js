@@ -1,4 +1,8 @@
+var selectedResult = null;
+
 $(document).ready(function () {
+
+    //VARIVEIS DE PÁGINA
 
     $(".ui.negative.message").hide();
     $(".ui.positive.message").hide();
@@ -48,7 +52,12 @@ $(document).ready(function () {
     $("#form-CAD-Excecao").form({
         fields: {
             user: {
-                identifier: "nameTipoExcecao",
+                identifier: "dataExcecao",
+                rules: [{
+                    type: "empty",
+                    prompt: ".",
+                },],
+                identifier: "tipoExcecao",
                 rules: [{
                     type: "empty",
                     prompt: ".",
@@ -59,15 +68,18 @@ $(document).ready(function () {
             event.preventDefault(); // Impede o envio padrão do formulário
 
             // Obtém os dados do formulário
-            var formData = $("#form-CAD-TipoExcecao").serialize();
+            var formData = $("#form-CAD-Excecao").serialize();
 
-            // Envia a requisição AJAX
             $.ajax({
                 type: "POST",
-                url: "./../../App/Controllers/TiposExcecoes.php",
-                data: formData,
+                url: "./../../App/Controllers/Excecoes.php",
+                data: {
+                    formData,
+                    cdTipoExcecao: selectedResult.description
+                },
                 beforeSend: function () {
-                    // Adicione uma animação ou mensagem de "carregando" aqui, se desejar
+                    console.log()
+
                     $(".ui.positive.right.labeled.icon.button").addClass("loading");
                 },
                 success: function (response) {
@@ -202,45 +214,51 @@ function excluirRegistro(idExcecao) {
     $("#botaoconfirmaExclusao").on("click", confirmadoExclusao);
 }
 
-async function carregar_tipoExecoes(nmTipoExcecao){
+async function carregar_tipoExecoes(nmTipoExcecao) {
 
-    if(nmTipoExcecao.length >= 1){
+    if (nmTipoExcecao.length >= 1) {
 
-    setTimeout(function () {
-        $.ajax({
-            type: "POST",
-            url: "./../../App/Controllers/TiposExcecoes.php",
-            data: {
-                nmTipoExcecao: nmTipoExcecao,
-                funcao: "listJSON",
-            },
-            success: function (data) {
-                var tipoExcecao = JSON.parse(data);
+        setTimeout(function () {
+            $.ajax({
+                type: "POST",
+                url: "./../../App/Controllers/TiposExcecoes.php",
+                data: {
+                    nmTipoExcecao: nmTipoExcecao,
+                    funcao: "listJSON",
+                },
+                success: function (data) {
+                    var tipoExcecao = JSON.parse(data);
 
-                var tiposExcecoesInput = [];
+                    var tiposExcecoesInput = [];
 
-                for (var i = 0; i < tipoExcecao.length; i++) {
-                    var nome = tipoExcecao[i].NM_TIPO_EXCECAO;
-                    tiposExcecoesInput.push(nome);
-                }
+                    for (var i = 0; i < tipoExcecao.length; i++) {
+                        var nome = tipoExcecao[i].NM_TIPO_EXCECAO;
+                        var codigo = tipoExcecao[i].CD_TIPO_EXCECAO;
+                        tiposExcecoesInput.push(nome);
+                        tiposExcecoesInput.push(codigo);
+                    }
 
-                var content = tiposExcecoesInput.map(function (nome) {
-                    return {
-                        title: nome
-                    };
-                });
+                    var content = tiposExcecoesInput.map(function (nome) {
+                        return {
+                            title: nome,
+                            id: codigo
+                        };
+                    });
 
-                $('.ui.search').search({
-                    source: content,
-                    fullTextSource: false
-                });
-    
-            },
-            error: function (xhr, status, error) {
-                console.error(error); // Mostra o erro no console do navegador
-                alert("Erro ao carregar os dados da Funcao.");
-            },
-        }); 
-    }, 2000);
-}
+                    $('.ui.search').search({
+                        source: content,
+                        onSelect: function (result, response) {
+                            selectedResult = result;
+                            console.log(selectedResult);
+                        }
+                    });
+
+                },
+                error: function (xhr, status, error) {
+                    console.error(error); // Mostra o erro no console do navegador
+                    alert("Erro ao carregar os dados da Funcao.");
+                },
+            });
+        }, 2000);
+    }
 }
