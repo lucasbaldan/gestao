@@ -1,13 +1,51 @@
-var selectedResult = null;
+var dadosFuncionarios = [];
 
-jQuery(document).ready(function($) {
+
+//PEGA OS FUNCIONÁRIOS PARA SEREM CARREGADOS NO MULTISELECT DO JQUERY DO MODAL DE CADASTRO DE EXCECÃO.
+async function carregarDadosFuncionario() {
+    dadosFuncionarios = [
+        { id: 1, nome: "Funcionário 1" },
+        { id: 2, nome: "Funcionário 2" },
+        { id: 3, nome: "Funcionário 3" },
+        { id: 4, nome: "Funcionário 4" },
+        { id: 5, nome: "Funcionário 5" },
+    ];
+
+    $.ajax({
+        type: "POST",
+        url: "./../../App/Controllers/Funcionarios.php",
+        data: {
+            funcao: "listJSON"
+        },
+        beforeSend: function () {
+        },
+        success: function (data) {
+            var funcionarios = JSON.parse(data)[0];
+            alert(funcionarios.NM_FUNCIONARIO);
+        },
+        error: function () {
+            alert(
+                "Erro ao Carregar os funcionários. Tente novamente mais Tarde!"
+            );
+        },
+        complete: function () {
+            // Remova a animação de "carregando" aqui, se necessário
+        },
+    });
+}
+////////////////////////////////////
+
+
+
+// INICIALIZA O JQUERY CONTENDO DE FORMA 
+jQuery(document).ready(function ($) {
     $('#search').multiselect({
         search: {
-            left: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
-            right: '<input type="text" name="q" class="form-control" placeholder="Search..." />',
+            left: '<input type="text" name="q" class="form-control" placeholder="Procurar Funcionário..." />',
+            right: '<input type="text" name="q" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
         },
-        fireSearch: function(value) {
-            return value.length > 3;
+        fireSearch: function (value) {
+            return value.length > 0;
         }
     });
 });
@@ -85,12 +123,8 @@ $(document).ready(function () {
             $.ajax({
                 type: "POST",
                 url: "./../../App/Controllers/Excecoes.php",
-                data: {
-                    formData,
-                    cdTipoExcecao: selectedResult.description
-                },
+                data: { formData },
                 beforeSend: function () {
-                    console.log()
 
                     $(".ui.positive.right.labeled.icon.button").addClass("loading");
                 },
@@ -165,6 +199,12 @@ function editarRegistro(idTipoExcecao) {
     });
 }
 
+
+
+
+
+
+//EXCLUSÃO DE REGISTRO VIA GRID
 function excluirRegistro(idExcecao) {
     $("#confirmacaoExclusao").modal("show");
 
@@ -224,53 +264,4 @@ function excluirRegistro(idExcecao) {
 
     // Vincula a função de callback ao evento de clique do botão de confirmação
     $("#botaoconfirmaExclusao").on("click", confirmadoExclusao);
-}
-
-async function carregar_tipoExecoes(nmTipoExcecao) {
-
-    if (nmTipoExcecao.length >= 1) {
-
-        setTimeout(function () {
-            $.ajax({
-                type: "POST",
-                url: "./../../App/Controllers/TiposExcecoes.php",
-                data: {
-                    nmTipoExcecao: nmTipoExcecao,
-                    funcao: "listJSON",
-                },
-                success: function (data) {
-                    var tipoExcecao = JSON.parse(data);
-
-                    var tiposExcecoesInput = [];
-
-                    for (var i = 0; i < tipoExcecao.length; i++) {
-                        var nome = tipoExcecao[i].NM_TIPO_EXCECAO;
-                        var codigo = tipoExcecao[i].CD_TIPO_EXCECAO;
-                        tiposExcecoesInput.push(nome);
-                        tiposExcecoesInput.push(codigo);
-                    }
-
-                    var content = tiposExcecoesInput.map(function (nome) {
-                        return {
-                            title: nome,
-                            id: codigo
-                        };
-                    });
-
-                    $('.ui.search').search({
-                        source: content,
-                        onSelect: function (result, response) {
-                            selectedResult = result;
-                            console.log(selectedResult);
-                        }
-                    });
-
-                },
-                error: function (xhr, status, error) {
-                    console.error(error); // Mostra o erro no console do navegador
-                    alert("Erro ao carregar os dados da Funcao.");
-                },
-            });
-        }, 2000);
-    }
 }

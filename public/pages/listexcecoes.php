@@ -113,11 +113,6 @@ $dados = $pegaExcecao->list();
                         <div class="row">
 
                             <select name="from[]" id="search" class="form-control" size="5" multiple="multiple">
-                                <option value="1">Item 1</option>
-                                <option value="2">Item 5</option>
-                                <option value="2">Item 2</option>
-                                <option value="2">Item 4</option>
-                                <option value="3">Item 3</option>
                             </select>
 
                             <div style="padding: 10px 10px 10px 0; display: flex; justify-content: center;">
