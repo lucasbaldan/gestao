@@ -66,6 +66,7 @@ $dados = $pegaExcecao->list();
     <div class="header">
         Exceção - Cadastro
     </div>
+    </br>
 
     <div class="ui positive message">
         <i class="close icon"></i>
@@ -81,22 +82,20 @@ $dados = $pegaExcecao->list();
         <div class="content">
             <div class="field">
                 <div class="ui grid">
-                    <div class="three wide column middle aligned">
+                    <div class="one wide column"></div>
+                    <div class="two wide column left aligned">
                         <label class="ui label large">Data inicial</label>
                     </div>
-                    <div class="twelve wide column">
+                    <div class="four wide column">
                         <div class="ui input">
                             <input type="date" name="dataExcecao" id="dataExcecao" placeholder="Data">
                         </div>
                     </div>
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui grid">
-                    <div class="three wide column middle aligned">
+                    <div class="one wide column"></div>
+                    <div class="two wide column left aligned">
                         <label class="ui label large">Data final</label>
                     </div>
-                    <div class="twelve wide column">
+                    <div class="four wide column">
                         <div class="ui input">
                             <input type="date" name="dataFinal" id="dataFinal" placeholder="Data final...">
                         </div>
@@ -105,13 +104,32 @@ $dados = $pegaExcecao->list();
             </div>
             <div class="field">
                 <div class="ui grid">
+                    <div class="one wide column"></div>
                     <div class="three wide column middle aligned">
-                        <label class="ui label large">Tipo de Exceção</label>
+                        <label class="ui label large">Funcionários</label>
                     </div>
-                    <div class="twelve wide column">
-                        <div class="ui search">
-                            <input type="text" class="prompt" placeholder="Tipo de Exceção..." id="tipoExcecao" name="tipoExcecao" onkeyup="carregar_tipoExecoes(this.value)" />
-                            <div class="results"></div>
+                    <div class="ten wide column">
+
+                        <div class="row">
+
+                            <select name="from[]" id="search" class="form-control" size="5" multiple="multiple">
+                                <option value="1">Item 1</option>
+                                <option value="2">Item 5</option>
+                                <option value="2">Item 2</option>
+                                <option value="2">Item 4</option>
+                                <option value="3">Item 3</option>
+                            </select>
+
+                            <div style="padding: 10px 10px 10px 0; display: flex; justify-content: center;">
+                                <button type="button" id="search_rightAll" class="ui small blue icon button"><i class="angle double down icon"></i></button>
+                                <button type="button" id="search_rightSelected" class="ui small blue icon button"><i class="angle down icon"></i></button>
+                                <button type="button" id="search_leftSelected" class="ui small red icon button"><i class="angle up icon"></i></button>
+                                <button type="button" id="search_leftAll" class="ui small red icon button"><i class="angle double up icon"></i></button>
+                            </div>
+
+                            <div class="col-xs-5">
+                                <select name="to[]" id="search_to" class="form-control" size="5" multiple="multiple"></select>
+                            </div>
                         </div>
 
                     </div>
