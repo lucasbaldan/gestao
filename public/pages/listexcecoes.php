@@ -42,7 +42,7 @@ $dados = $pegaExcecao->list();
                         <td><?= $dadoExcecao['NM_TIPO_EXCECAO'] ?></td>
                         <td><?= $dadoExcecao['DATA_INICIAL'] ?></td>
                         <td><?= $dadoExcecao['DATA_FINAL'] ?? "-" ?></td>
-                        <td><?= $dadoExcecao['NM_PESSOA'] ?? "GERAL" ?></td>
+                        <td><?= $dadoExcecao['NM_FUNCIONARIO'] ?? "GERAL" ?></td>
                         <td><?= "<button class='ui mini icon button blue' onclick='editarRegistro(" . $dadoExcecao['CD_EXCECAO'] . ")'><i class='pencil alternate icon'></i></button>" ?>
                             <?= "<button class='ui mini icon button red' onclick='excluirRegistro(" . $dadoExcecao['CD_EXCECAO'] . ")'><i class='trash alternate icon'></i></button>" ?></td>
                     </tr>
@@ -102,6 +102,24 @@ $dados = $pegaExcecao->list();
                     </div>
                 </div>
             </div>
+
+
+
+            <div class="field">
+                <div class="ui grid">
+                    <div class="one wide column"></div>
+                    <div class="two wide column left aligned">
+                        <label class="ui label large">Tipo de Exceção...</label>
+                    </div>
+                    <div class="eleven wide column">
+                        <div class="ui input">
+                            <input type="text" name="tipoExcecao" id="tipoExcecao" placeholder="Tipo de Exceção">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <div class="field">
                 <div class="ui grid">
                     <div class="one wide column"></div>

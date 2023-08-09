@@ -101,5 +101,5 @@ class Funcionarios
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
     $method = $_POST['funcao'];
     $Funcionario = new Funcionarios;
-    $Funcao->$method($_POST);
+    $Funcionario->$method($_POST);
 }
