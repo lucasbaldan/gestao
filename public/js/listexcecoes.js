@@ -1,10 +1,7 @@
-// VARIÁVEIS SCRIPT DA PÁGINA
-var dadosFuncionarios = [];
-var dadosTipoExcecoes = [];
 
 // FUNÇÃO QUE PEGA OS DADOS DO=S TIPOS DE EXCEÇÕES
 async function carregardadosTiposExcecoes() {
-  var input = document.getElementById("tipoExcecao");
+  const options = [];
 
   $.ajax({
     type: "POST",
@@ -13,25 +10,33 @@ async function carregardadosTiposExcecoes() {
       funcao: "listJSON",
     },
     success: function (data) {
-      dadosTipoExcecoes = JSON.parse(data);
-      const dataTE = {};
-      for (const item of dadosTipoExcecoes) {
-        dataTE[item.NM_TIPO_EXCECAO] = item.CD_TIPO_EXCECAO;
-      }
+      const dadosTipoExcecoes = JSON.parse(data);
+      // Atualize a variável options ao invés de redeclará-la
+      options.push(...dadosTipoExcecoes.map(item => ({
+        value: item.CD_TIPO_EXCECAO,
+        text: item.NM_TIPO_EXCECAO,
+      })));
 
-      new Awesomplete(input, { list: Object.keys(dataTE) });
+      new TomSelect("#select-tipoExcecao", {
+        create: false,
+        render: {
+          no_results: function () {
+            return '<div class="no-results"> Nenhum resultado encontrado</div>';
+          }
+        },
+        sortField: {
+          field: "text",
+          direction: "asc",
+        },
+        options: options,
 
-      input.addEventListener("awesomplete-selectcomplete", function (event) {
-        const selectedLabel = event.text.value;
-        const selectedId = dataTE[selectedLabel];
-        console.log("ID selecionado:", selectedId);
-        // Aqui você pode fazer o que quiser com o ID selecionado
       });
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
     },
   });
+
 }
 
 //PEGA OS FUNCIONÁRIOS PARA SEREM CARREGADOS NO MULTISELECT DO JQUERY DO MODAL DE CADASTRO DE EXCECÃO.
@@ -43,7 +48,7 @@ async function carregarDadosFuncionario() {
       funcao: "listJSON",
     },
     success: function (data) {
-      dadosFuncionarios = JSON.parse(data);
+      const dadosFuncionarios = JSON.parse(data);
       const selectFuncionarios = $("#search");
       selectFuncionarios.empty();
 
@@ -107,10 +112,10 @@ $(document).ready(function () {
 
           var input = $(
             "<h4>" +
-              title +
-              '</h4><input class="ui input responsive-input" type="text" placeholder="' +
-              title +
-              '..." />'
+            title +
+            '</h4><input class="ui input responsive-input" type="text" placeholder="' +
+            title +
+            '..." />'
           )
             .appendTo($(column.header()).empty())
             .on("keyup change", function () {

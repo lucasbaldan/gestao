@@ -112,8 +112,10 @@ $dados = $pegaExcecao->list();
                         <label class="ui label large">Tipo de Exceção...</label>
                     </div>
                     <div class="eleven wide column">
-                        <div class="ui input">
-                            <input type="text" name="tipoExcecao" id="tipoExcecao" placeholder="Tipo de Exceção">
+                        <div class="ui selection">
+                            <select id="select-tipoExcecao" placeholder="Escolha Tipo Exceção" autocomplete="off">
+                                <option value="">Select a person...</option>
+                            </select>
                         </div>
                     </div>
                 </div>
