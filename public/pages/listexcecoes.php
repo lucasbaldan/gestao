@@ -84,11 +84,11 @@ $dados = $pegaExcecao->list();
                 <div class="ui grid">
                     <div class="one wide column"></div>
                     <div class="two wide column left aligned">
-                        <label class="ui label large">Data inicial</label>
+                        <label class="ui label large">Data</label>
                     </div>
                     <div class="four wide column">
                         <div class="ui input">
-                            <input type="date" name="dataExcecao" id="dataExcecao" placeholder="Data">
+                            <input type="date" name="dataExcecao" id="dataExcecao" placeholder="Data" required>
                         </div>
                     </div>
                     <div class="one wide column"></div>
@@ -113,9 +113,7 @@ $dados = $pegaExcecao->list();
                     </div>
                     <div class="eleven wide column">
                         <div class="ui selection">
-                            <select id="select-tipoExcecao" placeholder="Escolha Tipo Exceção" autocomplete="off">
-                                <option value="">Select a person...</option>
-                            </select>
+                            <select id="select-tipoExcecao" placeholder="Escolha Tipo Exceção" autocomplete="off" required>                            </select>
                         </div>
                     </div>
                 </div>
