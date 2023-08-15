@@ -5,7 +5,7 @@ const HOST = 'localhost';
 const DRIVER = 'mysql';
 const USER = 'root';
 const PASS = '';
-const DBSA = 'ap_pdo';
+const DBSA = 'folhaponto';
 
 
 //UTILITÁRIOS

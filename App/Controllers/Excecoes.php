@@ -15,7 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
 class Excecoes
 {
     private $codigo;
-    private string $nome;
+    private $data;
+    private $dataFinal;
+    private $tpExcecao;
+    private $funcionarios_selecionados;
 
     public function list()
     {
@@ -44,30 +47,40 @@ class Excecoes
 
     public function controlar($dados)
     {
-
+        echo var_dump($dados);
         try {
-            $this->codigo = isset($dados['cdTipoExcecao']) ? $dados['cdTipoExcecao'] : '';
-            $this->nome = isset($dados['nameTipoExcecao']) ? $dados['nameTipoExcecao'] : '';
+            $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
+            $this->data = isset($dados['dataExcecao']) ? $dados['dataExcecao'] : '';
+            $this->dataFinal = isset($dados['dataFinal']) ? $dados['dataFinal'] : '';
+            $this->tpExcecao = isset($dados['tipoExcecao']) ? $dados['tipoExcecao'] : '';
+            $this->funcionarios_selecionados = isset($dados['to']) ? ($dados['to']) : '';
 
-            if (empty($this->codigo) && empty($this->nome)) {
+            if (empty($this->data) || empty($this->data) || empty($this->tpExcecao) || empty($this->funcionarios_selecionados)) {
                 throw new Exception("Campos Usuário e Senha não podem ser nulos!");
             }
 
             if (empty($this->codigo)) {
 
-                $cad = new \App\Models\TiposExcecoes;
-                $cad->setNome($this->nome);
-                $cad->inserir();
-                if ($cad->getResult() == true) {
-                    echo 'inserido';
-                } else {
-                    echo 'erro';
+                foreach ($this->funcionarios_selecionados as $funcionario) {
+
+                    $cad = new \App\Models\Excecoes;
+                    $cad->setData($this->data);
+                    $cad->setDataFinal($this->dataFinal);
+                    $cad->setTipoExcecao($this->tpExcecao);
+                    $cad->setFuncionario(intval($funcionario));
+                    $cad->inserir();
+                    if ($cad->getResult() != true) {
+                        echo 'erro';
+                        break;
+                    }
                 }
+                echo 'inserido';
+
             } else {
 
-                $cad = new \App\Models\TiposExcecoes;
+                $cad = new \App\Models\Excecoes;
                 $cad->setCodigo($this->codigo);
-                $cad->setNome($this->nome);
+                $cad->setData($this->data);
                 $cad->alterar();
                 if ($cad->getResult() == true) {
                     echo 'alterado';
@@ -76,7 +89,7 @@ class Excecoes
                 }
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            echo 'erro';
         }
     }
 

@@ -30,10 +30,10 @@ $(document).ready(function () {
 
           var input = $(
             "<h4>" +
-            title +
-            '</h4><input class="ui input responsive-input" type="text" placeholder="' +
-            title +
-            '..." />'
+              title +
+              '</h4><input class="ui input responsive-input" type="text" placeholder="' +
+              title +
+              '..." />'
           )
             .appendTo($(column.header()).empty())
             .on("keyup change", function () {
@@ -76,14 +76,14 @@ $(document).ready(function () {
       $.ajax({
         type: "POST",
         url: "./../../App/Controllers/Excecoes.php",
-        data: { formData },
+        data: formData,
         beforeSend: function () {
+          console.log(formData);
           $(".ui.positive.right.labeled.icon.button").addClass("loading");
         },
-        beforeSend: alert(formData),
         success: function (response) {
           // Manipula a resposta recebida
-          //alert(response); // Exemplo: exibe a resposta em um alerta
+          console.log(response); // Exemplo: exibe a resposta em um alerta
 
           // Se a validação for bem-sucedida, redirecione para outra página
           if (response === "inserido" || response === "alterado") {
@@ -215,13 +215,6 @@ function excluirRegistro(idExcecao) {
   $("#botaoconfirmaExclusao").on("click", confirmadoExclusao);
 }
 
-
-
-
-
-
-
-
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
 async function carregardadosTiposExcecoes() {
   const options = [];
@@ -235,31 +228,31 @@ async function carregardadosTiposExcecoes() {
     success: function (data) {
       const dadosTipoExcecoes = JSON.parse(data);
       // Atualize a variável options ao invés de redeclará-la
-      options.push(...dadosTipoExcecoes.map(item => ({
-        value: item.CD_TIPO_EXCECAO,
-        text: item.NM_TIPO_EXCECAO,
-      })));
+      options.push(
+        ...dadosTipoExcecoes.map((item) => ({
+          value: item.CD_TIPO_EXCECAO,
+          text: item.NM_TIPO_EXCECAO,
+        }))
+      );
 
       new TomSelect("#select-tipoExcecao", {
         create: false,
         render: {
           no_results: function () {
             return '<div class="no-results"> Nenhum resultado encontrado</div>';
-          }
+          },
         },
         sortField: {
           field: "text",
           direction: "asc",
         },
         options: options,
-
       });
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
     },
   });
-
 }
 
 //PEGA OS FUNCIONÁRIOS PARA SEREM CARREGADOS NO MULTISELECT DO JQUERY DO MODAL DE CADASTRO DE EXCECÃO.

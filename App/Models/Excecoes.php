@@ -7,7 +7,10 @@ use Exception;
 class Excecoes
 {
     private $codigo;
-    private $nome;
+    private $data;
+    private $dataFinal;
+    private $tpExcecao;
+    private $cdfuncionario;
     private $Message;
     private $Result;
 
@@ -15,10 +18,32 @@ class Excecoes
     {
         $this->codigo = $cd;
     }
-    public function setNome($nome)
+    public function setData($data)
     {
-        $this->nome = $nome;
+        $this->data = $data;
     }
+    public function setDataFinal($datafinal)
+    {
+        $this->dataFinal = $datafinal ?? null;
+    }
+    public function setTipoExcecao($tipoExcecao)
+    {
+        $this->tpExcecao = $tipoExcecao;
+    }
+    public function setFuncionario($funcionario)
+    {
+        $this->cdfuncionario = $funcionario;
+    }
+    public function getMessage()
+    {
+        return $this->Message;
+    }
+
+    public function getResult()
+    {
+        return $this->Result;
+    }
+
 
     public function listar($cdExcecao = null)
     {
@@ -47,7 +72,7 @@ class Excecoes
             $read->ExeRead("TIPO_EXCECOES", "WHERE CD_TIPO_EXCECAO = :C", "C=$this->codigo");
             $dadosCadastro = $read->getResult()[0] ?? [];
             if ($dadosCadastro) {
-                $dadosupdate = ["NM_TIPO_EXCECAO" => $this->nome];
+                $dadosupdate = ["NM_TIPO_EXCECAO" => $this->data];
                 $conn = \App\Conn\Conn::getConn(true);
                 $update = new \App\Conn\Update($conn);
                 $update->ExeUpdate("TIPO_EXCECOES", $dadosupdate, "WHERE CD_TIPO_EXCECAO =:C", "C=$this->codigo");
@@ -76,10 +101,10 @@ class Excecoes
     {
 
         try {
-            $dadosinsert = ["NM_TIPO_EXCECAO" => $this->nome];
+            $dadosinsert = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao, "CD_FUNCIONARIO" => $this->cdfuncionario];
             $conn = \App\Conn\Conn::getConn(true);
             $insert = new \App\Conn\Insert($conn);
-            $insert->ExeInsert("TIPO_EXCECOES", $dadosinsert);
+            $insert->ExeInsert("EXCECOES", $dadosinsert);
 
             if (!$insert->getResult()) {
                 $insert->Rollback();
@@ -115,13 +140,4 @@ class Excecoes
         }
     }
 
-    public function getMessage()
-    {
-        return $this->Message;
-    }
-
-    public function getResult()
-    {
-        return $this->Result;
-    }
 }
