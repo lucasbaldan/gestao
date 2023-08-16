@@ -32,10 +32,10 @@ $(document).ready(function () {
 
           var input = $(
             "<h4>" +
-              title +
-              '</h4><input class="ui input responsive-input" type="text" placeholder="' +
-              title +
-              '..." />'
+            title +
+            '</h4><input class="ui input responsive-input" type="text" placeholder="' +
+            title +
+            '..." />'
           )
             .appendTo($(column.header()).empty())
             .on("keyup change", function () {
@@ -135,11 +135,12 @@ $(document).ready(function () {
   });
 });
 
-function editarRegistro(idExcecao, idFuncionario) {
+function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
+  alert(idTipoExcecao);
   $("#search_to").empty();
   $("#dataExcecao").val("");
   $("#dataFinal").val("");
-  carregardadosTiposExcecoes();
+  carregardadosTiposExcecoes(idTipoExcecao);
   carregarDadosFuncionario(idFuncionario);
   $("#CADmodal").modal("show");
 
@@ -224,7 +225,7 @@ function excluirRegistro(idExcecao) {
 }
 
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
-async function carregardadosTiposExcecoes() {
+async function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
   const options = [];
 
   $.ajax({
@@ -243,7 +244,7 @@ async function carregardadosTiposExcecoes() {
         }))
       );
 
-      new TomSelect("#select-tipoExcecao", {
+      const select = new TomSelect("#select-tipoExcecao", {
         create: false,
         render: {
           no_results: function () {
@@ -256,6 +257,15 @@ async function carregardadosTiposExcecoes() {
         },
         options: options,
       });
+
+      //console.log("Item selecionado:", select.options[tipoExcecaoSalvoNoBanco]);
+      if (tipoExcecaoSalvoNoBanco) {
+        const selectedItem = options.find(option => option.value === tipoExcecaoSalvoNoBanco);
+        console.log("Selected Item:", selectedItem); // Adicione esta linha
+        if (selectedItem) {
+          select.addItem(selectedItem);
+        }
+      }
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
