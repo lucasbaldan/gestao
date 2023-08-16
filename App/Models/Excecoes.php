@@ -50,12 +50,12 @@ class Excecoes
         try {
             $read = new \App\Conn\Read();
             if (empty($cdExcecao)) {
-                $read->FullRead("SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO
+                $read->FullRead("SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO
         FROM EXCECOES E
         INNER JOIN TIPO_EXCECOES T ON (E.CD_TIPO_EXCECAO = T.CD_TIPO_EXCECAO)
         INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)");
             } else {
-                $read->FullRead("SELECT E.CD_EXCECAO, E.DATA_INICIAL, E.DATA_FINAL, E.CD_FUNCIONARIO, E.CD_TIPO_EXCECAO
+                $read->FullRead("SELECT E.CD_EXCECAO, E.DATA_INICIAL, E.DATA_FINAL
         FROM EXCECOES E WHERE E.CD_EXCECAO =:C", "C=$cdExcecao");
             }
             return $read->getResult();
@@ -97,24 +97,22 @@ class Excecoes
         }
     }
 
-    public function inserir()
+    public function inserir($insert)
     {
 
         try {
-            $dadosinsert = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao, "CD_FUNCIONARIO" => $this->cdfuncionario];
-            $conn = \App\Conn\Conn::getConn(true);
-            $insert = new \App\Conn\Insert($conn);
+            $dadosinsert = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao, "CD_FUNCIONARIO" => $this->cdfuncionario]; 
             $insert->ExeInsert("EXCECOES", $dadosinsert);
 
             if (!$insert->getResult()) {
-                $insert->Rollback();
+                //$insert->Rollback();
                 $this->Result = false;
             } else {
-                $insert->Commit();
+                //$insert->Commit();
                 $this->Result = true;
             }
         } catch (Exception $th) {
-            $insert->Rollback();
+            //$insert->Rollback();
             $this->Result = false;
         }
     }

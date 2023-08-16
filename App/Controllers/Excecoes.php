@@ -47,7 +47,6 @@ class Excecoes
 
     public function controlar($dados)
     {
-        echo var_dump($dados);
         try {
             $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
             $this->data = isset($dados['dataExcecao']) ? $dados['dataExcecao'] : '';
@@ -58,8 +57,11 @@ class Excecoes
             if (empty($this->data) || empty($this->data) || empty($this->tpExcecao) || empty($this->funcionarios_selecionados)) {
                 throw new Exception("Campos Usuário e Senha não podem ser nulos!");
             }
+            $conn = \App\Conn\Conn::getConn(true); 
+            $insert = new \App\Conn\Insert($conn);
 
             if (empty($this->codigo)) {
+
 
                 foreach ($this->funcionarios_selecionados as $funcionario) {
 
@@ -68,12 +70,14 @@ class Excecoes
                     $cad->setDataFinal($this->dataFinal);
                     $cad->setTipoExcecao($this->tpExcecao);
                     $cad->setFuncionario(intval($funcionario));
-                    $cad->inserir();
-                    if ($cad->getResult() != true) {
+                    $cad->inserir($insert);
+                    if ($cad->getResult() == false) {
                         echo 'erro';
+                        $insert->Rollback();
                         break;
                     }
                 }
+                $insert->Commit();
                 echo 'inserido';
 
             } else {

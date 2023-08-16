@@ -24,7 +24,7 @@ class Funcionarios
     {
         try {
             $read = new \App\Conn\Read();
-            if (empty($cdSetor)) {
+            if (empty($cdFuncionario)) {
                 $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO
         FROM FUNCIONARIOS F");
             } else {

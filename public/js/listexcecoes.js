@@ -1,3 +1,5 @@
+$(".ui.negative.message").hide();
+
 ////// INICIA O JAVASRIPT DA PÁGINA
 $(document).ready(function () {
   $(".ui.negative.message").hide();
@@ -82,8 +84,7 @@ $(document).ready(function () {
           $(".ui.positive.right.labeled.icon.button").addClass("loading");
         },
         success: function (response) {
-          // Manipula a resposta recebida
-          console.log(response); // Exemplo: exibe a resposta em um alerta
+          //alert(response);
 
           // Se a validação for bem-sucedida, redirecione para outra página
           if (response === "inserido" || response === "alterado") {
@@ -91,7 +92,6 @@ $(document).ready(function () {
 
             $(".ui.positive.right.labeled.icon.button").removeClass("loading");
 
-            // Agendar a remoção da mensagem após 4 segundos
             setTimeout(function () {
               $(".ui.positive.message").transition("fade out");
               $("#CADmodal").modal("hide");
@@ -112,6 +112,7 @@ $(document).ready(function () {
           alert(
             "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
           );
+          location.reload();
         },
         complete: function () {
           // Remova a animação de "carregando" aqui, se necessário
@@ -121,11 +122,12 @@ $(document).ready(function () {
   });
 
   $("#CAD").click(function () {
+    $("#dataExcecao").val("");
+    $("#dataFinal").val("");
     carregardadosTiposExcecoes();
     $("#search_to").empty();
     carregarDadosFuncionario();
     $("#CADmodal").modal("show");
-    $("#nameTipoExcecao").val("");
   });
 
   $(".ui.orange.basic.button").click(function () {
@@ -133,20 +135,26 @@ $(document).ready(function () {
   });
 });
 
-function editarRegistro(idTipoExcecao) {
+function editarRegistro(idExcecao, idFuncionario) {
+  $("#search_to").empty();
+  $("#dataExcecao").val("");
+  $("#dataFinal").val("");
+  carregardadosTiposExcecoes();
+  carregarDadosFuncionario(idFuncionario);
   $("#CADmodal").modal("show");
+
   $.ajax({
     type: "POST",
-    url: "./../../App/Controllers/TiposExcecoes.php",
+    url: "./../../App/Controllers/Excecoes.php",
     data: {
-      cdTipoExcecao: idTipoExcecao,
+      cdExcecao: idExcecao,
       funcao: "listJSON",
     },
     success: function (data) {
-      var tipoExcecao = JSON.parse(data)[0];
+      var Excecao = JSON.parse(data)[0];
 
-      $("#nameTipoExcecao").val(tipoExcecao.NM_TIPO_EXCECAO);
-      $("#cdTipoExcecao").val(tipoExcecao.CD_TIPO_EXCECAO);
+      $("#dataExcecao").val(Excecao.DATA_INICIAL);
+      $("#dataFinal").val(Excecao.DATA_FINAL);
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador
@@ -256,12 +264,13 @@ async function carregardadosTiposExcecoes() {
 }
 
 //PEGA OS FUNCIONÁRIOS PARA SEREM CARREGADOS NO MULTISELECT DO JQUERY DO MODAL DE CADASTRO DE EXCECÃO.
-async function carregarDadosFuncionario() {
+async function carregarDadosFuncionario(id = null) {
   $.ajax({
     type: "POST",
     url: "./../../App/Controllers/Funcionarios.php",
     data: {
       funcao: "listJSON",
+      cdFuncionario: id,
     },
     success: function (data) {
       const dadosFuncionarios = JSON.parse(data);
@@ -277,6 +286,7 @@ async function carregarDadosFuncionario() {
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
+      location.reload();
     },
   });
 }
