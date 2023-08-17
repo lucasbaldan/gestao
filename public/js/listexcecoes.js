@@ -247,6 +247,10 @@ async function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
         placeholder: "Selecione tipo Exceção",
         allowClear: true
       });
+
+      if (tipoExcecaoSalvoNoBanco) {
+        $("#select-tipoExcecao").val(tipoExcecaoSalvoNoBanco).trigger("change");
+      }
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
