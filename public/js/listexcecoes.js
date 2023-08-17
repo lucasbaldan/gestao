@@ -32,10 +32,10 @@ $(document).ready(function () {
 
           var input = $(
             "<h4>" +
-            title +
-            '</h4><input class="ui input responsive-input" type="text" placeholder="' +
-            title +
-            '..." />'
+              title +
+              '</h4><input class="ui input responsive-input" type="text" placeholder="' +
+              title +
+              '..." />'
           )
             .appendTo($(column.header()).empty())
             .on("keyup change", function () {
@@ -80,13 +80,11 @@ $(document).ready(function () {
         url: "./../../App/Controllers/Excecoes.php",
         data: formData,
         beforeSend: function () {
-          console.log(formData);
           $(".ui.positive.right.labeled.icon.button").addClass("loading");
         },
         success: function (response) {
           //alert(response);
 
-          // Se a validação for bem-sucedida, redirecione para outra página
           if (response === "inserido" || response === "alterado") {
             $(".ui.positive.message").transition("fade in");
 
@@ -136,7 +134,6 @@ $(document).ready(function () {
 });
 
 function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
-  alert(idTipoExcecao);
   $("#search_to").empty();
   $("#dataExcecao").val("");
   $("#dataFinal").val("");
@@ -182,7 +179,6 @@ function excluirRegistro(idExcecao) {
         $("#botaoconfirmaExclusao").addClass("loading");
       },
       success: function (response) {
-        alert(response);
         if (response === "excluido") {
           $(".ui.positive.message").transition("fade in");
 
@@ -226,7 +222,7 @@ function excluirRegistro(idExcecao) {
 
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
 async function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
-  const options = [];
+  let options = [];
 
   $.ajax({
     type: "POST",
@@ -236,36 +232,21 @@ async function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
     },
     success: function (data) {
       const dadosTipoExcecoes = JSON.parse(data);
-      // Atualize a variável options ao invés de redeclará-la
-      options.push(
-        ...dadosTipoExcecoes.map((item) => ({
-          value: item.CD_TIPO_EXCECAO,
-          text: item.NM_TIPO_EXCECAO,
-        }))
-      );
+      options = dadosTipoExcecoes.map((item) => ({
+        id: item.CD_TIPO_EXCECAO.toString(),
+        text: item.NM_TIPO_EXCECAO,
+      }));
 
-      const select = new TomSelect("#select-tipoExcecao", {
-        create: false,
-        render: {
-          no_results: function () {
-            return '<div class="no-results"> Nenhum resultado encontrado</div>';
-          },
-        },
-        sortField: {
-          field: "text",
-          direction: "asc",
-        },
-        options: options,
+      options.unshift({
+        id: "",
+        text: "",
       });
 
-      //console.log("Item selecionado:", select.options[tipoExcecaoSalvoNoBanco]);
-      if (tipoExcecaoSalvoNoBanco) {
-        const selectedItem = options.find(option => option.value === tipoExcecaoSalvoNoBanco);
-        console.log("Selected Item:", selectedItem); // Adicione esta linha
-        if (selectedItem) {
-          select.addItem(selectedItem);
-        }
-      }
+      $("#select-tipoExcecao").select2({
+        data: options,
+        placeholder: "Selecione tipo Exceção",
+        allowClear: true
+      });
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
