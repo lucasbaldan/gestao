@@ -69,13 +69,13 @@ class Excecoes
 
         try {
             $read = new \App\Conn\Read();
-            $read->ExeRead("TIPO_EXCECOES", "WHERE CD_TIPO_EXCECAO = :C", "C=$this->codigo");
+            $read->ExeRead("EXCECOES", "WHERE CD_EXCECAO = :C", "C=$this->codigo");
             $dadosCadastro = $read->getResult()[0] ?? [];
             if ($dadosCadastro) {
-                $dadosupdate = ["NM_TIPO_EXCECAO" => $this->data];
+                $dadosupdate = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao];
                 $conn = \App\Conn\Conn::getConn(true);
                 $update = new \App\Conn\Update($conn);
-                $update->ExeUpdate("TIPO_EXCECOES", $dadosupdate, "WHERE CD_TIPO_EXCECAO =:C", "C=$this->codigo");
+                $update->ExeUpdate("EXCECOES", $dadosupdate, "WHERE CD_EXCECAO =:C", "C=$this->codigo");
 
                 $atualizado = !empty($update->getResult());
                 if ($atualizado) {

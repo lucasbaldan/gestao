@@ -54,14 +54,13 @@ class Excecoes
             $this->tpExcecao = isset($dados['tipoExcecao']) ? $dados['tipoExcecao'] : '';
             $this->funcionarios_selecionados = isset($dados['to']) ? ($dados['to']) : '';
 
-            if (empty($this->data) || empty($this->data) || empty($this->tpExcecao) || empty($this->funcionarios_selecionados)) {
+            if (empty($this->data) || empty($this->data) || empty($this->tpExcecao) || (empty($this->funcionarios_selecionados) && !isset($this->codigo))) {
                 throw new Exception("Campos Usuário e Senha não podem ser nulos!");
             }
-            $conn = \App\Conn\Conn::getConn(true); 
-            $insert = new \App\Conn\Insert($conn);
 
             if (empty($this->codigo)) {
-
+                $conn = \App\Conn\Conn::getConn(true);
+                $insert = new \App\Conn\Insert($conn);
 
                 foreach ($this->funcionarios_selecionados as $funcionario) {
 
@@ -79,12 +78,14 @@ class Excecoes
                 }
                 $insert->Commit();
                 echo 'inserido';
-
+            
             } else {
 
                 $cad = new \App\Models\Excecoes;
                 $cad->setCodigo($this->codigo);
                 $cad->setData($this->data);
+                $cad->setDataFinal($this->dataFinal);
+                $cad->setTipoExcecao($this->tpExcecao);
                 $cad->alterar();
                 if ($cad->getResult() == true) {
                     echo 'alterado';

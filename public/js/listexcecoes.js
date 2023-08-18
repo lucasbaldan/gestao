@@ -1,5 +1,3 @@
-$(".ui.negative.message").hide();
-
 ////// INICIA O JAVASRIPT DA PÁGINA
 $(document).ready(function () {
   $(".ui.negative.message").hide();
@@ -50,24 +48,24 @@ $(document).ready(function () {
   // CONTROLA O FORMULÁRIO DO CADASTRO
 
   $("#form-CAD-Excecao").form({
-    fields: {
-      user: {
-        identifier: "dataExcecao",
-        rules: [
-          {
-            type: "empty",
-            prompt: ".",
-          },
-        ],
-        identifier: "tipoExcecao",
-        rules: [
-          {
-            type: "empty",
-            prompt: ".",
-          },
-        ],
-      },
-    },
+    // fields: {
+    //   user: {
+    //     identifier: "dataExcecao",
+    //     rules: [
+    //       {
+    //         type: "empty",
+    //         prompt: ".",
+    //       },
+    //     ],
+    //     identifier: "tipoExcecao",
+    //     rules: [
+    //       {
+    //         type: "empty",
+    //         prompt: ".",
+    //       },
+    //     ],
+    //   },
+    // },
     onSuccess: function (event, fields) {
       $("#search_to option").prop("selected", true);
       event.preventDefault(); // Impede o envio padrão do formulário
@@ -83,8 +81,7 @@ $(document).ready(function () {
           $(".ui.positive.right.labeled.icon.button").addClass("loading");
         },
         success: function (response) {
-          //alert(response);
-
+          
           if (response === "inserido" || response === "alterado") {
             $(".ui.positive.message").transition("fade in");
 
@@ -120,6 +117,7 @@ $(document).ready(function () {
   });
 
   $("#CAD").click(function () {
+    $('#select-tipoExcecao').val('');
     $("#dataExcecao").val("");
     $("#dataFinal").val("");
     carregardadosTiposExcecoes();
@@ -151,6 +149,7 @@ function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
     success: function (data) {
       var Excecao = JSON.parse(data)[0];
 
+      $("#cdExcecao").val(Excecao.CD_EXCECAO);
       $("#dataExcecao").val(Excecao.DATA_INICIAL);
       $("#dataFinal").val(Excecao.DATA_FINAL);
     },
