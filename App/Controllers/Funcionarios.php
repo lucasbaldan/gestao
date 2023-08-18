@@ -6,6 +6,12 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Exception;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
+    $method = $_POST['funcao'];
+    $Funcionario = new Funcionarios;
+    $Funcionario->$method($_POST);
+}
+
 class Funcionarios
 {
     private $codigo;
@@ -93,13 +99,7 @@ class Funcionarios
                 echo 'erro';
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            echo 'erro';
         }
     }
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
-    $method = $_POST['funcao'];
-    $Funcionario = new Funcionarios;
-    $Funcionario->$method($_POST);
 }
