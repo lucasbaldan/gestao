@@ -1,6 +1,3 @@
-<?php
-include("header_semantic_main.php");
-?>
 <style>
   header {
     padding-top: 25px;

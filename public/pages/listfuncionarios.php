@@ -16,12 +16,14 @@ $dados = $pegaFuncionarios->list();
     <div class="ui container">
         </br>
         <div style="float: right;">
+        <a href="./formfuncionarios.php">
             <div class="ui animated button green" id="CAD" tabindex="0">
                 <div class="visible content"><i class="plus icon"></i></div>
                 <div class="hidden content">
                     Novo
                 </div>
             </div>
+            </a>
         </div>
 
         <table id="myTable" class="ui red celled table">

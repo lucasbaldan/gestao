@@ -22,3 +22,10 @@ $conn = \App\Conn\Conn::verificaBanco();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema Baldan</title>
 </head>
+
+
+    <div class="ui page dimmer">
+        <div class="center">
+            <i class="ui text loader">Carregando...</i>
+        </div>
+    </div>

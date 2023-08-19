@@ -37,11 +37,6 @@
     </div>
 
     <div class="pusher">
-        <div class="ui page dimmer">
-            <div class="center">
-                <i class="ui text loader">Carregando...</i>
-            </div>
-        </div>
         <div class="ui" style="position: fixed; bottom: 0; left: 48%; right: 48%; z-index: 9999;">
             <button id="menuButton" class="ui icon button">
                 <i class="loading compass outline icon"></i>
