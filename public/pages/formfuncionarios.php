@@ -20,15 +20,23 @@ include("./footer_menu.php");
     <div class="ui form">
       <form id="CAD-funcionario">
         <div class="ui bottom attached tab segment active" data-tab="funcionario-geral">
-            <div class="ui large fluid label">
-              Nome do Funcionário⠀⠀⠀
-              <div class="ui large fluid icon input">
-                <input type="text" style="border-color: red;">
-                <i class="icon keyboard outline"></i>
-              </div>
+          <h3>Cadastros Gerais do Funcionário</h3>
+          <div class="ui large fluid label">
+            Nome do Funcionário⠀⠀⠀
+            <div class="ui large fluid icon input">
+              <input type="text" style="border-color: red;">
+              <i class="icon keyboard outline"></i>
             </div>
+          </div>
         </div>
         <div class="ui bottom attached tab segment" data-tab="funcionario-funcionais">
+          <h3>Cadastros Funcionais do Funcionário</h3>
+          <div class="ui large fluid label">
+            Data de início⠀⠀⠀
+            <div class="ui large input">
+              <input type="date" style="border-color: red;">
+            </div>
+          </div>
         </div>
       </form>
     </div>
