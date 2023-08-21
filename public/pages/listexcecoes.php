@@ -113,7 +113,7 @@ $dados = $pegaExcecao->list();
                     </div>
                     <div class="eleven wide column">
                         <div class="ui selection">
-                            <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required>7
+                            <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required>
                             </select>
                         </div>
                     </div>
