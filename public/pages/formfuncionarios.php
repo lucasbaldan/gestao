@@ -148,11 +148,25 @@ include("./footer_menu.php");
           <tbody>
           </tbody>
         </table>
-
       </div>
 
     </div>
+    <hr>
+
+    <div style="padding-bottom: 15px;">
+      <button class="ui blue labeled icon button">
+        <i class="icon paper plane"></i>
+        Salvar
+      </button>
+      <a href="./listfuncionarios.php" id="gopage"><button class="ui yellow labeled icon button">
+          <i class="icon reply"></i>
+          Cancelar
+        </button></a>
+    </div>
+
   </div>
+
+
 
 
 
@@ -176,35 +190,80 @@ include("./footer_menu.php");
         "bFilter": false
       });
 
+      // Evento de clique para os botões de edição
+      $('#funcionalTable').on('click', '.small.ui.icon.blue.button', function() {
+        var rowData = table.row($(this).closest('tr')).data();
+        var rowId = $(this).closest('tr').attr('data-id');
+
+        // Preencher campos de entrada com os dados da linha selecionada
+        $('#matricula').val(rowData[0]);
+        $('#dataInicio').val(rowData[1]);
+        $('#dataTermino').val(rowData[2]);
+        $('#select-almoco').val(rowData[3]).trigger("change");
+        $('#select-funcao').val(rowData[4]).trigger("change");
+        $('#descricaoHorario').val(rowData[6]);
+
+        var diasTrabalho = rowData[5];
+
+        // Marcar checkboxes correspondentes
+        diasTrabalho.forEach(function(dia) {
+          $('#' + dia).prop('checked', true);
+        });
+
+        // Armazenar o ID da linha sendo editada
+        $('#addfuncional').attr('data-edit-id', rowId);
+      });
+
       $('#addfuncional').on('click', function() {
-        var matricula = $('#matricula').val();
-        var dataInicio = $('#dataInicio').val();
-        var dataTermino = $('#dataTermino').val();
-        var almoco = $('#select-almoco').val();
-        var funcao = $('#select-funcao').val();
-        var diasTrabalho = [];
+        var editId = $(this).attr('data-edit-id'); // Pega o ID da edição, se houver
 
-        if ($('#SEG').is(':checked')) diasTrabalho.push('Segunda');
-        if ($('#TER').is(':checked')) diasTrabalho.push('Terça');
-        if ($('#QUA').is(':checked')) diasTrabalho.push('Quarta');
-        if ($('#QUI').is(':checked')) diasTrabalho.push('Quinta');
-        if ($('#SEX').is(':checked')) diasTrabalho.push('Sexta');
+        if (editId) {
+          var diasTrabalho = [];
+          if ($('#SEG').is(':checked')) diasTrabalho.push('SEG');
+          if ($('#TER').is(':checked')) diasTrabalho.push('TER');
+          if ($('#QUA').is(':checked')) diasTrabalho.push('QUA');
+          if ($('#QUI').is(':checked')) diasTrabalho.push('QUI');
+          if ($('#SEX').is(':checked')) diasTrabalho.push('SEX');
+          var diasTrabalhoTexto = diasTrabalho.join(', ');
+          // Atualizar os dados da linha com o ID correspondente
+          var updatedData = [
+            $('#matricula').val(),
+            $('#dataInicio').val(),
+            $('#dataTermino').val(),
+            $('#select-almoco').val(),
+            $('#select-funcao').val(),
+            diasTrabalho,
+            $('#descricaoHorario').val(),
+            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
+            // Preencha outros campos aqui...
+          ];
 
-        var descricaoHorario = $('#descricaoHorario').val();
+          table.row('#' + editId).data(updatedData).draw();
 
-        // Adicionar a nova linha à tabela
-        table.row.add([
-          matricula,
-          dataInicio,
-          dataTermino,
-          almoco,
-          funcao,
-          diasTrabalho.join(', '), // Transforma o array em uma string separada por vírgulas
-          descricaoHorario,
-          '<button class="ui icon red button">Remover</button>' // Botão para remover a linha
-        ]).draw(false); // Redesenha a tabela sem recarregar os dados
+          // Remover o atributo de edição após atualizar os dados
+          $(this).removeAttr('data-edit-id');
+        } else {
+          var diasTrabalho = [];
+          if ($('#SEG').is(':checked')) diasTrabalho.push('SEG');
+          if ($('#TER').is(':checked')) diasTrabalho.push('TER');
+          if ($('#QUA').is(':checked')) diasTrabalho.push('QUA');
+          if ($('#QUI').is(':checked')) diasTrabalho.push('QUI');
+          if ($('#SEX').is(':checked')) diasTrabalho.push('SEX');
+          var diasTrabalhoTexto = diasTrabalho.join(', ');
+          // Adicionar nova linha
+          var newRowData = [
+            $('#matricula').val(),
+            $('#dataInicio').val(),
+            $('#dataTermino').val(),
+            $('#select-almoco').val(),
+            $('#select-funcao').val(),
+            diasTrabalho,
+            $('#descricaoHorario').val(),
+            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
+          ];
 
-        // Limpar campos após adicionar a linha
+          table.row.add(newRowData).draw();
+        }
         $('#matricula').val('');
         $('#dataInicio').val('');
         $('#dataTermino').val('');
@@ -217,7 +276,6 @@ include("./footer_menu.php");
         $('#SEX').prop('checked', false);
         $('#descricaoHorario').val('');
       });
-
     });
 
 
