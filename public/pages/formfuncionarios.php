@@ -215,7 +215,7 @@ include("./footer_menu.php");
       });
 
       $('#addfuncional').on('click', function() {
-        var editId = $(this).attr('data-edit-id'); // Pega o ID da edição, se houver
+        var editId = $(this).attr('data-edit-id');
 
         if (editId) {
           var diasTrabalho = [];
@@ -238,7 +238,7 @@ include("./footer_menu.php");
             // Preencha outros campos aqui...
           ];
 
-          table.row('#' + editId).data(updatedData).draw();
+          table.row(editId).data(updatedData).draw();
 
           // Remover o atributo de edição após atualizar os dados
           $(this).removeAttr('data-edit-id');
@@ -250,7 +250,13 @@ include("./footer_menu.php");
           if ($('#QUI').is(':checked')) diasTrabalho.push('QUI');
           if ($('#SEX').is(':checked')) diasTrabalho.push('SEX');
           var diasTrabalhoTexto = diasTrabalho.join(', ');
-          // Adicionar nova linha
+
+          if (table.rows().count() === 0) {
+            var newId = 0
+          } else {
+            var newId = table.rows().count();
+          }
+
           var newRowData = [
             $('#matricula').val(),
             $('#dataInicio').val(),
@@ -262,7 +268,10 @@ include("./footer_menu.php");
             '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
           ];
 
-          table.row.add(newRowData).draw();
+          var newRow = table.row.add(newRowData);
+          $(newRow.node()).attr('data-id', newId);
+          newRow.draw();
+
         }
         $('#matricula').val('');
         $('#dataInicio').val('');
