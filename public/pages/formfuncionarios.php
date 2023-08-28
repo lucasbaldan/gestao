@@ -138,8 +138,10 @@ include("./footer_menu.php");
               <th>Matrícula</th>
               <th>Data Início</th>
               <th>Data Final</th>
+              <th>Almoço</th>
               <th>Almoço?</th>
               <th>Função</th>
+              <th>Função.</th>
               <th>Dias de Trabalho</th>
               <th>Descrição do horário</th>
               <th>Ações</th>
@@ -231,7 +233,9 @@ include("./footer_menu.php");
             $('#dataInicio').val(),
             $('#dataTermino').val(),
             $('#select-almoco').val(),
+            $('#select-almoco').find(':selected').text(),
             $('#select-funcao').val(),
+            $('#select-funcao').find(':selected').text(),
             diasTrabalho,
             $('#descricaoHorario').val(),
             '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
@@ -262,7 +266,9 @@ include("./footer_menu.php");
             $('#dataInicio').val(),
             $('#dataTermino').val(),
             $('#select-almoco').val(),
+            $('#select-almoco').find(':selected').text(),
             $('#select-funcao').val(),
+            $('#select-funcao').find(':selected').text(),
             diasTrabalho,
             $('#descricaoHorario').val(),
             '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
