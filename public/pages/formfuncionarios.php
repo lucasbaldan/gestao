@@ -68,8 +68,8 @@ include("./footer_menu.php");
           Faz horário de almoço?⠀⠀
           <div class="ui input">
             <select id="select-almoco" name="almoco" class="select2" style="border-color: red;" required>
-              <option value="S">Sim</option>
-              <option value="N">Não</option>
+              <option value="Sim">Sim</option>
+              <option value="Não">Não</option>
             </select>
           </div>
         </div>
@@ -131,17 +131,15 @@ include("./footer_menu.php");
           Adicionar / Alterar
         </button>
 
-
-        <table id="funcionalTable" class="ui blue celled table">
+        <table id="funcionalTable" class="ui blue celled table" style="min-width: 100%;">
           <thead>
             <tr>
               <th>Matrícula</th>
               <th>Data Início</th>
               <th>Data Final</th>
-              <th>Almoço</th>
               <th>Almoço?</th>
+              <th>idFunção</th>
               <th>Função</th>
-              <th>Função.</th>
               <th>Dias de Trabalho</th>
               <th>Descrição do horário</th>
               <th>Ações</th>
@@ -150,8 +148,8 @@ include("./footer_menu.php");
           <tbody>
           </tbody>
         </table>
-      </div>
 
+      </div>
     </div>
     <hr>
 
@@ -164,12 +162,9 @@ include("./footer_menu.php");
           <i class="icon reply"></i>
           Cancelar
         </button></a>
+
     </div>
-
   </div>
-
-
-
 
 
   <script>
@@ -189,7 +184,12 @@ include("./footer_menu.php");
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
         },
-        "bFilter": false
+        bFilter: false,
+        columnDefs: [{
+          targets: 4,
+          visible: false
+        }],
+
       });
 
       // Evento de clique para os botões de edição
@@ -197,15 +197,23 @@ include("./footer_menu.php");
         var rowData = table.row($(this).closest('tr')).data();
         var rowId = $(this).closest('tr').attr('data-id');
 
+        var dataInicioPura = rowData[1].split('/');
+        var dataInicio = dataInicioPura[2] + '-' + dataInicioPura[1] + '-' + dataInicioPura[0];
+
+        if (rowData[2] != "-") {
+          var dataTerminoPura = rowData[2].split('/');
+          var dataTermino = dataTerminoPura[2] + '-' + dataTerminoPura[1] + '-' + dataTerminoPura[0];
+        }
+
         // Preencher campos de entrada com os dados da linha selecionada
         $('#matricula').val(rowData[0]);
-        $('#dataInicio').val(rowData[1]);
-        $('#dataTermino').val(rowData[2]);
+        $('#dataInicio').val(dataInicio);
+        $('#dataTermino').val(dataTermino);
         $('#select-almoco').val(rowData[3]).trigger("change");
         $('#select-funcao').val(rowData[4]).trigger("change");
-        $('#descricaoHorario').val(rowData[6]);
+        $('#descricaoHorario').val(rowData[7]);
 
-        var diasTrabalho = rowData[5];
+        var diasTrabalho = rowData[6];
 
         // Marcar checkboxes correspondentes
         diasTrabalho.forEach(function(dia) {
@@ -227,13 +235,23 @@ include("./footer_menu.php");
           if ($('#QUI').is(':checked')) diasTrabalho.push('QUI');
           if ($('#SEX').is(':checked')) diasTrabalho.push('SEX');
           var diasTrabalhoTexto = diasTrabalho.join(', ');
-          // Atualizar os dados da linha com o ID correspondente
+
+          var dataInicioPura = $('#dataInicio').val().split('-');
+          var dataInicio = dataInicioPura[2] + '/' + dataInicioPura[1] + '/' + dataInicioPura[0];
+
+          if ($('#dataTermino').val()) {
+            var dataTerminoPura = $('#dataTermino').val().split('-');
+            var dataTermino = dataTerminoPura[2] + '/' + dataTerminoPura[1] + '/' + dataTerminoPura[0];
+          } else {
+            var dataTermino = "-";
+          }
+
+
           var updatedData = [
             $('#matricula').val(),
-            $('#dataInicio').val(),
-            $('#dataTermino').val(),
+            dataInicio,
+            dataTermino,
             $('#select-almoco').val(),
-            $('#select-almoco').find(':selected').text(),
             $('#select-funcao').val(),
             $('#select-funcao').find(':selected').text(),
             diasTrabalho,
@@ -261,12 +279,21 @@ include("./footer_menu.php");
             var newId = table.rows().count();
           }
 
+          var dataInicioPura = $('#dataInicio').val().split('-');
+          var dataInicio = dataInicioPura[2] + '/' + dataInicioPura[1] + '/' + dataInicioPura[0];
+
+          if ($('#dataTermino').val()) {
+            var dataTerminoPura = $('#dataTermino').val().split('-');
+            var dataTermino = dataTerminoPura[2] + '/' + dataTerminoPura[1] + '/' + dataTerminoPura[0];
+          } else {
+            var dataTermino = "-";
+          }
+
           var newRowData = [
             $('#matricula').val(),
-            $('#dataInicio').val(),
-            $('#dataTermino').val(),
+            dataInicio,
+            dataTermino,
             $('#select-almoco').val(),
-            $('#select-almoco').find(':selected').text(),
             $('#select-funcao').val(),
             $('#select-funcao').find(':selected').text(),
             diasTrabalho,
