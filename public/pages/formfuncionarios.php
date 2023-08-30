@@ -197,20 +197,9 @@ include("./footer_menu.php");
         var rowData = table.row($(this).closest('tr')).data();
         var rowId = $(this).closest('tr').attr('data-id');
 
-        // var updateEditando = [
-        //   rowData[0],
-        //   rowData[1],
-        //   rowData[2],
-        //   rowData[3],
-        //   rowData[4],
-        //   rowData[5],
-        //   rowData[6],
-        //   rowData[7],
-        //   "<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
-        // ];
+        rowData[8] ="<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
 
-        // var editId = $(this).attr('data-edit-id');
-        // table.row(editId).data(updateEditando).draw();
+        table.row(rowId).data(rowData).draw();
 
         var dataInicioPura = rowData[1].split('/');
         var dataInicio = dataInicioPura[2] + '-' + dataInicioPura[1] + '-' + dataInicioPura[0];
@@ -339,7 +328,11 @@ include("./footer_menu.php");
         var row = $(this).closest('tr');
         var rowData = table.row(row).data();
 
-        rowData[8] = "EXC";
+        rowData[4] = "EXC";
+        rowData[8] = "<div class'ui red message'><i class='exclamation icon'></i>Exclusão será efetivada quando Salvar</div>";
+
+        // Adiciona a classe 'error' à linha
+        row.addClass('error');
 
         table.row(row).data(rowData).draw();
       });
