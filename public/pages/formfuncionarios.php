@@ -197,6 +197,21 @@ include("./footer_menu.php");
         var rowData = table.row($(this).closest('tr')).data();
         var rowId = $(this).closest('tr').attr('data-id');
 
+        // var updateEditando = [
+        //   rowData[0],
+        //   rowData[1],
+        //   rowData[2],
+        //   rowData[3],
+        //   rowData[4],
+        //   rowData[5],
+        //   rowData[6],
+        //   rowData[7],
+        //   "<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
+        // ];
+
+        // var editId = $(this).attr('data-edit-id');
+        // table.row(editId).data(updateEditando).draw();
+
         var dataInicioPura = rowData[1].split('/');
         var dataInicio = dataInicioPura[2] + '-' + dataInicioPura[1] + '-' + dataInicioPura[0];
 
@@ -317,6 +332,16 @@ include("./footer_menu.php");
         $('#QUI').prop('checked', false);
         $('#SEX').prop('checked', false);
         $('#descricaoHorario').val('');
+      });
+
+
+      $('#funcionalTable').on('click', '.small.ui.icon.red.button', function() {
+        var row = $(this).closest('tr');
+        var rowData = table.row(row).data();
+
+        rowData[8] = "EXC";
+
+        table.row(row).data(rowData).draw();
       });
     });
 
