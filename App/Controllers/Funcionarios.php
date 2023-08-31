@@ -15,7 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
 class Funcionarios
 {
     private $codigo;
-    private string $nome;
+    private $nome;
+    private $setor;
 
     public function list()
     {
@@ -45,12 +46,39 @@ class Funcionarios
     public function controlar($dados)
     {
 
-        $teste = json_decode($dados['dados']);
-        echo json_encode($teste);
+        $infoFuncionario = json_decode($dados['dados'], true);
+        $vinculosFuncionais = $infoFuncionario['vinculosFuncionais'];
+
+        $this->codigo = isset($infoFuncionario['cdFuncionario']) ? $infoFuncionario['cdFuncionario'] : '';
+        $this->nome = isset($infoFuncionario['nmFuncionario']) ? $infoFuncionario['nmFuncionario'] : '';
+        $this->setor = isset($infoFuncionario['setorFuncionario']) ? $infoFuncionario['setorFuncionario'] : '';
+
+        $dadosFuncionais = [];
+        $vinculosFuncionaiscontador = 0;
+        foreach ($vinculosFuncionais as $vinculoFuncional) {
+        $vinculosFuncionaiscontador += 1;  
+        $matricula = isset($vinculoFuncional['Matrícula']) ? $vinculoFuncional['Matrícula'] : '';
+        $dataInicio = isset($vinculoFuncional["Data Início"]) ? $vinculoFuncional["Data Início"] : '';
+        $dataFinal = isset($vinculoFuncional["Data Final"]) ? $vinculoFuncional["Data Final"] : '';
+        $almoco = isset($vinculoFuncional["Almoço?"]) ? $vinculoFuncional["Almoço?"] : '';
+        $idFuncao = isset($vinculoFuncional["idFunção"]) ? $vinculoFuncional["idFunção"] : '';
+        $descHorario = isset($vinculoFuncional["Descrição do horário"]) ? $vinculoFuncional["Descrição do horário"] : '';
+
+        $dadosFuncionais[] = $matricula;
+        $dadosFuncionais[] = $dataInicio;
+        $dadosFuncionais[] = $dataFinal;
+        $dadosFuncionais[] = $almoco;
+        $dadosFuncionais[] = $idFuncao;
+        $dadosFuncionais[] = $descHorario;
+        $dadosFuncionais[] = $vinculosFuncionaiscontador;
+
+    }
+    
+    echo json_encode($dadosFuncionais);
+
+        
 
         // try {
-        //     $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
-        //     $this->nome = isset($dados['nameFuncionario']) ? $dados['nameFuncionario'] : '';
 
         //     if (empty($this->codigo) && empty($this->nome)) {
         //         throw new Exception("Campos Usuário e Senha não podem ser nulos!");

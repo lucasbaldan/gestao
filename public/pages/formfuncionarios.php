@@ -361,24 +361,23 @@ include("./footer_menu.php");
           dadosTable.push(obj);
         });
 
-        dadosTable.push({
+        var dadosAjax = {
           nmFuncionario: nomeFuncionario,
-          setorFuncionario: setor
-        });
+          setorFuncionario: setor,
+          vinculosFuncionais: dadosTable
+        }
 
         $.ajax({
           url: "./../../App/Controllers/Funcionarios.php",
           type: "POST",
           data: {
-            dados: JSON.stringify(dadosTable),
+            dados: JSON.stringify(dadosAjax),
             funcao: "controlar",
           },
           success: function(response) {
-
             console.log(response);
           },
           error: function(xhr, status, error) {
-            // Ação a ser realizada em caso de erro
             console.error("Erro na requisição AJAX:", error);
           }
         });
