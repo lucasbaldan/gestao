@@ -45,39 +45,42 @@ class Funcionarios
     public function controlar($dados)
     {
 
-        try {
-            $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
-            $this->nome = isset($dados['nameFuncionario']) ? $dados['nameFuncionario'] : '';
+        $teste = json_decode($dados['dados']);
+        echo json_encode($teste);
 
-            if (empty($this->codigo) && empty($this->nome)) {
-                throw new Exception("Campos Usuário e Senha não podem ser nulos!");
-            }
+        // try {
+        //     $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
+        //     $this->nome = isset($dados['nameFuncionario']) ? $dados['nameFuncionario'] : '';
 
-            if (empty($this->codigo)) {
+        //     if (empty($this->codigo) && empty($this->nome)) {
+        //         throw new Exception("Campos Usuário e Senha não podem ser nulos!");
+        //     }
 
-                $cad = new \App\Models\Funcionarios;
-                $cad->setNome($this->nome);
-                $cad->inserir();
-                if ($cad->getResult() == true) {
-                    echo 'inserido';
-                } else {
-                    echo 'erro';
-                }
-            } else {
+        //     if (empty($this->codigo)) {
 
-                $cad = new \App\Models\Funcionarios;
-                $cad->setCodigo($this->codigo);
-                $cad->setNome($this->nome);
-                $cad->alterar();
-                if ($cad->getResult() == true) {
-                    echo 'alterado';
-                } else {
-                    echo 'erro';
-                }
-            }
-        } catch (Exception $th) {
-            echo 'erro operação';
-        }
+        //         $cad = new \App\Models\Funcionarios;
+        //         $cad->setNome($this->nome);
+        //         $cad->inserir();
+        //         if ($cad->getResult() == true) {
+        //             echo 'inserido';
+        //         } else {
+        //             echo 'erro';
+        //         }
+        //     } else {
+
+        //         $cad = new \App\Models\Funcionarios;
+        //         $cad->setCodigo($this->codigo);
+        //         $cad->setNome($this->nome);
+        //         $cad->alterar();
+        //         if ($cad->getResult() == true) {
+        //             echo 'alterado';
+        //         } else {
+        //             echo 'erro';
+        //         }
+        //     }
+        // } catch (Exception $th) {
+        //     echo 'erro operação';
+        // }
     }
 
     public function excluir($dados)

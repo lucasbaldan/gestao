@@ -24,13 +24,12 @@ include("./footer_menu.php");
     </div>
 
     <div class="ui form">
-      <!-- <form id="CAD-funcionario"> -->
       <div class="ui bottom attached tab segment active" data-tab="funcionario-geral">
         <h3>Cadastros Gerais do Funcionário</h3>
         <div class="ui fluid label">
           Nome do Funcionário⠀⠀⠀
           <div class="ui fluid icon input">
-            <input type="text" style="border-color: red;">
+            <input type="text" style="border-color: red;" id="nomeFuncionario">
             <i class="icon keyboard outline"></i>
           </div>
         </div>
@@ -41,7 +40,6 @@ include("./footer_menu.php");
             <select id="select-setor" name="selectSetor" class="select2" style="border-color: red;" required></select>
           </div>
         </div>
-        <!-- </form> -->
       </div>
       <div class="ui bottom attached tab segment" data-tab="funcionario-funcionais">
         <h3>Cadastros Funcionais do Funcionário</h3>
@@ -154,7 +152,7 @@ include("./footer_menu.php");
     <hr>
 
     <div style="padding-bottom: 15px;">
-      <button class="ui blue labeled icon button">
+      <button class="ui blue labeled icon button" id="salvarFunc">
         <i class="icon paper plane"></i>
         Salvar
       </button>
@@ -168,6 +166,8 @@ include("./footer_menu.php");
 
 
   <script>
+    var editando = false;
+
     $(document).ready(function() {
 
       $('#tabnav .item')
@@ -194,38 +194,43 @@ include("./footer_menu.php");
 
       // Evento de clique para os botões de edição
       $('#funcionalTable').on('click', '.small.ui.icon.blue.button', function() {
-        var rowData = table.row($(this).closest('tr')).data();
-        var rowId = $(this).closest('tr').attr('data-id');
+        if (editando == true) {
+          alert("OUTRO REGISTRO JÁ SENDO EDITADO, SALVE PARA EDITAR OUTRO!");
+        } else {
+          editando = true;
+          var rowData = table.row($(this).closest('tr')).data();
+          var rowId = $(this).closest('tr').attr('data-id');
 
-        rowData[8] ="<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
+          rowData[8] = "<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
 
-        table.row(rowId).data(rowData).draw();
+          table.row(rowId).data(rowData).draw();
 
-        var dataInicioPura = rowData[1].split('/');
-        var dataInicio = dataInicioPura[2] + '-' + dataInicioPura[1] + '-' + dataInicioPura[0];
+          var dataInicioPura = rowData[1].split('/');
+          var dataInicio = dataInicioPura[2] + '-' + dataInicioPura[1] + '-' + dataInicioPura[0];
 
-        if (rowData[2] != "-") {
-          var dataTerminoPura = rowData[2].split('/');
-          var dataTermino = dataTerminoPura[2] + '-' + dataTerminoPura[1] + '-' + dataTerminoPura[0];
+          if (rowData[2] != "-") {
+            var dataTerminoPura = rowData[2].split('/');
+            var dataTermino = dataTerminoPura[2] + '-' + dataTerminoPura[1] + '-' + dataTerminoPura[0];
+          }
+
+          // Preencher campos de entrada com os dados da linha selecionada
+          $('#matricula').val(rowData[0]);
+          $('#dataInicio').val(dataInicio);
+          $('#dataTermino').val(dataTermino);
+          $('#select-almoco').val(rowData[3]).trigger("change");
+          $('#select-funcao').val(rowData[4]).trigger("change");
+          $('#descricaoHorario').val(rowData[7]);
+
+          var diasTrabalho = rowData[6];
+
+          // Marcar checkboxes correspondentes
+          diasTrabalho.forEach(function(dia) {
+            $('#' + dia).prop('checked', true);
+          });
+
+          // Armazenar o ID da linha sendo editada
+          $('#addfuncional').attr('data-edit-id', rowId);
         }
-
-        // Preencher campos de entrada com os dados da linha selecionada
-        $('#matricula').val(rowData[0]);
-        $('#dataInicio').val(dataInicio);
-        $('#dataTermino').val(dataTermino);
-        $('#select-almoco').val(rowData[3]).trigger("change");
-        $('#select-funcao').val(rowData[4]).trigger("change");
-        $('#descricaoHorario').val(rowData[7]);
-
-        var diasTrabalho = rowData[6];
-
-        // Marcar checkboxes correspondentes
-        diasTrabalho.forEach(function(dia) {
-          $('#' + dia).prop('checked', true);
-        });
-
-        // Armazenar o ID da linha sendo editada
-        $('#addfuncional').attr('data-edit-id', rowId);
       });
 
       $('#addfuncional').on('click', function() {
@@ -250,7 +255,6 @@ include("./footer_menu.php");
             var dataTermino = "-";
           }
 
-
           var updatedData = [
             $('#matricula').val(),
             dataInicio,
@@ -265,6 +269,7 @@ include("./footer_menu.php");
           ];
 
           table.row(editId).data(updatedData).draw();
+          editando = false;
 
           // Remover o atributo de edição após atualizar os dados
           $(this).removeAttr('data-edit-id');
@@ -336,7 +341,53 @@ include("./footer_menu.php");
 
         table.row(row).data(rowData).draw();
       });
+
+
+      $('#salvarFunc').click(function() {
+        var nomeFuncionario = $("#nomeFuncionario").val();
+        var setor = $("#select-setor").val();
+        var dadosTable = [];
+
+        var colunas = table.columns().header().toArray().map(function(th) {
+          return $(th).text();
+        });
+
+        table.rows().every(function() {
+          var dadosColuna = this.data();
+          var obj = {};
+          colunas.forEach(function(coluna, index) {
+            obj[coluna] = dadosColuna[index];
+          });
+          dadosTable.push(obj);
+        });
+
+        dadosTable.push({
+          nmFuncionario: nomeFuncionario,
+          setorFuncionario: setor
+        });
+
+        $.ajax({
+          url: "./../../App/Controllers/Funcionarios.php",
+          type: "POST",
+          data: {
+            dados: JSON.stringify(dadosTable),
+            funcao: "controlar",
+          },
+          success: function(response) {
+
+            console.log(response);
+          },
+          error: function(xhr, status, error) {
+            // Ação a ser realizada em caso de erro
+            console.error("Erro na requisição AJAX:", error);
+          }
+        });
+      });
+
     });
+
+
+
 
 
     async function carregardadosFuncoes(FuncaoSalvoNoBanco = null) {
