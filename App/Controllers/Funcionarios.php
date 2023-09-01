@@ -46,37 +46,72 @@ class Funcionarios
     public function controlar($dados)
     {
 
-        $infoFuncionario = json_decode($dados['dados'], true);
-        $vinculosFuncionais = $infoFuncionario['vinculosFuncionais'];
+        try {
 
-        $this->codigo = isset($infoFuncionario['cdFuncionario']) ? $infoFuncionario['cdFuncionario'] : '';
-        $this->nome = isset($infoFuncionario['nmFuncionario']) ? $infoFuncionario['nmFuncionario'] : '';
-        $this->setor = isset($infoFuncionario['setorFuncionario']) ? $infoFuncionario['setorFuncionario'] : '';
+            $infoFuncionario = json_decode($dados['dados'], true);
+            $vinculosFuncionais = $infoFuncionario['vinculosFuncionais'];
 
-        $dadosFuncionais = [];
-        $vinculosFuncionaiscontador = 0;
-        foreach ($vinculosFuncionais as $vinculoFuncional) {
-        $vinculosFuncionaiscontador += 1;  
-        $matricula = isset($vinculoFuncional['Matrícula']) ? $vinculoFuncional['Matrícula'] : '';
-        $dataInicio = isset($vinculoFuncional["Data Início"]) ? $vinculoFuncional["Data Início"] : '';
-        $dataFinal = isset($vinculoFuncional["Data Final"]) ? $vinculoFuncional["Data Final"] : '';
-        $almoco = isset($vinculoFuncional["Almoço?"]) ? $vinculoFuncional["Almoço?"] : '';
-        $idFuncao = isset($vinculoFuncional["idFunção"]) ? $vinculoFuncional["idFunção"] : '';
-        $descHorario = isset($vinculoFuncional["Descrição do horário"]) ? $vinculoFuncional["Descrição do horário"] : '';
+            $this->codigo = isset($infoFuncionario['cdFuncionario']) ? $infoFuncionario['cdFuncionario'] : '';
+            $this->nome = isset($infoFuncionario['nmFuncionario']) ? $infoFuncionario['nmFuncionario'] : '';
+            $this->setor = isset($infoFuncionario['setorFuncionario']) ? $infoFuncionario['setorFuncionario'] : '';
 
-        $dadosFuncionais[] = $matricula;
-        $dadosFuncionais[] = $dataInicio;
-        $dadosFuncionais[] = $dataFinal;
-        $dadosFuncionais[] = $almoco;
-        $dadosFuncionais[] = $idFuncao;
-        $dadosFuncionais[] = $descHorario;
-        $dadosFuncionais[] = $vinculosFuncionaiscontador;
+            if (empty($this->nome) || empty($this->setor)) {
+                throw new Exception("OS CAMPOS NOME OU SETOR NÃO PODEM SER SALVOS COM INFORMAÇÕES NULAS");
+            }
 
-    }
-    
-    echo json_encode($dadosFuncionais);
+            if (empty($this->codigo)) {
+                $conn = \App\Conn\Conn::getConn(true);
+                $insert = new \App\Conn\Insert($conn);
 
-        
+                $cad = new \App\Models\Funcionarios;
+                $cad->setNome($this->nome);
+                $cad->setSetor($this->setor);
+                $cad->inserirFuncionario($insert);
+                $resultadoInsertFuncionario = $cad->getResult();
+                if ($resultadoInsertFuncionario == false) {
+                    $insert->Rollback();
+                    throw new Exception("ERRO AO CADASTRAR FUNCIONÁRIO");
+                } else {
+                    $idFuncionario = $insert->getLastInsert();
+
+                    foreach ($vinculosFuncionais as $vinculoFuncional) {
+
+                        $matricula = isset($vinculoFuncional['Matrícula']) ? $vinculoFuncional['Matrícula'] : '';
+                        $dataInicio = isset($vinculoFuncional["Data Início"]) ? $vinculoFuncional["Data Início"] : '';
+                        $dataFinal = isset($vinculoFuncional["Data Final"]) ? $vinculoFuncional["Data Final"] : '';
+                        $almoco = isset($vinculoFuncional["Almoço?"]) ? $vinculoFuncional["Almoço?"] : ''; $almoco = $almoco == "Sim" ? 1 : 0;
+                        $idFuncao = isset($vinculoFuncional["idFunção"]) ? $vinculoFuncional["idFunção"] : '';
+                        $descHorario = isset($vinculoFuncional["Descrição do horário"]) ? $vinculoFuncional["Descrição do horário"] : '';
+
+                        echo json_encode(var_dump($almoco));
+
+                        $cad->setMatricula($matricula);
+                        $cad->setDataInicio($dataInicio);
+                        $cad->setDataFinal($dataFinal);
+                        $cad->setAlmoco($almoco);
+                        $cad->setFuncao($idFuncao);
+                        $cad->setDescHorario($descHorario);
+
+                        $cad->inserirVinculosFuncionais($insert, $idFuncionario);
+                        $resultadoInsertVinculosFuncionais = $cad->getResult();
+
+                        if ($resultadoInsertVinculosFuncionais == false) {
+                            $insert->Rollback();
+                            throw new Exception("ERRO AO CADASTRAR VINCULOS FUNCIONAIS");
+                        }
+                    }
+                    $insert->Commit();
+                    echo 'inserido';
+                }
+            }
+        } catch (Exception $th) {
+
+            echo 'erro';
+        }
+
+        //echo json_encode($dadosFuncionais);
+
+
 
         // try {
 
