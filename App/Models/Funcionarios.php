@@ -15,6 +15,7 @@ class Funcionarios
     private $almoco;
     private $idFuncao;
     private $descHorario;
+    private $diasSemana;
     private $Message;
     private $Result;
 
@@ -53,6 +54,10 @@ class Funcionarios
     public function setDescHorario($descHorario)
     {
         $this->descHorario = $descHorario;
+    }
+    public function setSemana($semana)
+    {
+        $this->diasSemana = $semana;
     }
 
 
@@ -130,7 +135,18 @@ class Funcionarios
     {
 
         try {
-            $dadosinsert = ["MATRICULA" => $this->matricula, "ALMOCO" => $this->almoco, "DESC_HR_TRABALHO" => $this->descHorario, "CD_FUNCAO" => $this->idFuncao, "CD_FUNCIONARIO" => $cdFuncionario];
+            $dadosinsert = [
+                "MATRICULA" => $this->matricula,
+                "ALMOCO" => $this->almoco,
+                "DESC_HR_TRABALHO" => $this->descHorario,
+                "CD_FUNCAO" => $this->idFuncao,
+                "CD_FUNCIONARIO" => $cdFuncionario,
+                "SEG" => $this->diasSemana[0],
+                "TER" => $this->diasSemana[1],
+                "QUA" => $this->diasSemana[2],
+                "QUI" => $this->diasSemana[3],
+                "SEX" => $this->diasSemana[4]
+            ];
             $insert->ExeInsert("VINCULOS_FUNCIONAIS_FUNCIONARIOS", $dadosinsert);
 
             if (!$insert->getResult()) {

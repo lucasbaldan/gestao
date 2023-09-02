@@ -79,11 +79,24 @@ class Funcionarios
                         $matricula = isset($vinculoFuncional['Matrícula']) ? $vinculoFuncional['Matrícula'] : '';
                         $dataInicio = isset($vinculoFuncional["Data Início"]) ? $vinculoFuncional["Data Início"] : '';
                         $dataFinal = isset($vinculoFuncional["Data Final"]) ? $vinculoFuncional["Data Final"] : '';
-                        $almoco = isset($vinculoFuncional["Almoço?"]) ? $vinculoFuncional["Almoço?"] : ''; $almoco = $almoco == "Sim" ? 1 : 0;
+                        $almoco = isset($vinculoFuncional["Almoço?"]) ? $vinculoFuncional["Almoço?"] : '';
+                        $almoco = $almoco == "Sim" ? 1 : 0;
                         $idFuncao = isset($vinculoFuncional["idFunção"]) ? $vinculoFuncional["idFunção"] : '';
                         $descHorario = isset($vinculoFuncional["Descrição do horário"]) ? $vinculoFuncional["Descrição do horário"] : '';
+                        $diasTrabalhoSemana = isset($vinculoFuncional["Dias de Trabalho"]) ? $vinculoFuncional["Dias de Trabalho"] : '';
 
-                        echo json_encode(var_dump($almoco));
+                        if (!empty($diasTrabalhoSemana)) {
+
+                            $cad->setSemana($semana = [
+                                in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
+                                in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
+                                in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
+                                in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
+                                in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
+                            ]);
+                        }
+
+                        //echo json_encode($segunda);
 
                         $cad->setMatricula($matricula);
                         $cad->setDataInicio($dataInicio);
