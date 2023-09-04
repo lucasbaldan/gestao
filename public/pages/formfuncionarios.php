@@ -26,6 +26,7 @@ include("./footer_menu.php");
     <div class="ui form">
       <div class="ui bottom attached tab segment active" data-tab="funcionario-geral">
         <h3>Cadastros Gerais do Funcionário</h3>
+        <input type="hidden" id="cdFucionario" name="cdFuncionario">
         <div class="ui fluid label">
           Nome do Funcionário⠀⠀⠀
           <div class="ui fluid icon input">
@@ -43,6 +44,7 @@ include("./footer_menu.php");
       </div>
       <div class="ui bottom attached tab segment" data-tab="funcionario-funcionais">
         <h3>Cadastros Funcionais do Funcionário</h3>
+        <input type="text" id="cdVinculoFuncional" name="cdVinculoFuncional">
         <div class="ui label">
           Matrícula⠀⠀
           <div class="ui input">
@@ -141,6 +143,7 @@ include("./footer_menu.php");
               <th>Dias de Trabalho</th>
               <th>Descrição do horário</th>
               <th>Ações</th>
+              <th>codigo</th>
             </tr>
           </thead>
           <tbody>
@@ -214,6 +217,7 @@ include("./footer_menu.php");
           }
 
           // Preencher campos de entrada com os dados da linha selecionada
+          $('#cdVinculoFuncional').val(rowData[9]);
           $('#matricula').val(rowData[0]);
           $('#dataInicio').val(dataInicio);
           $('#dataTermino').val(dataTermino);
@@ -255,6 +259,8 @@ include("./footer_menu.php");
             var dataTermino = "-";
           }
 
+          alert($('#cdVinculoFuncional').val());
+
           var updatedData = [
             $('#matricula').val(),
             dataInicio,
@@ -264,8 +270,8 @@ include("./footer_menu.php");
             $('#select-funcao').find(':selected').text(),
             diasTrabalho,
             $('#descricaoHorario').val(),
-            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
-            // Preencha outros campos aqui...
+            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
+            $('#cdVinculoFuncional').val(),
           ];
 
           table.row(editId).data(updatedData).draw();
@@ -307,7 +313,8 @@ include("./footer_menu.php");
             $('#select-funcao').find(':selected').text(),
             diasTrabalho,
             $('#descricaoHorario').val(),
-            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>'
+            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
+            "-"
           ];
 
           var newRow = table.row.add(newRowData);
@@ -326,6 +333,7 @@ include("./footer_menu.php");
         $('#QUI').prop('checked', false);
         $('#SEX').prop('checked', false);
         $('#descricaoHorario').val('');
+        $('#cdVinculoFuncional').val('');
       });
 
 
@@ -344,6 +352,7 @@ include("./footer_menu.php");
 
 
       $('#salvarFunc').click(function() {
+        var cdFuncionario = $('#cdFuncionario').val();
         var nomeFuncionario = $("#nomeFuncionario").val();
         var setor = $("#select-setor").val();
         var dadosTable = [];
@@ -362,6 +371,7 @@ include("./footer_menu.php");
         });
 
         var dadosAjax = {
+          cdFuncionario: cdFuncionario,
           nmFuncionario: nomeFuncionario,
           setorFuncionario: setor,
           vinculosFuncionais: dadosTable
