@@ -44,7 +44,7 @@ include("./footer_menu.php");
       </div>
       <div class="ui bottom attached tab segment" data-tab="funcionario-funcionais">
         <h3>Cadastros Funcionais do Funcionário</h3>
-        <input type="text" id="cdVinculoFuncional" name="cdVinculoFuncional">
+        <input type="hidden" id="cdVinculoFuncional" name="cdVinculoFuncional">
         <div class="ui label">
           Matrícula⠀⠀
           <div class="ui input">
