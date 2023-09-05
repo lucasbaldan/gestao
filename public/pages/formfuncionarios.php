@@ -180,15 +180,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
     var editando = false;
 
 
-    $(document).ready(function() {
-      let dadosTabelaFuncional;
+    $(document).ready(async function() {
+      var dadosTabelaFuncional = [];
 
       carregardadosSetores();
       carregardadosFuncoes();
 
       if (typeof codigoFuncionario !== 'undefined' && codigoFuncionario !== null) {
         carregarDadosGeraisFuncionario(codigoFuncionario);
-        carregarDadosFuncionaisFuncionario(codigoFuncionario);
+        dadosTabelaFuncional = await carregarDadosFuncionaisFuncionario(codigoFuncionario);
       }
 
 
@@ -202,31 +202,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
       console.log(dadosTabelaFuncional);
       var table = $('#funcionalTable').DataTable({
         data: dadosTabelaFuncional,
-        // columns: [{
-        //     data: 'MATRICULA'
-        //   },
-        //   {
-        //     data: 'CD_FUNCAO'
-        //   },
-        //   {
-        //     data: 'CD_VINCULO_FUNCIONAL'
-        //   },
-        //   {
-        //     data: 'DESC_HR_TRABALHO'
-        //   },
-        //   {
-        //     data: 'MATRICULA'
-        //   },
-        //   // Adicione mais colunas conforme necessário
-        // ],
+        columns: [{
+            data: 'MATRICULA'
+          },
+          {
+            data: 'DATA_INICIAL'
+          },
+          {
+            data: 'DATA_FINAL'
+          },
+          {
+            data: 'ALMOCO'
+          },
+        ],
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
         },
         bFilter: false,
-        columnDefs: [{
-          targets: [4, 9],
-          visible: false
-        }],
+        // columnDefs: [{
+        //   targets: [4, 9],
+        //   visible: false
+        // }],
 
       });
 
@@ -524,24 +520,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
       });
     }
 
-    async function carregarDadosFuncionaisFuncionario(idFuncionario) {
-
-      $.ajax({
-        url: "./../../App/Controllers/Funcionarios.php",
-        method: 'POST',
-        data: {
-          cdFuncionario: idFuncionario,
-          funcao: "listFuncionalJSON"
-        },
-        dataType: 'json',
-        success: function(data) {
-          dadosTabelaFuncional = data;
-          console.log(dadosTabelaFuncional);
-        },
-        error: function(xhr, status, error) {
-          // Lide com erros, se necessário
-          alert("Erro ao carregar dados funcionais do funcionário: " + error);
-        }
+   async function carregarDadosFuncionaisFuncionario(idFuncionario) {
+      return new Promise(function(resolve, reject) {
+        $.ajax({
+          url: "./../../App/Controllers/Funcionarios.php",
+          method: 'POST',
+          data: {
+            cdFuncionario: idFuncionario,
+            funcao: "listFuncionalJSON"
+          },
+          dataType: 'json',
+          success: function(data) {
+            resolve(data); // Resolva a Promise com os dados
+          },
+          error: function(xhr, status, error) {
+            reject(error); // Rejeite a Promise em caso de erro
+          }
+        });
       });
     }
   </script>
