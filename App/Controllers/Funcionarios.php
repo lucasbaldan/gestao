@@ -43,6 +43,40 @@ class Funcionarios
         }
     }
 
+    public function listFuncionalJSON($dados)
+    {
+        try {
+            $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
+
+            $pegalista = new \App\Models\Funcionarios;
+            $lista = $pegalista->listarFuncional($this->codigo);
+
+
+            $camposEncontrados = "";
+
+            foreach ($lista as &$item) {
+                $campos = array("SEG", "TER", "QUA", "QUI", "SEX");
+                foreach ($campos as $campo) {
+                    // Se o valor do campo for 1, adicione o nome do campo à string
+                    if ($item[$campo] == 1) {
+                        if (!empty($camposEncontrados)) {
+                            $camposEncontrados .= ",";
+                        }
+                        $camposEncontrados .= $campo;
+                    }
+                    unset($item[$campo]);
+                }
+                $item["DIASSEMANA"] = $camposEncontrados;
+                // Reinicie a string para o próximo item
+                $camposEncontrados = "";
+            }
+
+            echo json_encode($lista);
+        } catch (Exception $th) {
+            return json_encode(array('error' => "Erro ao executar operação."));
+        }
+    }
+
     public function controlar($dados)
     {
 

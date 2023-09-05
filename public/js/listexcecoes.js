@@ -48,24 +48,7 @@ $(document).ready(function () {
   // CONTROLA O FORMULÁRIO DO CADASTRO
 
   $("#form-CAD-Excecao").form({
-    // fields: {
-    //   user: {
-    //     identifier: "dataExcecao",
-    //     rules: [
-    //       {
-    //         type: "empty",
-    //         prompt: ".",
-    //       },
-    //     ],
-    //     identifier: "tipoExcecao",
-    //     rules: [
-    //       {
-    //         type: "empty",
-    //         prompt: ".",
-    //       },
-    //     ],
-    //   },
-    // },
+    
     onSuccess: function (event, fields) {
       $("#search_to option").prop("selected", true);
       event.preventDefault(); // Impede o envio padrão do formulário

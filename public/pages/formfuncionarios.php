@@ -3,6 +3,14 @@ $nomePagina = "Funcionários - Cadastro";
 include("./header_semantic_main.php");
 include("./header.php");
 include("./footer_menu.php");
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
+  $cdFuncionario = $_POST['cdFuncionario'];
+  echo "<script>var codigoFuncionario = " . json_encode($cdFuncionario) . ";</script>";
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['cdFuncionario'])) {
+  echo "ERRO AO CARREGAR PÁGINA";
+  exit;
+}
 ?>
 
 <style>
@@ -171,7 +179,18 @@ include("./footer_menu.php");
   <script>
     var editando = false;
 
+
     $(document).ready(function() {
+      let dadosTabelaFuncional;
+
+      carregardadosSetores();
+      carregardadosFuncoes();
+
+      if (typeof codigoFuncionario !== 'undefined' && codigoFuncionario !== null) {
+        carregarDadosGeraisFuncionario(codigoFuncionario);
+        carregarDadosFuncionaisFuncionario(codigoFuncionario);
+      }
+
 
       $('#tabnav .item')
         .tab();
@@ -180,16 +199,32 @@ include("./footer_menu.php");
         minimumResultsForSearch: -1
       });
 
-      carregardadosFuncoes();
-      carregardadosSetores();
-
+      console.log(dadosTabelaFuncional);
       var table = $('#funcionalTable').DataTable({
+        data: dadosTabelaFuncional,
+        // columns: [{
+        //     data: 'MATRICULA'
+        //   },
+        //   {
+        //     data: 'CD_FUNCAO'
+        //   },
+        //   {
+        //     data: 'CD_VINCULO_FUNCIONAL'
+        //   },
+        //   {
+        //     data: 'DESC_HR_TRABALHO'
+        //   },
+        //   {
+        //     data: 'MATRICULA'
+        //   },
+        //   // Adicione mais colunas conforme necessário
+        // ],
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
         },
         bFilter: false,
         columnDefs: [{
-          targets: 4,
+          targets: [4, 9],
           visible: false
         }],
 
@@ -314,7 +349,7 @@ include("./footer_menu.php");
             diasTrabalho,
             $('#descricaoHorario').val(),
             '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
-            "-"
+            ""
           ];
 
           var newRow = table.row.add(newRowData);
@@ -396,9 +431,6 @@ include("./footer_menu.php");
     });
 
 
-
-
-
     async function carregardadosFuncoes(FuncaoSalvoNoBanco = null) {
       let options = [];
 
@@ -466,6 +498,50 @@ include("./footer_menu.php");
         error: function() {
           alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
         },
+      });
+    }
+
+    async function carregarDadosGeraisFuncionario(idFuncionario) {
+
+      $.ajax({
+        url: "./../../App/Controllers/Funcionarios.php",
+        method: 'POST',
+        data: {
+          cdFuncionario: idFuncionario,
+          funcao: "listJSON"
+        },
+        dataType: 'json',
+        success: function(data) {
+          $('#select-setor').val(data[0].CD_SETOR).trigger("change");
+          $('#cdFuncionario').val(data[0].CD_FUNCIONARIO);
+          $('#nomeFuncionario').val(data[0].NM_FUNCIONARIO);
+
+        },
+        error: function(xhr, status, error) {
+          // Lide com erros, se necessário
+          alert("Erro ao carregar dados do funcionário: " + error);
+        }
+      });
+    }
+
+    async function carregarDadosFuncionaisFuncionario(idFuncionario) {
+
+      $.ajax({
+        url: "./../../App/Controllers/Funcionarios.php",
+        method: 'POST',
+        data: {
+          cdFuncionario: idFuncionario,
+          funcao: "listFuncionalJSON"
+        },
+        dataType: 'json',
+        success: function(data) {
+          dadosTabelaFuncional = data;
+          console.log(dadosTabelaFuncional);
+        },
+        error: function(xhr, status, error) {
+          // Lide com erros, se necessário
+          alert("Erro ao carregar dados funcionais do funcionário: " + error);
+        }
       });
     }
   </script>

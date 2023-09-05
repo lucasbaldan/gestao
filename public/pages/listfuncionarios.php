@@ -16,13 +16,13 @@ $dados = $pegaFuncionarios->list();
     <div class="ui container">
         </br>
         <div style="float: right;">
-        <a href="./formfuncionarios.php">
-            <div class="ui animated button green" id="CAD" tabindex="0">
-                <div class="visible content"><i class="plus icon"></i></div>
-                <div class="hidden content">
-                    Novo
+            <a href="./formfuncionarios.php">
+                <div class="ui animated button green" id="CAD" tabindex="0">
+                    <div class="visible content"><i class="plus icon"></i></div>
+                    <div class="hidden content">
+                        Novo
+                    </div>
                 </div>
-            </div>
             </a>
         </div>
 
@@ -39,8 +39,13 @@ $dados = $pegaFuncionarios->list();
                     <tr>
                         <td><?= $dado['CD_FUNCIONARIO'] ?></td>
                         <td><?= $dado['NM_FUNCIONARIO'] ?></td>
-                        <td><?= "<button class='ui mini icon button blue' onclick='editarRegistro(" . $dado['CD_FUNCIONARIO'] . ")'><i class='pencil alternate icon'></i></button>" ?>
-                            <?= "<button class='ui mini icon button red' onclick='excluirRegistro(" . $dado['CD_FUNCIONARIO'] . ")'><i class='trash alternate icon'></i></button>" ?></td>
+                        <td style="display: flex; justify-content: center;">
+                            <form action="formfuncionarios.php" method="POST">
+                                <input type="hidden" name="cdFuncionario" value="<?= $dado['CD_FUNCIONARIO'] ?>">
+                                <button type="submit" class="ui mini icon button blue"><i class='pencil alternate icon'></i></button>
+                            </form>
+                            <?= "<button class='ui mini icon button red' onclick='excluirRegistro(" . $dado['CD_FUNCIONARIO'] . ")'><i class='trash alternate icon'></i></button>" ?>
+                        </td>
                     </tr>
                 <?php } ?>
             </tbody>

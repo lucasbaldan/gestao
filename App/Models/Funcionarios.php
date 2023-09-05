@@ -71,9 +71,21 @@ class Funcionarios
                 $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO
         FROM FUNCIONARIOS F");
             } else {
-                $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO
+                $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO, F.CD_SETOR
         FROM FUNCIONARIOS F WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");
             }
+            return $read->getResult();
+        } catch (Exception $th) {
+            header("Location: /gestao/public/pages/generalError.php");
+        }
+    }
+
+    public function listarFuncional($cdFuncionario = null)
+    {
+        try {
+            $read = new \App\Conn\Read();
+            $read->FullRead("SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA, F.DATA_INICIAL, F.DATA_FINAL, F.ALMOCO, F.DESC_HR_TRABALHO, F.SEG, F.TER, F.QUA, F.QUI, F.SEX, F.CD_FUNCAO
+                             FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS F WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");
             return $read->getResult();
         } catch (Exception $th) {
             header("Location: /gestao/public/pages/generalError.php");
