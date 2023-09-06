@@ -214,6 +214,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           {
             data: 'ALMOCO'
           },
+          {
+            data: 'CD_FUNCAO'
+          },
+          {
+            data: 'NM_FUNCAO'
+          },
+          {
+            data: 'DIASSEMANA'
+          },
+          {
+            data: 'DESC_HR_TRABALHO'
+          },
+          {
+            data: 'ACOES'
+          },
+          {
+            data: 'CD_VINCULO_FUNCIONAL'
+          },
         ],
         language: {
           url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
@@ -223,6 +241,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         //   targets: [4, 9],
         //   visible: false
         // }],
+        createdRow: function(row, data, dataIndex) {
+          // Atribua um data-id independente com base em algum contador ou lógica
+          $(row).attr('data-id', dataIndex);
+        }
 
       });
 
@@ -235,28 +257,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           var rowData = table.row($(this).closest('tr')).data();
           var rowId = $(this).closest('tr').attr('data-id');
 
-          rowData[8] = "<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
+          rowData['ACOES'] = "<div class='yellow tiny ui icon message' style='width: 150px;'><i class='tiny loading sync icon'></i>Editando</div>"
 
           table.row(rowId).data(rowData).draw();
 
-          var dataInicioPura = rowData[1].split('/');
+          var dataInicioPura = rowData['DATA_INICIAL'].split('/');
           var dataInicio = dataInicioPura[2] + '-' + dataInicioPura[1] + '-' + dataInicioPura[0];
 
-          if (rowData[2] != "-") {
-            var dataTerminoPura = rowData[2].split('/');
+          if (rowData['DATA_FINAL'] != "-") {
+            var dataTerminoPura = rowData['DATA_FINAL'].split('/');
             var dataTermino = dataTerminoPura[2] + '-' + dataTerminoPura[1] + '-' + dataTerminoPura[0];
           }
 
           // Preencher campos de entrada com os dados da linha selecionada
-          $('#cdVinculoFuncional').val(rowData[9]);
-          $('#matricula').val(rowData[0]);
+          $('#cdVinculoFuncional').val(rowData['CD_VINCULO_FUNCIONAL']);
+          $('#matricula').val(rowData['MATRICULA']);
           $('#dataInicio').val(dataInicio);
           $('#dataTermino').val(dataTermino);
-          $('#select-almoco').val(rowData[3]).trigger("change");
-          $('#select-funcao').val(rowData[4]).trigger("change");
-          $('#descricaoHorario').val(rowData[7]);
+          $('#select-almoco').val(rowData['ALMOCO']).trigger("change");
+          $('#select-funcao').val(rowData['CD_FUNCAO']).trigger("change");
+          $('#descricaoHorario').val(rowData['DESC_HR_TRABALHO']);
 
-          var diasTrabalho = rowData[6];
+          var diasTrabalho = rowData['DIASSEMANA'];
+          console.log(rowData['DIASSEMANA']);
 
           // Marcar checkboxes correspondentes
           diasTrabalho.forEach(function(dia) {
@@ -290,20 +313,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
             var dataTermino = "-";
           }
 
-          alert($('#cdVinculoFuncional').val());
+          // alert($('#cdVinculoFuncional').val());
 
-          var updatedData = [
-            $('#matricula').val(),
-            dataInicio,
-            dataTermino,
-            $('#select-almoco').val(),
-            $('#select-funcao').val(),
-            $('#select-funcao').find(':selected').text(),
-            diasTrabalho,
-            $('#descricaoHorario').val(),
-            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
-            $('#cdVinculoFuncional').val(),
-          ];
+          var updatedData = {
+            MATRICULA: $('#matricula').val(),
+            DATA_INICIAL: dataInicio,
+            DATA_FINAL: dataTermino,
+            ALMOCO: $('#select-almoco').val(),
+            CD_FUNCAO: $('#select-funcao').val(),
+            NM_FUNCAO: $('#select-funcao').find(':selected').text(),
+            DIASSEMANA: diasTrabalho,
+            DESC_HR_TRABALHO: $('#descricaoHorario').val(),
+            ACOES: '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
+            CD_VINCULO_FUNCIONAL: $('#cdVinculoFuncional').val(),
+          };
 
           table.row(editId).data(updatedData).draw();
           editando = false;
@@ -335,18 +358,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
             var dataTermino = "-";
           }
 
-          var newRowData = [
-            $('#matricula').val(),
-            dataInicio,
-            dataTermino,
-            $('#select-almoco').val(),
-            $('#select-funcao').val(),
-            $('#select-funcao').find(':selected').text(),
-            diasTrabalho,
-            $('#descricaoHorario').val(),
-            '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
-            ""
-          ];
+          var newRowData = {
+            MATRICULA: $('#matricula').val(),
+            DATA_INICIAL: dataInicio,
+            DATA_FINAL: dataTermino,
+            ALMOCO: $('#select-almoco').val(),
+            CD_FUNCAO: $('#select-funcao').val(),
+            NM_FUNCAO: $('#select-funcao').find(':selected').text(),
+            DIASSEMANA: diasTrabalho,
+            DESC_HR_TRABALHO: $('#descricaoHorario').val(),
+            ACOES: '<button class="small ui icon blue button"><i class="icon pencil alternate"></i></button>        <button class="small ui icon red button"><i class="icon trash alternate outline"></i></button>',
+            CD_VINCULO_FUNCIONAL: ""
+          };
 
           var newRow = table.row.add(newRowData);
           $(newRow.node()).attr('data-id', newId);
@@ -372,8 +395,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         var row = $(this).closest('tr');
         var rowData = table.row(row).data();
 
-        rowData[4] = "EXC";
-        rowData[8] = "<div class'ui red message'><i class='exclamation icon'></i>Exclusão será efetivada quando Salvar</div>";
+        rowData['CD_FUNCAO'] = "EXC";
+        rowData['ACOES'] = "<div class'ui red message'><i class='exclamation icon'></i>Exclusão será efetivada quando Salvar</div>";
 
         // Adiciona a classe 'error' à linha
         row.addClass('error');
@@ -520,7 +543,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
       });
     }
 
-   async function carregarDadosFuncionaisFuncionario(idFuncionario) {
+    async function carregarDadosFuncionaisFuncionario(idFuncionario) {
       return new Promise(function(resolve, reject) {
         $.ajax({
           url: "./../../App/Controllers/Funcionarios.php",

@@ -55,6 +55,11 @@ class Funcionarios
             $camposEncontrados = "";
 
             foreach ($lista as &$item) {
+
+                $item['ALMOCO'] = $item['ALMOCO'] == 1 ? "Sim" : "Não";
+                $item['DATA_FINAL'] = isset($item['DATA_FINAL']) ? $item['DATA_FINAL'] : "-";
+                
+
                 $campos = array("SEG", "TER", "QUA", "QUI", "SEX");
                 foreach ($campos as $campo) {
                     // Se o valor do campo for 1, adicione o nome do campo à string
