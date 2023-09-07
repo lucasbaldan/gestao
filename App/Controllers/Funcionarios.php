@@ -5,6 +5,7 @@ namespace App\Controllers;
 require __DIR__ . '/../../vendor/autoload.php';
 
 use Exception;
+use DateTime;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
     $method = $_POST['funcao'];
@@ -51,30 +52,32 @@ class Funcionarios
             $pegalista = new \App\Models\Funcionarios;
             $lista = $pegalista->listarFuncional($this->codigo);
 
-
-            $camposEncontrados = "";
-
             foreach ($lista as &$item) {
-
                 $item['ALMOCO'] = $item['ALMOCO'] == 1 ? "Sim" : "Não";
                 $item['DATA_FINAL'] = isset($item['DATA_FINAL']) ? $item['DATA_FINAL'] : "-";
-                
 
-                $campos = array("SEG", "TER", "QUA", "QUI", "SEX");
-                foreach ($campos as $campo) {
-                    // Se o valor do campo for 1, adicione o nome do campo à string
-                    if ($item[$campo] == 1) {
-                        if (!empty($camposEncontrados)) {
-                            $camposEncontrados .= ",";
-                        }
-                        $camposEncontrados .= $campo;
+                $diasSelecionados = array();
+
+                $diasDaSemana = array(
+                    "SEG" => 0,
+                    "TER" => 0,
+                    "QUA" => 0,
+                    "QUI" => 0,
+                    "SEX" => 0
+                );
+
+                foreach ($diasDaSemana as $dia => &$valor) {
+                    if ($item[$dia] == 1) {
+                        $valor = 1;
+                        $diasSelecionados[] = $dia; // Adicione o nome do dia ao array
                     }
-                    unset($item[$campo]);
+                    unset($item[$dia]);
                 }
-                $item["DIASSEMANA"] = $camposEncontrados;
-                // Reinicie a string para o próximo item
-                $camposEncontrados = "";
+
+                $item["DIASSEMANA"] = $diasSelecionados;
             }
+
+
 
             echo json_encode($lista);
         } catch (Exception $th) {
@@ -115,14 +118,23 @@ class Funcionarios
 
                     foreach ($vinculosFuncionais as $vinculoFuncional) {
 
-                        $matricula = isset($vinculoFuncional['Matrícula']) ? $vinculoFuncional['Matrícula'] : '';
-                        $dataInicio = isset($vinculoFuncional["Data Início"]) ? $vinculoFuncional["Data Início"] : '';
-                        $dataFinal = isset($vinculoFuncional["Data Final"]) ? $vinculoFuncional["Data Final"] : '';
-                        $almoco = isset($vinculoFuncional["Almoço?"]) ? $vinculoFuncional["Almoço?"] : '';
+                        $matricula = isset($vinculoFuncional['MATRICULA']) ? $vinculoFuncional['MATRICULA'] : '';
+                        $dataInicio = isset($vinculoFuncional["DATA_INICIAL"]) ? $vinculoFuncional["DATA_INICIAL"] : '';
+                        $dataFinal = isset($vinculoFuncional["DATA_FINAL"]) ? $vinculoFuncional["DATA_FINAL"] : '';
+                        $almoco = isset($vinculoFuncional["ALMOCO"]) ? $vinculoFuncional["ALMOCO"] : '';
                         $almoco = $almoco == "Sim" ? 1 : 0;
-                        $idFuncao = isset($vinculoFuncional["idFunção"]) ? $vinculoFuncional["idFunção"] : '';
-                        $descHorario = isset($vinculoFuncional["Descrição do horário"]) ? $vinculoFuncional["Descrição do horário"] : '';
-                        $diasTrabalhoSemana = isset($vinculoFuncional["Dias de Trabalho"]) ? $vinculoFuncional["Dias de Trabalho"] : '';
+                        $idFuncao = isset($vinculoFuncional["CD_FUNCAO"]) ? $vinculoFuncional["CD_FUNCAO"] : '';
+                        $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
+                        $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
+
+                        // DATA VALIDATIONS
+                        $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
+                        $dataInicio = $data_datetime->format('Y-m-d');
+
+                        if (!empty($dataFinal)) {
+                            $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
+                            $dataFinal = $data_datetime->format('Y-m-d');
+                        }
 
                         if (!empty($diasTrabalhoSemana)) {
 

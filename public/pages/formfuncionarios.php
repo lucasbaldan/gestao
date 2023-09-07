@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
     <div class="ui form">
       <div class="ui bottom attached tab segment active" data-tab="funcionario-geral">
         <h3>Cadastros Gerais do Funcionário</h3>
-        <input type="hidden" id="cdFucionario" name="cdFuncionario">
+        <input type="hidden" id="cdFuncionario" name="cdFuncionario">
         <div class="ui fluid label">
           Nome do Funcionário⠀⠀⠀
           <div class="ui fluid icon input">
@@ -409,19 +409,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         var cdFuncionario = $('#cdFuncionario').val();
         var nomeFuncionario = $("#nomeFuncionario").val();
         var setor = $("#select-setor").val();
-        var dadosTable = [];
-
-        var colunas = table.columns().header().toArray().map(function(th) {
-          return $(th).text();
-        });
+         var dadosTable = [];
 
         table.rows().every(function() {
           var dadosColuna = this.data();
-          var obj = {};
-          colunas.forEach(function(coluna, index) {
-            obj[coluna] = dadosColuna[index];
-          });
-          dadosTable.push(obj);
+          
+          dadosTable.push(dadosColuna);
         });
 
         var dadosAjax = {
@@ -430,6 +423,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           setorFuncionario: setor,
           vinculosFuncionais: dadosTable
         }
+        console.log(dadosAjax);
 
         $.ajax({
           url: "./../../App/Controllers/Funcionarios.php",
@@ -520,7 +514,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
       });
     }
 
-    async function carregarDadosGeraisFuncionario(idFuncionario) {
+    function carregarDadosGeraisFuncionario(idFuncionario) {
 
       $.ajax({
         url: "./../../App/Controllers/Funcionarios.php",

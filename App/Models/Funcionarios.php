@@ -152,6 +152,8 @@ class Funcionarios
         try {
             $dadosinsert = [
                 "MATRICULA" => $this->matricula,
+                "DATA_INICIAL" => $this->dataInicio,
+                "DATA_FINAL" => $this->dataFinal,
                 "ALMOCO" => $this->almoco,
                 "DESC_HR_TRABALHO" => $this->descHorario,
                 "CD_FUNCAO" => $this->idFuncao,
