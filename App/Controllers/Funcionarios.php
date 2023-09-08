@@ -18,6 +18,7 @@ class Funcionarios
     private $codigo;
     private $nome;
     private $setor;
+    private $vinculosFuncionais;
 
     public function list()
     {
@@ -91,8 +92,7 @@ class Funcionarios
         try {
 
             $infoFuncionario = json_decode($dados['dados'], true);
-            $vinculosFuncionais = $infoFuncionario['vinculosFuncionais'];
-
+            $this->vinculosFuncionais = isset($infoFuncionario['vinculosFuncionais']) ? $infoFuncionario['vinculosFuncionais'] : '';
             $this->codigo = isset($infoFuncionario['cdFuncionario']) ? $infoFuncionario['cdFuncionario'] : '';
             $this->nome = isset($infoFuncionario['nmFuncionario']) ? $infoFuncionario['nmFuncionario'] : '';
             $this->setor = isset($infoFuncionario['setorFuncionario']) ? $infoFuncionario['setorFuncionario'] : '';
@@ -101,9 +101,11 @@ class Funcionarios
                 throw new Exception("OS CAMPOS NOME OU SETOR NÃO PODEM SER SALVOS COM INFORMAÇÕES NULAS");
             }
 
+            $conn = \App\Conn\Conn::getConn(true);
+
             if (empty($this->codigo)) {
-                $conn = \App\Conn\Conn::getConn(true);
                 $insert = new \App\Conn\Insert($conn);
+
 
                 $cad = new \App\Models\Funcionarios;
                 $cad->setNome($this->nome);
@@ -114,86 +116,45 @@ class Funcionarios
                     $insert->Rollback();
                     throw new Exception("ERRO AO CADASTRAR FUNCIONÁRIO");
                 } else {
+
                     $idFuncionario = $insert->getLastInsert();
-
-                    foreach ($vinculosFuncionais as $vinculoFuncional) {
-
-                        $matricula = isset($vinculoFuncional['MATRICULA']) ? $vinculoFuncional['MATRICULA'] : '';
-                        $dataInicio = isset($vinculoFuncional["DATA_INICIAL"]) ? $vinculoFuncional["DATA_INICIAL"] : '';
-                        $dataFinal = isset($vinculoFuncional["DATA_FINAL"]) ? $vinculoFuncional["DATA_FINAL"] : '';
-                        $almoco = isset($vinculoFuncional["ALMOCO"]) ? $vinculoFuncional["ALMOCO"] : '';
-                        $almoco = $almoco == "Sim" ? 1 : 0;
-                        $idFuncao = isset($vinculoFuncional["CD_FUNCAO"]) ? $vinculoFuncional["CD_FUNCAO"] : '';
-                        $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
-                        $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
-
-                        // DATA VALIDATIONS
-                        $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
-                        $dataInicio = $data_datetime->format('Y-m-d');
-
-                        if (!empty($dataFinal)) {
-                            $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
-                            $dataFinal = $data_datetime->format('Y-m-d');
-                        }
-
-                        if (!empty($diasTrabalhoSemana)) {
-
-                            $cad->setSemana($semana = [
-                                in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
-                                in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
-                                in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
-                                in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
-                                in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
-                            ]);
-                        }
-
-                        //echo json_encode($segunda);
-
-                        $cad->setMatricula($matricula);
-                        $cad->setDataInicio($dataInicio);
-                        $cad->setDataFinal($dataFinal);
-                        $cad->setAlmoco($almoco);
-                        $cad->setFuncao($idFuncao);
-                        $cad->setDescHorario($descHorario);
-
-                        $cad->inserirVinculosFuncionais($insert, $idFuncionario);
-                        $resultadoInsertVinculosFuncionais = $cad->getResult();
-
-                        if ($resultadoInsertVinculosFuncionais == false) {
-                            $insert->Rollback();
-                            throw new Exception("ERRO AO CADASTRAR VINCULOS FUNCIONAIS");
-                        }
+                    try {
+                        $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $idFuncionario, $insert);
+                    } catch (Exception $th) {
+                        echo 'erro';
                     }
+
                     $insert->Commit();
                     echo 'inserido';
+                }
+            } else {
+                $update = new \App\Conn\Update($conn);
+
+                $cad = new \App\Models\Funcionarios;
+                $cad->setCodigo($this->codigo);
+                $cad->setNome($this->nome);
+                $cad->setSetor($this->setor);
+                $cad->alterarFuncionario($update);
+                $resultadoUpdateFuncionario = $cad->getResult();
+                if ($resultadoUpdateFuncionario == false) {
+                    $update->Rollback();
+                    throw new Exception("ERRO AO CADASTRAR FUNCIONÁRIO");
+                } else {
+
+                    try {
+                        $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $this->codigo, null, $update);
+                    } catch (Exception $th) {
+                        echo 'erro';
+                    }
+
+                    $update->Commit();
+                    echo 'alterado';
                 }
             }
         } catch (Exception $th) {
 
             echo 'erro';
         }
-
-        //echo json_encode($dadosFuncionais);
-
-
-
-        // try {
-
-        //     if (empty($this->codigo) && empty($this->nome)) {
-        //         throw new Exception("Campos Usuário e Senha não podem ser nulos!");
-        //     }
-
-        //     if (empty($this->codigo)) {
-
-        //         $cad = new \App\Models\Funcionarios;
-        //         $cad->setNome($this->nome);
-        //         $cad->inserir();
-        //         if ($cad->getResult() == true) {
-        //             echo 'inserido';
-        //         } else {
-        //             echo 'erro';
-        //         }
-        //     } else {
 
         //         $cad = new \App\Models\Funcionarios;
         //         $cad->setCodigo($this->codigo);
@@ -230,6 +191,91 @@ class Funcionarios
             }
         } catch (Exception $th) {
             echo 'erro';
+        }
+    }
+
+    //MÉTODOS AUXILIARES
+
+    public function controlarVinculosFuncionais($conn, $cad, $vinculosFuncionais, $idFuncionario, $insert = null, $update = null)
+    {
+        if (!$insert) {
+            $insert = new \App\Conn\Insert($conn);
+        }
+        if (!$update) {
+            $update = new \App\Conn\Update($conn);
+        }
+        $delete = new \App\Conn\Delete($conn);
+
+        foreach ($vinculosFuncionais as $vinculoFuncional) {
+
+            $codigoFuncional = isset($vinculoFuncional['CD_VINCULO_FUNCIONAL']) ? $vinculoFuncional['CD_VINCULO_FUNCIONAL'] : '';
+            $matricula = isset($vinculoFuncional['MATRICULA']) ? $vinculoFuncional['MATRICULA'] : '';
+            $dataInicio = isset($vinculoFuncional["DATA_INICIAL"]) ? $vinculoFuncional["DATA_INICIAL"] : '';
+            $dataFinal = isset($vinculoFuncional["DATA_FINAL"]) ? $vinculoFuncional["DATA_FINAL"] : '';
+            $almoco = isset($vinculoFuncional["ALMOCO"]) ? $vinculoFuncional["ALMOCO"] : '';
+            $almoco = $almoco == "Sim" ? 1 : 0;
+            $idFuncao = isset($vinculoFuncional["CD_FUNCAO"]) ? $vinculoFuncional["CD_FUNCAO"] : '';
+            $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
+            $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
+
+            // DATA VALIDATIONS
+            $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
+            $dataInicio = $data_datetime->format('Y-m-d');
+
+            if ($dataFinal != "-") {
+                $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
+                $dataFinal = $data_datetime->format('Y-m-d');
+            } else {
+                $dataFinal = null;
+            }
+
+            if (!empty($diasTrabalhoSemana)) {
+
+                $cad->setSemana($semana = [
+                    in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
+                    in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
+                    in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
+                    in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
+                    in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
+                ]);
+            }
+
+
+            $cad->setCodigo($codigoFuncional);
+            $cad->setMatricula($matricula);
+            $cad->setDataInicio($dataInicio);
+            $cad->setDataFinal($dataFinal);
+            $cad->setAlmoco($almoco);
+            $cad->setFuncao($idFuncao);
+            $cad->setDescHorario($descHorario);
+
+            if (!$codigoFuncional && $idFuncao != "EXC") {
+                $cad->inserirVinculosFuncionais($insert, $idFuncionario);
+                $resultadoInsertVinculosFuncionais = $cad->getResult();
+
+                if ($resultadoInsertVinculosFuncionais == false) {
+                    $insert->Rollback();
+                    throw new Exception("ERRO AO CADASTRAR VÍNCULOS FUNCIONAIS");
+                }
+            }
+            if ($codigoFuncional && $idFuncao != "EXC") {
+                $cad->alterarVinculosFuncionais($update);
+                $resultadoUpdateVinculosFuncionais = $cad->getResult();
+
+                if ($resultadoUpdateVinculosFuncionais == false) {
+                    $update->Rollback();
+                    throw new Exception("ERRO AO ALTERAR VÍNCULOS FUNCIONAIS");
+                }
+            }
+            if ($codigoFuncional && $idFuncao == "EXC") {
+                $cad->excluirVinculosFuncionais($delete);
+                $resultadoDeleteVinculosFuncionais = $cad->getResult();
+
+                if ($resultadoDeleteVinculosFuncionais == false) {
+                    $delete->Rollback();
+                    throw new Exception("ERRO AO DELETAR VÍNCULOS FUNCIONAIS");
+                }
+            }
         }
     }
 }

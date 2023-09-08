@@ -95,7 +95,7 @@ class Funcionarios
         }
     }
 
-    public function alterar()
+    public function alterarFuncionario($update)
     {
 
         try {
@@ -103,20 +103,19 @@ class Funcionarios
             $read->ExeRead("FUNCIONARIOS", "WHERE CD_FUNCIONARIO = :C", "C=$this->codigo");
             $dadosCadastro = $read->getResult()[0] ?? [];
             if ($dadosCadastro) {
-                $dadosupdate = ["NM_FUNCIONARIO" => $this->nome];
-                $conn = \App\Conn\Conn::getConn(true);
-                $update = new \App\Conn\Update($conn);
+                $dadosupdate = ["NM_FUNCIONARIO" => $this->nome, "CD_SETOR" => $this->setor];
+
                 $update->ExeUpdate("FUNCIONARIOS", $dadosupdate, "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
 
                 $atualizado = !empty($update->getResult());
                 if ($atualizado) {
                     $this->Result = true;
                     //$this->Message = "Os dados do usuário go - $this->NomeLogin</strong> foram atualizados com sucesso";
-                    $update->Commit();
+                    //$update->Commit();
                 } else {
                     $this->Result = false;
                     //$this->Message = "Não foi possível atualizar os dados usuário <strong>$this->Codigo - $this->NomeLogin</strong>. <br><small>" . \App\Helppers\Formats::TratamentoMensagemErro($update->getError()) . "</small>";
-                    $update->Rollback();
+                    //$update->Rollback();
                 }
             } else {
                 throw new Exception("ERRO AO ENCONTRAR REGISTRO PARA ATUALIZAÇÃO NA BASE DE DADOS.");
@@ -176,6 +175,68 @@ class Funcionarios
             $this->Result = false;
         }
     }
+
+    public function alterarVinculosFuncionais($update)
+    {
+
+        try {
+            $read = new \App\Conn\Read();
+            $read->ExeRead("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_VINCULO_FUNCIONAL = :C", "C=$this->codigo");
+            $dadosCadastro = $read->getResult()[0] ?? [];
+            if ($dadosCadastro) {
+                $dadosupdate = [
+                    "MATRICULA" => $this->matricula,
+                    "DATA_INICIAL" => $this->dataInicio,
+                    "DATA_FINAL" => $this->dataFinal,
+                    "ALMOCO" => $this->almoco,
+                    "DESC_HR_TRABALHO" => $this->descHorario,
+                    "CD_FUNCAO" => $this->idFuncao,
+                    "SEG" => $this->diasSemana[0],
+                    "TER" => $this->diasSemana[1],
+                    "QUA" => $this->diasSemana[2],
+                    "QUI" => $this->diasSemana[3],
+                    "SEX" => $this->diasSemana[4]
+                ];
+
+                $update->ExeUpdate("VINCULOS_FUNCIONAIS_FUNCIONARIOS", $dadosupdate, "WHERE CD_VINCULO_FUNCIONAL =:C", "C=$this->codigo");
+
+                $atualizado = !empty($update->getResult());
+                if ($atualizado) {
+                    $this->Result = true;
+
+                } else {
+                    $this->Result = false;
+
+                }
+            } else {
+                throw new Exception("ERRO AO ENCONTRAR REGISTRO PARA ATUALIZAÇÃO NA BASE DE DADOS.");
+            }
+        } catch (Exception $th) {
+            $update->Rollback();
+            $this->Result = false;
+            $this->Message = $th->getMessage();
+        }
+    }
+
+    public function excluirVinculosFuncionais($delete)
+    {
+
+        try {
+
+            $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_VINCULO_FUNCIONAL=:C", "C=$this->codigo");
+
+            if ($delete->getRowCount() > 0) {
+                $this->Result = true;
+            } else {
+                $this->Result = false;
+            }
+        } catch (Exception $th) {
+            $this->Result = false;
+            $delete->Rollback();
+        }
+    }
+
+
 
 
     public function excluir()

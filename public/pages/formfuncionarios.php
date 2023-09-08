@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
   exit;
 }
 ?>
+<link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" />
 
 <style>
   .ui.slider.checkbox {
@@ -173,11 +174,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         </button></a>
 
     </div>
+
+    <div id="hiddenDiv" class="hidden">
+      <div class="ui negative message">
+        <i class="close icon"></i>
+        <div class="header">
+          <i class="exclamation triangle icon" style="color: #fff;"></i>
+        </div>
+        <p><b>Erro ao Efetuar Operação!</b></p>
+      </div>
+    </div>
+
   </div>
 
 
   <script>
     var editando = false;
+    $(".ui.negative.message").hide();
 
 
     $(document).ready(async function() {
@@ -409,11 +422,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         var cdFuncionario = $('#cdFuncionario').val();
         var nomeFuncionario = $("#nomeFuncionario").val();
         var setor = $("#select-setor").val();
-         var dadosTable = [];
+        var dadosTable = [];
 
         table.rows().every(function() {
           var dadosColuna = this.data();
-          
+
           dadosTable.push(dadosColuna);
         });
 
@@ -434,6 +447,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           },
           success: function(response) {
             console.log(response);
+
+            if (response === 'erro') {
+              $(".ui.negative.message").transition("fade in");
+
+              setTimeout(function() {
+                $(".ui.negative.message").transition("fade out");
+              }, 1500);
+            }
           },
           error: function(xhr, status, error) {
             console.error("Erro na requisição AJAX:", error);
