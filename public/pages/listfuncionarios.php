@@ -77,6 +77,7 @@ $dados = $pegaFuncionarios->list();
             <div class="content">
                 <div class="header">Atenção</div>
                 <p>Você tem certeza que deseja excluir este registro do sistema?</p>
+                <p style="color: red;"><strong>A AÇÃO ACARRETARÁ NA EXCLUSÃO DE TODOS OS VÍNCULOS FUNCIONAIS DO FUNCIONÁRIO</strong></p>
             </div>
         </div>
     </div>

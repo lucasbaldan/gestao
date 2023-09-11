@@ -203,10 +203,8 @@ class Funcionarios
                 $atualizado = !empty($update->getResult());
                 if ($atualizado) {
                     $this->Result = true;
-
                 } else {
                     $this->Result = false;
-
                 }
             } else {
                 throw new Exception("ERRO AO ENCONTRAR REGISTRO PARA ATUALIZAÇÃO NA BASE DE DADOS.");
@@ -247,12 +245,22 @@ class Funcionarios
             $delete = new \App\Conn\Delete($conn);
             $delete->ExeDelete("FUNCIONARIOS", "WHERE CD_FUNCIONARIO=:C", "C=$this->codigo");
 
-            if ($delete->getRowCount() > 0) {
-                $delete->Commit();
-                $this->Result = true;
+            if ($delete->getResult()[0] != false) {
+
+                $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
+
+                if ($delete->getResult()[0] != false) {
+                    $delete->Commit();
+                    $this->Result = true;
+                } else {
+                    $delete->Rollback();
+                    $this->Result = false;
+                    $this->Message = "Erro ao excluir os vínculos funcionais do funcionário. Operação Cancelada.";
+                }
             } else {
                 $delete->Rollback();
                 $this->Result = false;
+                $this->Message = "Erro ao excluir o Registro do funionário";
             }
         } catch (Exception $th) {
             $delete->Rollback();

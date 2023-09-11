@@ -143,12 +143,12 @@ class Funcionarios
 
                     try {
                         $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $this->codigo, null, $update);
+                        $update->Commit();
+                        echo 'alterado';
                     } catch (Exception $th) {
+                        $update->Rollback();
                         echo 'erro';
                     }
-
-                    $update->Commit();
-                    echo 'alterado';
                 }
             }
         } catch (Exception $th) {
@@ -198,84 +198,102 @@ class Funcionarios
 
     public function controlarVinculosFuncionais($conn, $cad, $vinculosFuncionais, $idFuncionario, $insert = null, $update = null)
     {
-        if (!$insert) {
-            $insert = new \App\Conn\Insert($conn);
-        }
-        if (!$update) {
-            $update = new \App\Conn\Update($conn);
-        }
-        $delete = new \App\Conn\Delete($conn);
-
-        foreach ($vinculosFuncionais as $vinculoFuncional) {
-
-            $codigoFuncional = isset($vinculoFuncional['CD_VINCULO_FUNCIONAL']) ? $vinculoFuncional['CD_VINCULO_FUNCIONAL'] : '';
-            $matricula = isset($vinculoFuncional['MATRICULA']) ? $vinculoFuncional['MATRICULA'] : '';
-            $dataInicio = isset($vinculoFuncional["DATA_INICIAL"]) ? $vinculoFuncional["DATA_INICIAL"] : '';
-            $dataFinal = isset($vinculoFuncional["DATA_FINAL"]) ? $vinculoFuncional["DATA_FINAL"] : '';
-            $almoco = isset($vinculoFuncional["ALMOCO"]) ? $vinculoFuncional["ALMOCO"] : '';
-            $almoco = $almoco == "Sim" ? 1 : 0;
-            $idFuncao = isset($vinculoFuncional["CD_FUNCAO"]) ? $vinculoFuncional["CD_FUNCAO"] : '';
-            $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
-            $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
-
-            // DATA VALIDATIONS
-            $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
-            $dataInicio = $data_datetime->format('Y-m-d');
-
-            if ($dataFinal != "-") {
-                $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
-                $dataFinal = $data_datetime->format('Y-m-d');
-            } else {
-                $dataFinal = null;
+        try {
+            if (!$insert) {
+                $insert = new \App\Conn\Insert($conn);
             }
-
-            if (!empty($diasTrabalhoSemana)) {
-
-                $cad->setSemana($semana = [
-                    in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
-                    in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
-                    in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
-                    in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
-                    in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
-                ]);
+            if (!$update) {
+                $update = new \App\Conn\Update($conn);
             }
+            $delete = new \App\Conn\Delete($conn);
+
+            foreach ($vinculosFuncionais as $vinculoFuncional) {
+
+                $codigoFuncional = isset($vinculoFuncional['CD_VINCULO_FUNCIONAL']) ? $vinculoFuncional['CD_VINCULO_FUNCIONAL'] : '';
+                $matricula = isset($vinculoFuncional['MATRICULA']) ? $vinculoFuncional['MATRICULA'] : '';
+                $dataInicio = isset($vinculoFuncional["DATA_INICIAL"]) ? $vinculoFuncional["DATA_INICIAL"] : '';
+                $dataFinal = isset($vinculoFuncional["DATA_FINAL"]) ? $vinculoFuncional["DATA_FINAL"] : '';
+                $almoco = isset($vinculoFuncional["ALMOCO"]) ? $vinculoFuncional["ALMOCO"] : '';
+                $almoco = $almoco == "Sim" ? 1 : 0;
+                $idFuncao = isset($vinculoFuncional["CD_FUNCAO"]) ? $vinculoFuncional["CD_FUNCAO"] : '';
+                $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
+                $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
+
+                // DATA VALIDATIONS
+                if ($dataInicio == "undefined/undefined/" || $dataInicio == null) {
+                    throw new Exception("DATA INICIAL NÃO PODE SER NULA");
+                }
+                if ($almoco == "undefined" || $almoco == null) {
+                    throw new Exception("INFORMAÇÃO DE ALMOÇO INCORRETA");
+                }
+                if ($idFuncao == "" || $idFuncao == null) {
+                    throw new Exception("INFORMAÇÃO DE FUNÇÃO INCORRETA");
+                }
+                if ($diasTrabalhoSemana == [] || $diasTrabalhoSemana == null) {
+                    throw new Exception("INFORMAÇÃO DE DIAS TRABALHaDOS INCORRETA");
+                }
+
+                $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
+                $dataInicio = $data_datetime->format('Y-m-d');
+
+                if ($dataFinal != "-") {
+                    $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
+                    $dataFinal = $data_datetime->format('Y-m-d');
+                } else {
+                    $dataFinal = null;
+                }
+
+                if (!empty($diasTrabalhoSemana)) {
+
+                    $cad->setSemana($semana = [
+                        in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
+                        in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
+                        in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
+                        in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
+                        in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
+                    ]);
+                }
 
 
-            $cad->setCodigo($codigoFuncional);
-            $cad->setMatricula($matricula);
-            $cad->setDataInicio($dataInicio);
-            $cad->setDataFinal($dataFinal);
-            $cad->setAlmoco($almoco);
-            $cad->setFuncao($idFuncao);
-            $cad->setDescHorario($descHorario);
+                $cad->setCodigo($codigoFuncional);
+                $cad->setMatricula($matricula);
+                $cad->setDataInicio($dataInicio);
+                $cad->setDataFinal($dataFinal);
+                $cad->setAlmoco($almoco);
+                $cad->setFuncao($idFuncao);
+                $cad->setDescHorario($descHorario);
 
-            if (!$codigoFuncional && $idFuncao != "EXC") {
-                $cad->inserirVinculosFuncionais($insert, $idFuncionario);
-                $resultadoInsertVinculosFuncionais = $cad->getResult();
+                if (!$codigoFuncional && $idFuncao != "EXC") {
+                    $cad->inserirVinculosFuncionais($insert, $idFuncionario);
+                    $resultadoInsertVinculosFuncionais = $cad->getResult();
 
-                if ($resultadoInsertVinculosFuncionais == false) {
-                    $insert->Rollback();
-                    throw new Exception("ERRO AO CADASTRAR VÍNCULOS FUNCIONAIS");
+                    if ($resultadoInsertVinculosFuncionais == false) {
+                        $insert->Rollback();
+                        throw new Exception("ERRO AO CADASTRAR VÍNCULOS FUNCIONAIS");
+                    }
+                }
+                if ($codigoFuncional && $idFuncao != "EXC") {
+                    $cad->alterarVinculosFuncionais($update);
+                    $resultadoUpdateVinculosFuncionais = $cad->getResult();
+
+                    if ($resultadoUpdateVinculosFuncionais == false) {
+                        $update->Rollback();
+                        throw new Exception("ERRO AO ALTERAR VÍNCULOS FUNCIONAIS");
+                    }
+                }
+                if ($codigoFuncional && $idFuncao == "EXC") {
+                    $cad->excluirVinculosFuncionais($delete);
+                    $resultadoDeleteVinculosFuncionais = $cad->getResult();
+
+                    if ($resultadoDeleteVinculosFuncionais == false) {
+                        $delete->Rollback();
+                        throw new Exception("ERRO AO DELETAR VÍNCULOS FUNCIONAIS");
+                    }
                 }
             }
-            if ($codigoFuncional && $idFuncao != "EXC") {
-                $cad->alterarVinculosFuncionais($update);
-                $resultadoUpdateVinculosFuncionais = $cad->getResult();
-
-                if ($resultadoUpdateVinculosFuncionais == false) {
-                    $update->Rollback();
-                    throw new Exception("ERRO AO ALTERAR VÍNCULOS FUNCIONAIS");
-                }
-            }
-            if ($codigoFuncional && $idFuncao == "EXC") {
-                $cad->excluirVinculosFuncionais($delete);
-                $resultadoDeleteVinculosFuncionais = $cad->getResult();
-
-                if ($resultadoDeleteVinculosFuncionais == false) {
-                    $delete->Rollback();
-                    throw new Exception("ERRO AO DELETAR VÍNCULOS FUNCIONAIS");
-                }
-            }
+        } catch (Exception $th) {
+            echo 'erro';
+            exit;
         }
     }
 }
