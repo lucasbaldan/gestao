@@ -156,19 +156,6 @@ class Funcionarios
             echo 'erro';
         }
 
-        //         $cad = new \App\Models\Funcionarios;
-        //         $cad->setCodigo($this->codigo);
-        //         $cad->setNome($this->nome);
-        //         $cad->alterar();
-        //         if ($cad->getResult() == true) {
-        //             echo 'alterado';
-        //         } else {
-        //             echo 'erro';
-        //         }
-        //     }
-        // } catch (Exception $th) {
-        //     echo 'erro operação';
-        // }
     }
 
     public function excluir($dados)
@@ -219,11 +206,14 @@ class Funcionarios
                 $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
                 $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
 
-                // DATA VALIDATIONS
+                // A EXCLUSÃO FOGE A REGRA DAS VALIDAÇÕES DOS DADOS
+
+                if(!($codigoFuncional && $idFuncao == "EXC")){
+                //DATA VALIDATIONS
                 if ($dataInicio == "undefined/undefined/" || $dataInicio == null) {
                     throw new Exception("DATA INICIAL NÃO PODE SER NULA");
                 }
-                if ($almoco == "undefined" || $almoco == null) {
+                if ($almoco == "⠀⠀⠀" || $almoco == null) {
                     throw new Exception("INFORMAÇÃO DE ALMOÇO INCORRETA");
                 }
                 if ($idFuncao == "" || $idFuncao == null) {
@@ -253,7 +243,7 @@ class Funcionarios
                         in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
                     ]);
                 }
-
+            }
 
                 $cad->setCodigo($codigoFuncional);
                 $cad->setMatricula($matricula);

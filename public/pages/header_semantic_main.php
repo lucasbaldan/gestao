@@ -24,7 +24,7 @@ $conn = \App\Conn\Conn::verificaBanco();
 </head>
 
 
-    <div class="ui page dimmer">
+    <div class="ui active page dimmer" id="dimmerCarregando">
         <div class="center">
             <i class="ui text loader">Carregando...</i>
         </div>

@@ -1,8 +1,8 @@
 <?php
 $nomePagina = "Funcionários - Cadastro";
-include("./header_semantic_main.php");
-include("./header.php");
-include("./footer_menu.php");
+include_once("./header_semantic_main.php");
+include_once("./header.php");
+include_once("./footer_menu.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
   $cdFuncionario = $_POST['cdFuncionario'];
@@ -24,6 +24,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
 
 
 <body>
+
+<div class="ui page dimmer" id="operacaoSucesso">
+    <div class="center">
+      <h2 class="ui inverted icon header">
+        <i class="green check icon"></i>
+        Sucesso!
+        <div class="sub header">Operação efetuada com êxito.</div>
+      </h2>
+    </div>
+</div>
+
+
   <div class="ui container">
     <br>
     <br>
@@ -77,6 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           Faz horário de almoço?⠀⠀
           <div class="ui input">
             <select id="select-almoco" name="almoco" class="select2" style="border-color: red;" required>
+              <option value="">⠀⠀⠀</option>
               <option value="Sim">Sim</option>
               <option value="Não">Não</option>
             </select>
@@ -185,35 +198,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
       </div>
     </div>
 
+    <div class="ui positive message">
+      <i class="close icon"></i>
+      <div class="header">
+        <i class="check circle icon"></i>
+      </div>
+      <p>Operação efetuada com sucesso! <b>Aguarde, atualizando a tabela de registros</b></p>
+    </div>
+
   </div>
 
 
   <script>
     var editando = false;
     $(".ui.negative.message").hide();
+    $(".ui.positive.message").hide();
 
 
     $(document).ready(async function() {
-      var dadosTabelaFuncional = [];
 
       carregardadosSetores();
       carregardadosFuncoes();
+
+      $('#tabnav .item')
+        .tab();
+
+      var dadosTabelaFuncional = [];
 
       if (typeof codigoFuncionario !== 'undefined' && codigoFuncionario !== null) {
         carregarDadosGeraisFuncionario(codigoFuncionario);
         dadosTabelaFuncional = await carregarDadosFuncionaisFuncionario(codigoFuncionario);
       }
 
-
-      $('#tabnav .item')
-        .tab();
-
       $("#select-almoco").select2({
         minimumResultsForSearch: -1
       });
 
-      console.log(dadosTabelaFuncional);
       var table = $('#funcionalTable').DataTable({
+        pageLength: 50,
+        paging: false,
+        processing: true,
         data: dadosTabelaFuncional,
         columns: [{
             data: 'MATRICULA'
@@ -250,10 +274,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
         },
         bFilter: false,
-        // columnDefs: [{
-        //   targets: [4, 9],
-        //   visible: false
-        // }],
+        columnDefs: [{
+          targets: [4, 9],
+          visible: false
+        }],
         createdRow: function(row, data, dataIndex) {
           // Atribua um data-id independente com base em algum contador ou lógica
           $(row).attr('data-id', dataIndex);
@@ -445,15 +469,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
             dados: JSON.stringify(dadosAjax),
             funcao: "controlar",
           },
+          beforeSend: function(){
+            $('#dimmerCarregando').addClass('active');
+          },
           success: function(response) {
             console.log(response);
 
-            if (response === 'erro') {
+            if (response === 'inserido' || response === 'alterado') {
+              setTimeout(function() {
+                $('#dimmerCarregando').removeClass('active');
+              $("#operacaoSucesso").addClass("active");
+              }, 1000);
+              setTimeout(function() {
+                window.location.href = 'listfuncionarios.php';
+              }, 3000);
+            }
+
+            else {
+              $('#dimmerCarregando').removeClass('active');
               $(".ui.negative.message").transition("fade in");
 
               setTimeout(function() {
                 $(".ui.negative.message").transition("fade out");
-              }, 1500);
+              }, 2000);
             }
           },
           error: function(xhr, status, error) {
@@ -464,6 +502,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
 
     });
 
+    window.onload = function() {
+      $('#dimmerCarregando').removeClass('active');
+    }
 
     async function carregardadosFuncoes(FuncaoSalvoNoBanco = null) {
       let options = [];
