@@ -10,6 +10,11 @@
             $('.ui.dimmer').dimmer("show")
         });
     });
+
+    window.onload = function () {
+  $("#dimmerCarregando").removeClass("active");
+  
+};
 </script>
 
 <footer>
@@ -33,6 +38,10 @@
         <a href="./listtiposexcecoes.php" class="item" id="gopage">
             <i class="tag icon"></i>
             Tipos de Exceções
+        </a>
+        <a href="./listtiposexcecoes.php" class="item" id="gopage">
+            <i class="tag icon"></i>
+            Relatório Folha de Ponto
         </a>
     </div>
 
