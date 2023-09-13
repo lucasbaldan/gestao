@@ -79,3 +79,7 @@ $(document).ready(function () {
     },
   });
 });
+
+window.onload = function() {
+  $('#dimmerCarregando').removeClass('active');
+}

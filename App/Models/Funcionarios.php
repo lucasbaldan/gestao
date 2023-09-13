@@ -268,6 +268,20 @@ class Funcionarios
         }
     }
 
+    public static function gerarRelatorio($dados)
+    {
+
+        $codigoFuncionario = $_POST['idFuncionario'];
+
+        $read = new \App\Conn\Read();
+        $read->FullRead("SELECT F.NM_FUNCIONARIO AS NOME, V.MATRICULA, FU.NM_FUNCAO, V.DESC_HR_TRABALHO, V.SEG, V.TER, V.QUA, V.QUI, V.SEX, V.ALMOCO 
+        FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS V
+        INNER JOIN FUNCIONARIOS F  ON (F.CD_FUNCIONARIO = V.CD_FUNCIONARIO)
+        INNER JOIN FUNCOES FU ON (V.CD_FUNCAO = FU.CD_FUNCAO)
+        WHERE F.CD_FUNCIONARIO =:C", "C=$codigoFuncionario");
+        return $read->getResult();
+    }
+
 
 
 

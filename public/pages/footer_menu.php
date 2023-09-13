@@ -39,8 +39,8 @@
             <i class="tag icon"></i>
             Tipos de Exceções
         </a>
-        <a href="./listtiposexcecoes.php" class="item" id="gopage">
-            <i class="tag icon"></i>
+        <a href="./relatoriofolhaponto.php" class="item" id="gopage">
+            <i class="file icon"></i>
             Relatório Folha de Ponto
         </a>
     </div>
