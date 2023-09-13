@@ -15,7 +15,7 @@ include_once("./footer_menu.php");
 
 <br>
 <br>
-<div class="ui container">
+<div class="ui container" style="border: 1px">
 <h4 class="ui dividing header">Selecione as opções para gerar o relatório</h4>
   <form action="../../App/Controllers/relatorios/Rel_Folha_Ponto.php" method="POST">
     <input type="hidden" value="gerarRelatorio" name="metodo">
@@ -28,7 +28,7 @@ include_once("./footer_menu.php");
 
     <label for="" class="label">Funcionário</label>
     <select class="ui fluid dropdown" name="idFuncionario" id="opcoesRelatorioFuncionario">
-      <option value="23">LUACAS FAÉ BALDAN</option>
+      <option value="10">LUACAS FAÉ BALDAN</option>
       <option value="2">leandro</option>
     </select>
 <br>

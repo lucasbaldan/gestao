@@ -270,15 +270,18 @@ class Funcionarios
 
     public static function gerarRelatorio($dados)
     {
-
+        $mesRelatorio = $_POST['mesRelatorio'];
+        //$mesRelatorio = date('m', $mesRelatorio);
         $codigoFuncionario = $_POST['idFuncionario'];
 
         $read = new \App\Conn\Read();
-        $read->FullRead("SELECT F.NM_FUNCIONARIO AS NOME, V.MATRICULA, FU.NM_FUNCAO, V.DESC_HR_TRABALHO, V.SEG, V.TER, V.QUA, V.QUI, V.SEX, V.ALMOCO 
+        $read->FullRead("SELECT F.NM_FUNCIONARIO AS NOME, V.MATRICULA, V.DATA_INICIAL, V.DATA_FINAL, FU.NM_FUNCAO, V.DESC_HR_TRABALHO, V.SEG, V.TER, V.QUA, V.QUI, V.SEX, V.ALMOCO 
         FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS V
         INNER JOIN FUNCIONARIOS F  ON (F.CD_FUNCIONARIO = V.CD_FUNCIONARIO)
         INNER JOIN FUNCOES FU ON (V.CD_FUNCAO = FU.CD_FUNCAO)
-        WHERE F.CD_FUNCIONARIO =:C", "C=$codigoFuncionario");
+        WHERE F.CD_FUNCIONARIO =:C
+        AND DATE_FORMAT(DATA_INICIAL, '%Y-%m') <= :MREL
+        AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "C=$codigoFuncionario&MREL=$mesRelatorio");
         return $read->getResult();
     }
 
