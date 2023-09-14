@@ -13,5 +13,8 @@
         {
             "name": "lucas baldan"
         }
-    ]
+    ],
+    "require": {
+        "dompdf/dompdf": "^2.0"
+    }
 }
