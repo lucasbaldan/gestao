@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['metodo'])) {
     $qui = $dadosRelatorio[0]['QUI'];
     $sex = $dadosRelatorio[0]['SEX'];
     $dataFinalVinculo = $dadosRelatorio[0]['DATA_FINAL'];
+    $dataInicialVinculo = $dadosRelatorio[0]['DATA_INICIAL'];
     list($anoRelatorio, $mesRelatorio) = explode("-", $_POST['mesRelatorio']);
 
     $diasMes = cal_days_in_month(CAL_GREGORIAN, $mesRelatorio, $anoRelatorio);
@@ -101,11 +102,23 @@ $html = '<html>
 
 for ($dia = 1; $dia <= $diasMes; $dia++) {
 
-    if ("$anoRelatorio-$mesRelatorio-$dia" > $dataFinalVinculo) {
-        $diaDaSemana = "SEM VINCULO";
-        $hrEntradaSaida = "SEM VINCULO";
-        $hrAlmoco = "SEM VINCULO";
-    } else {
+    //$data = "$anoRelatorio-$mesRelatorio-". 0 ."$dia";
+    $data = $dia <= 9 ?  "$anoRelatorio-$mesRelatorio-". 0 ."$dia" : "$anoRelatorio-$mesRelatorio-$dia";
+
+    if ($dataFinalVinculo < $data) {
+
+        $diaDaSemana = "TERMINOU VINCULO";
+        $hrEntradaSaida = "TERMINOU VINCULO";
+        $hrAlmoco = "TERMINOU VINCULO";
+
+    } else if ($dataInicialVinculo > $data){
+
+        $diaDaSemana = "NÃO COMEÇOU VINCULO";
+        $hrEntradaSaida = "NÃO COMEÇOU VINCULO";
+        $hrAlmoco = "NÃO COMEÇOU VINCULO";
+
+    }
+     else {
 
 
         $diaDaSemana = date('w', strtotime("$anoRelatorio-$mesRelatorio-$dia"));

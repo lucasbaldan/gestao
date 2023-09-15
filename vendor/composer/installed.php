@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'lucas/gestao',
-        'pretty_version' => 'dev-main',
-        'version' => 'dev-main',
-        'reference' => 'd1638f0e30899541ebace535d5f8b05d008e98c8',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => NULL,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -20,9 +20,9 @@
             'dev_requirement' => false,
         ),
         'lucas/gestao' => array(
-            'pretty_version' => 'dev-main',
-            'version' => 'dev-main',
-            'reference' => 'd1638f0e30899541ebace535d5f8b05d008e98c8',
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => NULL,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
