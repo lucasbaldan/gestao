@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-require __DIR__ . '/../../../vendor/autoload.php';
+require __DIR__ . '/../../vendor/autoload.php';
 
 use DateTime;
 use Dompdf\Dompdf;
@@ -19,10 +19,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['metodo'])) {
     $matricula = $dadosRelatorio[0]['MATRICULA'];
     $funcao = $dadosRelatorio[0]['NM_FUNCAO'];
     $horario = $dadosRelatorio[0]['DESC_HR_TRABALHO'];
+    $almoco = $dadosRelatorio[0]['ALMOCO'];
+    $seg = $dadosRelatorio[0]['SEG'];
+    $ter = $dadosRelatorio[0]['TER'];
+    $qua = $dadosRelatorio[0]['QUA'];
+    $qui = $dadosRelatorio[0]['QUI'];
+    $sex = $dadosRelatorio[0]['SEX'];
+    $dataFinalVinculo = $dadosRelatorio[0]['DATA_FINAL'];
     list($anoRelatorio, $mesRelatorio) = explode("-", $_POST['mesRelatorio']);
 
     $diasMes = cal_days_in_month(CAL_GREGORIAN, $mesRelatorio, $anoRelatorio);
-
 }
 
 //echo print_r($nome);
@@ -66,10 +72,10 @@ $html = '<html>
     <div class="quadroInfoFuncionario">
         <table>
             <tr>
-                <td><b>SERVIDOR:</b> ' . $nome . ' <b>MATRÍCULA:</b> ' . $matricula . ' <b>FUNCÃO:</b>' . $funcao . '</td>
+                <td><b>SERVIDOR:</b> ' . strtoupper($nome) . ' <b>MATRÍCULA:</b> ' . strtoupper($matricula) . ' <b>FUNCÃO:</b>' . strtoupper($funcao) . '</td>
             </tr>
             <tr>
-                <td><b>Horário de Trabalho: ' . $horario . '</b></td>
+                <td><b>Horário de Trabalho: ' . strtoupper($horario) . '</b></td>
             </tr>
             <tr>
                 <td>Mês de <b>' . $mesRelatorio . '</b> de ' . $anoRelatorio . '</td>
@@ -94,27 +100,48 @@ $html = '<html>
             <tbody>';
 
 for ($dia = 1; $dia <= $diasMes; $dia++) {
-    $diaDaSemana = date('w', strtotime("$anoRelatorio-$mesRelatorio-$dia"));
-    if($diaDaSemana == 0 ){
-        $diaDaSemana = "DOMINGO";
-    }
-    else if($diaDaSemana == 6){
-        $diaDaSemana = "SÁBADO";
-    }
-    else {
-        $diaDaSemana = " ";
+
+    if ("$anoRelatorio-$mesRelatorio-$dia" > $dataFinalVinculo) {
+        $diaDaSemana = "SEM VINCULO";
+        $hrEntradaSaida = "SEM VINCULO";
+        $hrAlmoco = "SEM VINCULO";
+    } else {
+
+
+        $diaDaSemana = date('w', strtotime("$anoRelatorio-$mesRelatorio-$dia"));
+        if ($diaDaSemana == 0) {
+            $diaDaSemana = "DOMINGO";
+            $hrEntradaSaida = "-------";
+            $hrAlmoco = "-------";
+        } else if ($diaDaSemana == 6) {
+            $diaDaSemana = "SÁBADO";
+            $hrEntradaSaida = "-------";
+            $hrAlmoco = "-------";
+        } else if (($diaDaSemana == 1 && $seg == 1) || ($diaDaSemana == 2 && $ter == 1) || ($diaDaSemana == 3 && $qua == 1) || ($diaDaSemana == 4 && $qui == 1) || ($diaDaSemana == 5 && $sex == 1)) {
+            $diaDaSemana = " ";
+            $hrEntradaSaida = " ";
+            $hrAlmoco = " ";
+        } else {
+            $diaDaSemana = "-------";
+            $hrEntradaSaida = "-------";
+            $hrAlmoco = "------";
+        }
+
+        if ($almoco == 0) {
+            $hrAlmoco = "-------";
+        }
     }
 
     $html .= ' <tr>
-    <td>'.$dia.'</td>
-     <td>---</td>
-     <td>'.$diaDaSemana.'</td>
-     <td>---</td>
-     <td>'.$diaDaSemana.'</td>
-     <td>---</td>
-     <td>'.$diaDaSemana.'</td>
-     <td>---</td>
-     <td>'.$diaDaSemana.'</td>
+    <td>' . $dia . '</td>
+     <td>' . $hrEntradaSaida . '</td>
+     <td>' . $diaDaSemana . '</td>
+     <td>' . $hrAlmoco . '</td>
+     <td>' . $diaDaSemana . '</td>
+     <td>' . $hrAlmoco . '</td>
+     <td>' . $diaDaSemana . '</td>
+     <td>' . $hrEntradaSaida . '</td>
+     <td>' . $diaDaSemana . '</td>
      </tr>';
 }
 

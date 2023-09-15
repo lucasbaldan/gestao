@@ -7,8 +7,11 @@ include_once("./footer_menu.php");
 ?>
 <style>
   .botaoGerar{
-    margin-top: 30%;
+    margin-top: 5%;
   }
+  .ui.fluid.dropdown {
+      border: 1px solid red !important;
+    }
 </style>
 <!-- <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" /> -->
 
@@ -17,17 +20,18 @@ include_once("./footer_menu.php");
 <br>
 <div class="ui container" style="border: 1px">
 <h4 class="ui dividing header">Selecione as opções para gerar o relatório</h4>
-  <form action="../../App/Controllers/relatorios/Rel_Folha_Ponto.php" method="POST">
+  <form action="../../App/ControllersRel/Rel_folha_ponto.php" method="POST">
     <input type="hidden" value="gerarRelatorio" name="metodo">
     <label for="" class="label">Opções</label>
     <select class="ui fluid dropdown" name="opcoesRelatorio" id="opcoesRelatorio">
+    <option value=""> </option>
       <option value="SETOR">Por Setor</option>
       <option value="FUNCIONARIO">Por Funcionário</option>
     </select>
     <br>
 
     <label for="" class="label">Funcionário</label>
-    <select class="ui fluid dropdown" name="idFuncionario" id="opcoesRelatorioFuncionario">
+    <select class="ui fluid dropdown" name="idFuncionario" id="opcoesRelatorioFuncionario"> 
       <option value="10">LUACAS FAÉ BALDAN</option>
       <option value="2">leandro</option>
     </select>
@@ -40,7 +44,7 @@ include_once("./footer_menu.php");
     </div>
 
     <div class="botaoGerar">
-    <button class="ui gray button" type="submit">
+    <button class="ui fluid grey button" type="submit">
       <i class="file icon"></i>
       Gerar Relatório
     </button>

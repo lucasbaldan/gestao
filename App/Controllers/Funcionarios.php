@@ -213,9 +213,6 @@ class Funcionarios
                 if ($dataInicio == "undefined/undefined/" || $dataInicio == null) {
                     throw new Exception("DATA INICIAL NÃO PODE SER NULA");
                 }
-                if ($almoco == "⠀⠀⠀" || $almoco == null) {
-                    throw new Exception("INFORMAÇÃO DE ALMOÇO INCORRETA");
-                }
                 if ($idFuncao == "" || $idFuncao == null) {
                     throw new Exception("INFORMAÇÃO DE FUNÇÃO INCORRETA");
                 }
