@@ -279,7 +279,7 @@ class Funcionarios
         FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS V
         INNER JOIN FUNCIONARIOS F  ON (F.CD_FUNCIONARIO = V.CD_FUNCIONARIO)
         INNER JOIN FUNCOES FU ON (V.CD_FUNCAO = FU.CD_FUNCAO)
-        WHERE F.CD_FUNCIONARIO =:C
+        WHERE V.MATRICULA =:C
         AND DATE_FORMAT(DATA_INICIAL, '%Y-%m') <= :MREL
         AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "C=$codigoFuncionario&MREL=$mesRelatorio");
         return $read->getResult();

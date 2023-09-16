@@ -30,9 +30,9 @@ include_once("./footer_menu.php");
     </select>
     <br>
 
-    <label for="" class="label">Funcionário</label>
+    <label for="" class="label">Funcionário - Matrícula</label>
     <select class="ui fluid dropdown" name="idFuncionario" id="opcoesRelatorioFuncionario"> 
-      <option value="10">LUACAS FAÉ BALDAN</option>
+      <option value="69334">LUACAS FAÉ BALDAN</option>
       <option value="2">leandro</option>
     </select>
 <br>
