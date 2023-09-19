@@ -17,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['metodo'])) {
 
 setlocale(LC_TIME, 'pt_BR');
 
-
 $nome = $dadosRelatorio[0]['NOME'];
 $matricula = $dadosRelatorio[0]['MATRICULA'];
 $funcao = $dadosRelatorio[0]['NM_FUNCAO'];
@@ -71,6 +70,10 @@ $html = '<html>
     .quadroPontoFuncionario {
         margin-top: 5px;
     }
+    .pagebreak { 
+        page-break-after: always; 
+    }
+
 </style>
 
 <DIV class="tituloRelatorio"><u><b>FICHA DE PONTO DIÁRIO</b></u></DIV>
@@ -190,7 +193,7 @@ $html .= '</tr>
         </table>
     </div>
 </body>
-
+<div class="pagebreak"></div>
 </html>';
 
 $options = new Options();
@@ -203,3 +206,8 @@ $dompdf->setPaper('A4', 'landscape');
 //$dompdf->setOptions(['margin-top' => 20, 'margin-right' => 10, 'margin-bottom' => 20, 'margin-left' => 10]);
 $dompdf->render();
 $dompdf->stream();
+
+?>
+<html>
+   
+</html>

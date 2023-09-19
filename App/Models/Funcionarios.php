@@ -281,7 +281,8 @@ class Funcionarios
         INNER JOIN FUNCOES FU ON (V.CD_FUNCAO = FU.CD_FUNCAO)
         WHERE V.MATRICULA =:C
         AND DATE_FORMAT(DATA_INICIAL, '%Y-%m') <= :MREL
-        AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "C=$codigoFuncionario&MREL=$mesRelatorio");
+        AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)
+        ORDER BY V.MATRICULA", "C=$codigoFuncionario&MREL=$mesRelatorio");
         return $read->getResult();
     }
 
