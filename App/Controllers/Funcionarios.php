@@ -32,6 +32,20 @@ class Funcionarios
         }
     }
 
+    public function listRelFuncionario($dados)
+    {
+        try {
+            $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
+            $dataSelect = isset($dados['mesRelatorio']) ? $dados['mesRelatorio'] : '';
+
+            $pegalista = new \App\Models\Funcionarios;
+            $lista = $pegalista->listarTelaRelatorio($this->codigo, $dataSelect);
+            echo json_encode($lista);
+        } catch (Exception $th) {
+            return json_encode('erro');
+        }
+    }
+
     public function listJSON($dados)
     {
         try {

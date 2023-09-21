@@ -38,20 +38,10 @@ include_once("./footer_menu.php");
     <label for="" class="label">Opções</label>
     <select class="ui fluid dropdown" name="opcoesRelatorio" id="opcoesRelatorio">
       <option value=""> </option>
+      <option value="FUNCIONARIO">Por Funcionários</option>
       <option value="SETOR">Por Setor</option>
-      <option value="FUNCIONARIO">Por Funcionário</option>
-      <option value="MULTFUNCIONARIO">Múltiplos Funcionários</option>
     </select>
     <br>
-
-    <div id="tipoRelatorioFuncionario">
-      <label for="" class="label">Funcionário - Matrícula</label>
-      <select class="ui fluid dropdown" name="idFuncionario" id="opcoesRelatorioFuncionario">
-        <option value="69334">LUACAS FAÉ BALDAN</option>
-        <option value="2">leandro</option>
-      </select>
-      <br>
-    </div>
 
     <div class="ui fluid container">
       <select name="from[]" id="search" class="form-control" size="5" multiple="multiple" style="width: 100%;">
@@ -78,19 +68,43 @@ include_once("./footer_menu.php");
 </div>
 
 <script>
-  document.querySelector("#tipoRelatorioFuncionario").style.display = "none";
 
   $(document).ready(function() {
     $('#opcoesRelatorio').dropdown();
-
-    var opcaoTipo = document.getElementById("opcoesRelatorio");
-    opcaoTipo.addEventListener("change", function() {
-      if (opcaoTipo.value == "FUNCIONARIO") {
-        $('#opcoesRelatorioFuncionario').dropdown();
-        document.querySelector("#tipoRelatorioFuncionario").style.display = "block";
-      };
+    var dataInput = document.getElementById("mesRelatorio");
+    dataInput.addEventListener("change", function() {
+      carregarDadosFuncionarios($('#mesRelatorio').val());
     });
   });
+
+  async function carregarDadosFuncionarios(mesRelatorio) {
+  $.ajax({
+    type: "POST",
+    url: "./../../App/Controllers/Funcionarios.php",
+    data: {
+      funcao: "listRelFuncionario",
+      mesRelatorio: mesRelatorio
+    },
+    success: function (data) {
+      console.log(data);
+      const dadosFuncionarios = JSON.parse(data);
+      const selectFuncionarios = $("#search");
+      selectFuncionarios.empty();
+
+      dadosFuncionarios.forEach((funcionario) => {
+        const option = $("<option>")
+          .val(funcionario.MATRICULA)
+          .text(funcionario.OPCAO_FUNCIONARIO);
+        selectFuncionarios.append(option);
+      });
+    },
+    error: function () {
+      alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
+      location.reload();
+    },
+  });
+}
+
 
   jQuery(document).ready(function($) {
     $("#search").multiselect({

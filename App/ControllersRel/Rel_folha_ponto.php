@@ -12,8 +12,13 @@ use Dompdf\Options;
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['metodo'])) {
     $method = $_POST['metodo'];
     $Funcionario = new \App\Models\Funcionarios;
-    $dadosRelatorio = $Funcionario->$method($_POST);
+    $matriculasSelecionadas = isset($_POST['to']) ? ($_POST['to']) : '';
+    $html = '.';
 }
+
+foreach ($matriculasSelecionadas as $matriculas){
+$dadosRelatorio = $Funcionario->$method($_POST['mesRelatorio'],$matriculas);
+
 
 setlocale(LC_TIME, 'pt_BR');
 
@@ -25,7 +30,7 @@ list($anoRelatorio, $mesRelatorio) = explode("-", $_POST['mesRelatorio']);
 
 //echo print_r($nome);
 
-$html = '<html>
+$html .= '<html>
 <style>
     *{
         margin: 0;
@@ -196,18 +201,17 @@ $html .= '</tr>
 <div class="pagebreak"></div>
 </html>';
 
+
+}
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
 $options->set('isPhpEnabled', true);
-
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'landscape');
 //$dompdf->setOptions(['margin-top' => 20, 'margin-right' => 10, 'margin-bottom' => 20, 'margin-left' => 10]);
 $dompdf->render();
+
 $dompdf->stream();
 
 ?>
-<html>
-   
-</html>

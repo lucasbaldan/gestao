@@ -80,6 +80,21 @@ class Funcionarios
         }
     }
 
+    public function listarTelaRelatorio($cdFuncionario = null, $dataSelect)
+    {
+        try {
+            $read = new \App\Conn\Read();
+                $read->FullRead("SELECT DISTINCT V.MATRICULA, CONCAT(F.NM_FUNCIONARIO, ' - ', V.MATRICULA) AS OPCAO_FUNCIONARIO
+        FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS V
+        INNER JOIN FUNCIONARIOS F ON (V.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
+        AND DATE_FORMAT(DATA_INICIAL, '%Y-%m') <= :MREL
+        AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "MREL=$dataSelect");
+            return $read->getResult();
+        } catch (Exception $th) {
+            header("Location: /gestao/public/pages/generalError.php");
+        }
+    }
+
     public function listarFuncional($cdFuncionario = null)
     {
         try {
@@ -268,11 +283,11 @@ class Funcionarios
         }
     }
 
-    public static function gerarRelatorio($dados)
+    public static function gerarRelatorio($mesRelatorio, $codigoFuncionario)
     {
-        $mesRelatorio = $_POST['mesRelatorio'];
-        //$mesRelatorio = date('m', $mesRelatorio);
-        $codigoFuncionario = $_POST['idFuncionario'];
+        // $mesRelatorio = $_POST['mesRelatorio'];
+        // //$mesRelatorio = date('m', $mesRelatorio);
+        // $codigoFuncionario = $_POST['idFuncionario'];
 
         $read = new \App\Conn\Read();
         $read->FullRead("SELECT F.NM_FUNCIONARIO AS NOME, V.MATRICULA, V.DATA_INICIAL, V.DATA_FINAL, FU.NM_FUNCAO, V.DESC_HR_TRABALHO, V.SEG, V.TER, V.QUA, V.QUI, V.SEX, V.ALMOCO 
