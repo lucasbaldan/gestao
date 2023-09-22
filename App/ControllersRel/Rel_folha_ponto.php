@@ -9,28 +9,29 @@ use Dompdf\Dompdf;
 use Dompdf\Options;
 
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['metodo'])) {
-    $method = $_POST['metodo'];
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $Funcionario = new \App\Models\Funcionarios;
+    $Excecoes = new \App\Models\Excecoes;
     $matriculasSelecionadas = isset($_POST['to']) ? ($_POST['to']) : '';
-    $html = '.';
+    $html = '';
 }
 
-foreach ($matriculasSelecionadas as $matriculas){
-$dadosRelatorio = $Funcionario->$method($_POST['mesRelatorio'],$matriculas);
+foreach ($matriculasSelecionadas as $matriculas) {
+    $dadosRelatorio = $Funcionario->gerarRelatorio($_POST['mesRelatorio'], $matriculas);
+    $dadosExcecoes = $Excecoes->selectExcecoesRelatorio($_POST['mesRelatorio'], $matriculas);
 
 
-setlocale(LC_TIME, 'pt_BR');
+    setlocale(LC_TIME, 'pt_BR');
 
-$nome = $dadosRelatorio[0]['NOME'];
-$matricula = $dadosRelatorio[0]['MATRICULA'];
-$funcao = $dadosRelatorio[0]['NM_FUNCAO'];
-$horario = $dadosRelatorio[0]['DESC_HR_TRABALHO'];
-list($anoRelatorio, $mesRelatorio) = explode("-", $_POST['mesRelatorio']);
+    $nome = $dadosRelatorio[0]['NOME'];
+    $matricula = $dadosRelatorio[0]['MATRICULA'];
+    $funcao = $dadosRelatorio[0]['NM_FUNCAO'];
+    $horario = $dadosRelatorio[0]['DESC_HR_TRABALHO'];
+    list($anoRelatorio, $mesRelatorio) = explode("-", $_POST['mesRelatorio']);
 
-//echo print_r($nome);
+    //echo print_r($nome);
 
-$html .= '<html>
+    $html .= '<html>
 <style>
     *{
         margin: 0;
@@ -115,42 +116,40 @@ $html .= '<html>
             <tbody>';
 
 
-$diasMes = cal_days_in_month(CAL_GREGORIAN, $mesRelatorio, $anoRelatorio);
+    $diasMes = cal_days_in_month(CAL_GREGORIAN, $mesRelatorio, $anoRelatorio);
 
-for ($dia = 1; $dia <= $diasMes; $dia++) {
+    for ($dia = 1; $dia <= $diasMes; $dia++) {
 
-    $data = $dia <= 9 ?  "$anoRelatorio-$mesRelatorio-" . 0 . "$dia" : "$anoRelatorio-$mesRelatorio-$dia";
+        $data = $dia <= 9 ?  "$anoRelatorio-$mesRelatorio-" . 0 . "$dia" : "$anoRelatorio-$mesRelatorio-$dia";
 
-    foreach ($dadosRelatorio as $dadoVinculoFuncional) {
+        foreach ($dadosRelatorio as $dadoVinculoFuncional) {
 
-        if ($data >= $dadoVinculoFuncional["DATA_INICIAL"] && $data <= $dadoVinculoFuncional["DATA_FINAL"]) {
+            if ($data >= $dadoVinculoFuncional["DATA_INICIAL"] && ($data <= $dadoVinculoFuncional["DATA_FINAL"] || $dadoVinculoFuncional["DATA_FINAL"] == null)) {
 
-            $almoco = $dadoVinculoFuncional['ALMOCO'];
-            $seg = $dadoVinculoFuncional['SEG'];
-            $ter = $dadoVinculoFuncional['TER'];
-            $qua = $dadoVinculoFuncional['QUA'];
-            $qui = $dadoVinculoFuncional['QUI'];
-            $sex = $dadoVinculoFuncional['SEX'];
-            $dataFinalVinculo = $dadoVinculoFuncional['DATA_FINAL'];
-            $dataInicialVinculo = $dadoVinculoFuncional['DATA_INICIAL'];
+                $almoco = $dadoVinculoFuncional['ALMOCO'];
+                $seg = $dadoVinculoFuncional['SEG'];
+                $ter = $dadoVinculoFuncional['TER'];
+                $qua = $dadoVinculoFuncional['QUA'];
+                $qui = $dadoVinculoFuncional['QUI'];
+                $sex = $dadoVinculoFuncional['SEX'];
+                $dataFinalVinculo = $dadoVinculoFuncional['DATA_FINAL'];
+                $dataInicialVinculo = $dadoVinculoFuncional['DATA_INICIAL'];
 
+                /////////////////////////////////////////////////////////////////////////////////////////
 
+                // if ($dataFinalVinculo < $data) {
 
-            /////////////////////////////////////////////////////////////////////////////////////////
+                //     $diaDaSemana = "TERMINOU VINCULO";
+                //     $hrEntradaSaida = "TERMINOU VINCULO";
+                //     $hrAlmoco = "TERMINOU VINCULO";
+                // } else if ($dataInicialVinculo > $data) {
 
-            if ($dataFinalVinculo < $data) {
+                //     $diaDaSemana = "NÃO COMEÇOU VINCULO";
+                //     $hrEntradaSaida = "NÃO COMEÇOU VINCULO";
+                //     $hrAlmoco = "NÃO COMEÇOU VINCULO";
+                // } else {
 
-                $diaDaSemana = "TERMINOU VINCULO";
-                $hrEntradaSaida = "TERMINOU VINCULO";
-                $hrAlmoco = "TERMINOU VINCULO";
-            } else if ($dataInicialVinculo > $data) {
-
-                $diaDaSemana = "NÃO COMEÇOU VINCULO";
-                $hrEntradaSaida = "NÃO COMEÇOU VINCULO";
-                $hrAlmoco = "NÃO COMEÇOU VINCULO";
-            } else {
-
-                $diaDaSemana = date('w', strtotime("$anoRelatorio-$mesRelatorio-$dia"));
+                $diaDaSemana = date('w', strtotime($data));
                 if ($diaDaSemana == 0) {
                     $diaDaSemana = "DOMINGO";
                     $hrEntradaSaida = "-------";
@@ -172,9 +171,19 @@ for ($dia = 1; $dia <= $diasMes; $dia++) {
                 if ($almoco == 0) {
                     $hrAlmoco = "-------";
                 }
-            }
 
-            $html .= ' <tr>
+                if (isset($dadosExcecoes)) {
+                    foreach ($dadosExcecoes as $excecoes) {
+                        if ($data >= $excecoes['DATA_INICIAL']) {
+                            $diaDaSemana = $excecoes['NM_TIPO_EXCECAO'];
+                            $hrEntradaSaida = "-------";
+                            $hrAlmoco = "-------";
+                        }
+                    }
+                }
+                // }
+
+                $html .= ' <tr>
     <td>' . $dia . '</td>
      <td>' . $hrEntradaSaida . '</td>
      <td>' . $diaDaSemana . '</td>
@@ -185,23 +194,25 @@ for ($dia = 1; $dia <= $diasMes; $dia++) {
      <td>' . $hrEntradaSaida . '</td>
      <td>' . $diaDaSemana . '</td>
      </tr>';
+            }
         }
     }
-}
 
 
-$html .= '</tr>
+    $html .= '</tr>
                 <tr>
                     <td colspan="9" style="text-align: left">Obs:</td>
                 </tr>
             </tbody>
         </table>
     </div>
-</body>
-<div class="pagebreak"></div>
-</html>';
+</body>';
 
-
+    if (!($matriculas === end($matriculasSelecionadas))) {
+        $html .= '<div class="pagebreak"></div>';
+    } else {
+        $html .= '</html>';
+    }
 }
 $options = new Options();
 $options->set('isHtml5ParserEnabled', true);
@@ -213,5 +224,3 @@ $dompdf->setPaper('A4', 'landscape');
 $dompdf->render();
 
 $dompdf->stream();
-
-?>

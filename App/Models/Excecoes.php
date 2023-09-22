@@ -101,7 +101,7 @@ class Excecoes
     {
 
         try {
-            $dadosinsert = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao, "CD_FUNCIONARIO" => $this->cdfuncionario]; 
+            $dadosinsert = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao, "CD_FUNCIONARIO" => $this->cdfuncionario];
             $insert->ExeInsert("EXCECOES", $dadosinsert);
 
             if (!$insert->getResult()) {
@@ -138,4 +138,22 @@ class Excecoes
         }
     }
 
+
+    public function selectExcecoesRelatorio($mesRelatorio, $matricula)
+    {
+        try {
+            $read = new \App\Conn\Read();
+            $read->FullRead("SELECT E.DATA_INICIAL, E.DATA_FINAL, TE.NM_TIPO_EXCECAO
+        FROM EXCECOES E 
+        INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
+        INNER JOIN VINCULOS_FUNCIONAIS_FUNCIONARIOS V ON (V.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
+        INNER JOIN TIPO_EXCECOES TE ON (TE.CD_TIPO_EXCECAO = E.CD_TIPO_EXCECAO)
+        WHERE V.MATRICULA =:M
+        AND DATE_FORMAT(E.DATA_INICIAL, '%Y-%m') <= :MREL
+        AND (DATE_FORMAT(E.DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "M=$matricula&MREL=$mesRelatorio");
+            return $read->getResult();
+        } catch (Exception $th) {
+            echo 'erro';
+        }
+    }
 }
