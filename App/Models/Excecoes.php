@@ -150,10 +150,12 @@ class Excecoes
         INNER JOIN TIPO_EXCECOES TE ON (TE.CD_TIPO_EXCECAO = E.CD_TIPO_EXCECAO)
         WHERE V.MATRICULA =:M
         AND DATE_FORMAT(E.DATA_INICIAL, '%Y-%m') <= :MREL
-        AND (DATE_FORMAT(E.DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "M=$matricula&MREL=$mesRelatorio");
+        AND DATE_FORMAT(E.DATA_FINAL, '%Y-%m') >= :MREL 
+        OR E.DATA_FINAL IS NULL", "M=$matricula&MREL=$mesRelatorio");
+        
             return $read->getResult();
         } catch (Exception $th) {
-            echo 'erro';
+            return 'erro';
         }
     }
 }

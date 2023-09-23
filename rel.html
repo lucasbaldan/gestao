@@ -4,9 +4,12 @@
         margin: 0;
         padding: 0;
     }
-    
+    html{
+        margin-top: 30px;
+        margin-left: 30px;
+        margin-right: 30px;
+    }
     body{
-        margin: 4cm 3cm 3cm 3cm;
         font-family: Arial, Helvetica, sans-serif;
         font-size: 10;
     }
@@ -18,7 +21,7 @@
     table,
     th,
     td {
-        border: 2px solid black;
+        border: 1px solid black;
         max-height: 100px;
         overflow: auto;
         text-align: center;
@@ -29,7 +32,8 @@
     }
 
     .quadroInfoFuncionario {
-        margin-top: 20px;
+        width: 100%;
+        margin-left: 10px;
     }
 
     tr {
@@ -37,27 +41,45 @@
     }
 
     .quadroPontoFuncionario {
-        margin-top: 10px;
+        margin-top: 5px;
     }
+
+    .pagebreak { 
+        page-break-after: always; 
+    }
+
+    .cabecalho{
+        display: flex;
+        margin-top: 20px;
+    }
+
+    .cabecalho img {
+    max-width: 100px;
+    height: auto;
+    margin-left: 12px;
+    }
+
 </style>
 
 <DIV class="tituloRelatorio"><u><b>FICHA DE PONTO DIÁRIO</b></u></DIV>
 
 <body>
+    <div class="cabecalho">
+    <img src="/public/img/brasaoPM.png" >
     <div class="quadroInfoFuncionario">
         <table>
             <tr>
-                <td><b>SERVIDOR:</b> $nome do servidor$ <b>MATRÍCULA:</b> $matricula do servidor$ <b>FUNCÃO:</b>$NOME
-                    FUNÇÃO DO SERVIDOR$</td>
+                <td><b>SERVIDOR:</b> ' . strtoupper($nome) . ' <b>MATRÍCULA:</b> ' . strtoupper($matricula) . ' <b>FUNCÃO:</b>' . strtoupper($funcao) . '</td>
             </tr>
             <tr>
-                <td><b>Horário de Trabalho: $descrição do horário de trabalho$</b></td>
+                <td><b>Horário de Trabalho: ' . $horario . '</b></td>
             </tr>
             <tr>
-                <td>Mês de <b>$MÊS SELECIONADO$</b> de $ANO SELECIONADO$</td>
+                <td>Mês de <b>' . $mesRelatorio . '</b> de ' . $anoRelatorio . '</td>
             </tr>
         </table>
     </div>
+</div>
     <div class="quadroPontoFuncionario">
         <table>
             <thead>
@@ -75,22 +97,22 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>1</td>
-                    <td>---</td>
-                    <td>Assinatura ou domingos</td>
-                    <td>---</td>
-                    <td>Assinatura ou domingo</td>
-                    <td>---</td>
-                    <td>Assinatura ou domingo</td>
-                    <td>---</td>
-                    <td>Assinatura ou domings</td>
-                </tr>
-                <tr>
-                    <td colspan="9" style="text-align: left">Obs:</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</body>
+                    <td>' . $dia . '</td>
+                     <td>' . $hrEntradaSaida . '</td>
+                     <td>' . $diaDaSemana . '</td>
+                     <td>' . $hrAlmoco . '</td>
+                     <td>' . $diaDaSemana . '</td>
+                     <td>' . $hrAlmoco . '</td>
+                     <td>' . $diaDaSemana . '</td>
+                     <td>' . $hrEntradaSaida . '</td>
+                     <td>' . $diaDaSemana . '</td>
+                     </tr>
 
-</html>
+                    </tr>
+                    <tr>
+                        <td colspan="9" style="text-align: left">Obs:</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>

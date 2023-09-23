@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 foreach ($matriculasSelecionadas as $matriculas) {
+    $dadosRelatorio = [];
+    $dadosExcecoes = [];
     $dadosRelatorio = $Funcionario->gerarRelatorio($_POST['mesRelatorio'], $matriculas);
     $dadosExcecoes = $Excecoes->selectExcecoesRelatorio($_POST['mesRelatorio'], $matriculas);
 
@@ -79,12 +81,24 @@ foreach ($matriculasSelecionadas as $matriculas) {
     .pagebreak { 
         page-break-after: always; 
     }
+    .cabecalho{
+        display: flex;
+        margin-top: 20px;
+    }
+
+    .cabecalho img {
+    max-width: 100px;
+    height: auto;
+    margin-left: 12px;
+    }
 
 </style>
 
 <DIV class="tituloRelatorio"><u><b>FICHA DE PONTO DIÁRIO</b></u></DIV>
 
 <body>
+<div class="cabecalho">
+<img src="./../../public/img/brasaoPM.png" >
     <div class="quadroInfoFuncionario">
         <table>
             <tr>
@@ -97,6 +111,7 @@ foreach ($matriculasSelecionadas as $matriculas) {
                 <td>Mês de <b>' . $mesRelatorio . '</b> de ' . $anoRelatorio . '</td>
             </tr>
         </table>
+    </div>
     </div>
     <div class="quadroPontoFuncionario">
         <table>
@@ -174,7 +189,7 @@ foreach ($matriculasSelecionadas as $matriculas) {
 
                 if (isset($dadosExcecoes)) {
                     foreach ($dadosExcecoes as $excecoes) {
-                        if ($data >= $excecoes['DATA_INICIAL']) {
+                        if (($data >= $excecoes['DATA_INICIAL'] && $data <= $excecoes['DATA_FINAL']) || ($data == $excecoes['DATA_INICIAL'] && $excecoes['DATA_FINAL'] == null)) {
                             $diaDaSemana = $excecoes['NM_TIPO_EXCECAO'];
                             $hrEntradaSaida = "-------";
                             $hrAlmoco = "-------";
