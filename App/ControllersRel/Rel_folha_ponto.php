@@ -4,9 +4,8 @@ namespace App\Controllers;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
-use DateTime;
 use Dompdf\Dompdf;
-use Dompdf\Options;
+setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -16,14 +15,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $html = '';
 }
 
+$nomesMeses = array(
+    1 => 'Janeiro',
+    2 => 'Fevereiro',
+    3 => 'Março',
+    4 => 'Abril',
+    5 => 'Maio',
+    6 => 'Junho',
+    7 => 'Julho',
+    8 => 'Agosto',
+    9 => 'Setembro',
+    10 => 'Outubro',
+    11 => 'Novembro',
+    12 => 'Dezembro'
+);
+
 foreach ($matriculasSelecionadas as $matriculas) {
     $dadosRelatorio = [];
     $dadosExcecoes = [];
     $dadosRelatorio = $Funcionario->gerarRelatorio($_POST['mesRelatorio'], $matriculas);
     $dadosExcecoes = $Excecoes->selectExcecoesRelatorio($_POST['mesRelatorio'], $matriculas);
-
-
-    setlocale(LC_TIME, 'pt_BR');
 
     $nome = $dadosRelatorio[0]['NOME'];
     $matricula = $dadosRelatorio[0]['MATRICULA'];
@@ -31,23 +42,24 @@ foreach ($matriculasSelecionadas as $matriculas) {
     $horario = $dadosRelatorio[0]['DESC_HR_TRABALHO'];
     list($anoRelatorio, $mesRelatorio) = explode("-", $_POST['mesRelatorio']);
 
-    //echo print_r($nome);
-
     $html .= '<html>
-<style>
-    *{
+    <style>
+    * {
         margin: 0;
         padding: 0;
     }
-    html{
+
+    html {
         margin-top: 30px;
         margin-left: 30px;
         margin-right: 30px;
     }
-    body{
+
+    body {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 10;
     }
+
     table {
         width: 100%;
         border-collapse: collapse;
@@ -66,8 +78,19 @@ foreach ($matriculasSelecionadas as $matriculas) {
         text-align: center;
     }
 
-    .quadroInfoFuncionario {
+    .cabecalho {
         margin-top: 20px;
+    }
+
+    .cabecalho img {
+        max-width: 100px;
+        height: auto;
+        float: left; /* Alinha a imagem à esquerda */
+        margin-left: 50px; 
+    }
+
+    .quadroInfoFuncionario {
+        width: 84,5%;
         margin-left: 161px;
     }
 
@@ -78,37 +101,27 @@ foreach ($matriculasSelecionadas as $matriculas) {
     .quadroPontoFuncionario {
         margin-top: 5px;
     }
-    .pagebreak { 
-        page-break-after: always; 
-    }
-    .cabecalho{
-        display: flex;
-        margin-top: 20px;
-    }
 
-    .cabecalho img {
-    max-width: 100px;
-    height: auto;
-    margin-left: 12px;
+    .pagebreak {
+        page-break-after: always;
     }
-
 </style>
 
-<DIV class="tituloRelatorio"><u><b>FICHA DE PONTO DIÁRIO</b></u></DIV>
+<div class="tituloRelatorio"><u><b>FICHA DE PONTO DIÁRIO</b></u></div>
 
 <body>
 <div class="cabecalho">
-<img src="./../../public/img/brasaoPM.png" >
+<img src="http://localhost/gestao/public/img/brasaoPM.png">
     <div class="quadroInfoFuncionario">
         <table>
             <tr>
-                <td><b>SERVIDOR:</b> ' . strtoupper($nome) . ' <b>MATRÍCULA:</b> ' . strtoupper($matricula) . ' <b>FUNCÃO:</b>' . strtoupper($funcao) . '</td>
+                <td><b>SERVIDOR:</b> ' . mb_strtoupper($nome, 'UTF-8') . ' <b>MATRÍCULA:</b> ' . mb_strtoupper($matricula, 'UTF-8') . ' <b>FUNCÃO:</b>' . mb_strtoupper($funcao, 'UTF-8') . '</td>
             </tr>
             <tr>
-                <td><b>Horário de Trabalho: ' . $horario . '</b></td>
+                <td><b>Horário de Trabalho: ' . mb_convert_encoding($horario, 'UTF-8', 'auto') . '</b></td>
             </tr>
             <tr>
-                <td>Mês de <b>' . $mesRelatorio . '</b> de ' . $anoRelatorio . '</td>
+                <td>Mês de <b>' . $nomesMeses[ltrim($mesRelatorio, '0')]  . '</b> de ' . $anoRelatorio . '</td>
             </tr>
         </table>
     </div>
@@ -169,10 +182,12 @@ foreach ($matriculasSelecionadas as $matriculas) {
                     $diaDaSemana = "DOMINGO";
                     $hrEntradaSaida = "-------";
                     $hrAlmoco = "-------";
+                    goto montadia;
                 } else if ($diaDaSemana == 6) {
                     $diaDaSemana = "SÁBADO";
                     $hrEntradaSaida = "-------";
                     $hrAlmoco = "-------";
+                    goto montadia;
                 } else if (($diaDaSemana == 1 && $seg == 1) || ($diaDaSemana == 2 && $ter == 1) || ($diaDaSemana == 3 && $qua == 1) || ($diaDaSemana == 4 && $qui == 1) || ($diaDaSemana == 5 && $sex == 1)) {
                     $diaDaSemana = " ";
                     $hrEntradaSaida = " ";
@@ -196,8 +211,9 @@ foreach ($matriculasSelecionadas as $matriculas) {
                         }
                     }
                 }
-                // }
 
+                // }
+                montadia:
                 $html .= ' <tr>
     <td>' . $dia . '</td>
      <td>' . $hrEntradaSaida . '</td>
@@ -229,13 +245,10 @@ foreach ($matriculasSelecionadas as $matriculas) {
         $html .= '</html>';
     }
 }
-$options = new Options();
-$options->set('isHtml5ParserEnabled', true);
-$options->set('isPhpEnabled', true);
-$dompdf = new Dompdf($options);
+$dompdf = new Dompdf(['enable_remote' => true]);
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'landscape');
-//$dompdf->setOptions(['margin-top' => 20, 'margin-right' => 10, 'margin-bottom' => 20, 'margin-left' => 10]);
+
 $dompdf->render();
 
 $dompdf->stream();
