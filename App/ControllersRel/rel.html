@@ -1,0 +1,122 @@
+<html>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    
+        html {
+            margin-top: 30px;
+            margin-left: 25px;
+            margin-right: 25px;
+        }
+    
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 10;
+        }
+    
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+    
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            max-height: 100px;
+            overflow: auto;
+            text-align: center;
+        }
+    
+        .tituloRelatorio {
+            text-align: center;
+            font-size: 15px;
+        }
+    
+        .cabecalho {
+            margin-top: 20px;
+        }
+    
+        .cabecalho img {
+            max-width: 100px;
+            height: auto;
+            float: left; /* Alinha a imagem à esquerda */
+            margin-left: 28px; 
+        }
+    
+        .quadroInfoFuncionario {
+            width: 84,5%;
+            margin-left: 111px;
+        }
+    
+        tr {
+            vertical-align: middle;
+            height: 20px;
+        }
+    
+        .quadroPontoFuncionario {
+            margin-top: 5px;
+        }
+    
+        .pagebreak {
+            page-break-after: always;
+        }
+    </style>
+
+<DIV class="tituloRelatorio"><u><b>FICHA DE PONTO DIÁRIO</b></u></DIV>
+
+<body>
+    <div class="cabecalho">
+    <img src="/public/img/brasaoPM.png" style="display: fle;" >
+    <div class="quadroInfoFuncionario">
+        <table>
+            <tr height="30">
+                <td><b>SERVIDOR:</b> ' . strtoupper($nome) . ' <b>MATRÍCULA:</b> ' . strtoupper($matricula) . ' <b>FUNCÃO:</b>' . strtoupper($funcao) . '</td>
+            </tr>
+            <tr height="30">
+                <td><b>Horário de Trabalho: ' . $horario . '</b></td>
+            </tr>
+            <tr height="30">
+                <td>Mês de <b>' . $mesRelatorio . '</b> de ' . $anoRelatorio . '</td>
+            </tr>
+        </table>
+    </div>
+</div>
+    <div class="quadroPontoFuncionario">
+        <table>
+            <thead style="font-size: 10px;">
+                <tr>
+                    <td style="width: 30px;">DIA</td>
+                    <td style="width: 80px;">HORA de Entrada</td>
+                    <td>ASSINATURA</td>
+                    <td style="width: 80px;">HORA saída do almoço</td>
+                    <td>ASSINATURA</td>
+                    <td style="width: 80px;">HORA retorno do almoço</td>
+                    <td>ASSINATURA</td>
+                    <td style="width: 80px;">HORA da Saída</td>
+                    <td>ASSINATURA</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                     <td>--------</td>
+                     <td>SABADO</td>
+                     <td>--------</td>
+                     <td>SABADO</td>
+                     <td>--------</td>
+                     <td>SABADO</td>
+                     <td>--------</td>
+                     <td>SABADO</td>
+                     </tr>
+
+                    </tr>
+                    <tr>
+                        <td colspan="9" style="text-align: left">Obs:</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>

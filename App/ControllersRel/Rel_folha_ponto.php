@@ -50,9 +50,9 @@ foreach ($matriculasSelecionadas as $matriculas) {
     }
 
     html {
-        margin-top: 30px;
-        margin-left: 30px;
-        margin-right: 30px;
+        margin-top: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
     }
 
     body {
@@ -69,13 +69,13 @@ foreach ($matriculasSelecionadas as $matriculas) {
     th,
     td {
         border: 1px solid black;
-        max-height: 100px;
         overflow: auto;
         text-align: center;
     }
 
     .tituloRelatorio {
         text-align: center;
+        font-size: 15px;
     }
 
     .cabecalho {
@@ -86,12 +86,16 @@ foreach ($matriculasSelecionadas as $matriculas) {
         max-width: 100px;
         height: auto;
         float: left; /* Alinha a imagem à esquerda */
-        margin-left: 50px; 
+        margin-left: 28px; 
+    }
+
+    .tableInfoFuncionario td{
+        height: 20px
     }
 
     .quadroInfoFuncionario {
         width: 84,5%;
-        margin-left: 161px;
+        margin-left: 111px;
     }
 
     tr {
@@ -113,9 +117,9 @@ foreach ($matriculasSelecionadas as $matriculas) {
 <div class="cabecalho">
 <img src="http://localhost/gestao/public/img/brasaoPM.png">
     <div class="quadroInfoFuncionario">
-        <table>
+        <table class="tableInfoFuncionario">
             <tr>
-                <td><b>SERVIDOR:</b> ' . mb_strtoupper($nome, 'UTF-8') . ' <b>MATRÍCULA:</b> ' . mb_strtoupper($matricula, 'UTF-8') . ' <b>FUNCÃO:</b>' . mb_strtoupper($funcao, 'UTF-8') . '</td>
+                <td><b>SERVIDOR:</b> ' . mb_strtoupper($nome, 'UTF-8'). '&nbsp;&nbsp;&nbsp; <b>MATRÍCULA:</b> ' . mb_strtoupper($matricula, 'UTF-8') . '&nbsp;&nbsp;&nbsp; <b>FUNCÃO:</b>' . mb_strtoupper($funcao, 'UTF-8') . '</td>
             </tr>
             <tr>
                 <td><b>Horário de Trabalho: ' . mb_convert_encoding($horario, 'UTF-8', 'auto') . '</b></td>
@@ -128,19 +132,19 @@ foreach ($matriculasSelecionadas as $matriculas) {
     </div>
     <div class="quadroPontoFuncionario">
         <table>
-            <thead>
-                <tr>
-                    <td>DIA</td>
-                    <td>HORA de Entrada</td>
-                    <td>ASSINATURA</td>
-                    <td>HORA saída do almoço</td>
-                    <td>ASSINATURA</td>
-                    <td>HORA retorno do almoço</td>
-                    <td>ASSINATURA</td>
-                    <td>HORA da Saída</td>
-                    <td>ASSINATURA</td>
-                </tr>
-            </thead>
+        <thead style="font-size: 10px;">
+        <tr>
+            <td style="width: 30px;">DIA</td>
+            <td style="width: 80px;">HORA de Entrada</td>
+            <td>ASSINATURA</td>
+            <td style="width: 80px;">HORA saída do almoço</td>
+            <td>ASSINATURA</td>
+            <td style="width: 80px;">HORA retorno do almoço</td>
+            <td>ASSINATURA</td>
+            <td style="width: 80px;">HORA da Saída</td>
+            <td>ASSINATURA</td>
+        </tr>
+    </thead>
             <tbody>';
 
 
@@ -215,7 +219,7 @@ foreach ($matriculasSelecionadas as $matriculas) {
                 // }
                 montadia:
                 $html .= ' <tr>
-    <td>' . $dia . '</td>
+    <td style="height: 20px">' . $dia . '</td>
      <td>' . $hrEntradaSaida . '</td>
      <td>' . $diaDaSemana . '</td>
      <td>' . $hrAlmoco . '</td>
