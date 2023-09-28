@@ -24,9 +24,13 @@ class Login
                 $temLogin = new \App\Models\Login($this->login, $this->senha);
                 $logou = $temLogin->verificaLoginBanco();
                 if ($logou) {
-                    //var_dump($logou);
-                    //return $logou;
-                    echo 'login';
+
+                    $Sessao = new Sessions();
+                    $Sessao->setInfoUSuario([$logou[0]['NM_PESSOA']]);
+                    $Sessao->gerarSessao();
+                    $result = $Sessao->getResult();
+                    $result = $result == 1 ? 'login' : 'invalido';
+                    echo $result;
                 } else {
                     echo 'invalido';
                 }
@@ -39,17 +43,17 @@ class Login
         }
     }
 
-    public function listUsuarios(){
-        try{
-        $pegalistaDeUsuarios = new \App\Models\Login;
-        $listaDeUsuarios = $pegalistaDeUsuarios->listUsuario();
-        return $listaDeUsuarios;
-        }
-        catch(Exception $th){
+    public function listUsuarios()
+    {
+        try {
+            $pegalistaDeUsuarios = new \App\Models\Login;
+            $listaDeUsuarios = $pegalistaDeUsuarios->listUsuario();
+            return $listaDeUsuarios;
+        } catch (Exception $th) {
             $this->Message = "Erro ao executar operação. ";
             return $this->Message;
+        }
     }
-}
 
 
 

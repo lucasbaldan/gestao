@@ -43,6 +43,7 @@ $(document).ready(function () {
           $('.ui.form input[name="user"], .ui.form input[name="password"]').prop('disabled', true);
         },
         success: function (response) {
+          alert(response);
           // Manipula a resposta recebida
           //alert(response); // Exemplo: exibe a resposta em um alerta
 

@@ -31,3 +31,9 @@ include("header_semantic_main.php");
         </div>
       </div>
     </div>
+
+    <script>
+  $(document).ready(function() { 
+    $('#dimmerCarregando').removeClass('active');
+  });
+</script>

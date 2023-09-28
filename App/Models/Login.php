@@ -19,9 +19,10 @@ class Login
     {
         try {
             $read = new \App\Conn\Read();
-            $read->FullRead("SELECT *
+            $read->FullRead("SELECT P.NM_PESSOA
         FROM USUARIOS U
-        WHERE U.USUARIO = :L AND U.SENHA = :S", "L=$this->login_usuario&S=$this->senha_usuario");
+        INNER JOIN PESSOAS P ON (P.CD_PESSOA = U.CD_PESSOA)
+        WHERE U.USUARIO = :L AND U.SENHA = :S LIMIT 1", "L=$this->login_usuario&S=$this->senha_usuario");
             return $read->getResult();
         } catch (Exception $th) {
             return "Erro ao fazer consulta no banco de dados!";
