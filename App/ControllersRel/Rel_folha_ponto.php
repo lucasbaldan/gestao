@@ -65,7 +65,7 @@ foreach ($matriculasSelecionadas as $matriculas) {
         border-collapse: collapse;
     }
 
-    table,
+    table
     th,
     td {
         border: 1px solid black;
@@ -135,17 +135,17 @@ foreach ($matriculasSelecionadas as $matriculas) {
         <thead style="font-size: 10px;">
         <tr>
             <td style="width: 30px;">DIA</td>
-            <td style="width: 80px;">HORA de Entrada</td>
+            <td style="width: 58px;">HORA de Entrada</td>
             <td>ASSINATURA</td>
-            <td style="width: 80px;">HORA saída do almoço</td>
+            <td style="width: 58px;">HORA saída do almoço</td>
             <td>ASSINATURA</td>
-            <td style="width: 80px;">HORA retorno do almoço</td>
+            <td style="width: 58px;">HORA retorno do almoço</td>
             <td>ASSINATURA</td>
-            <td style="width: 80px;">HORA da Saída</td>
+            <td style="width: 58px;">HORA da Saída</td>
             <td>ASSINATURA</td>
         </tr>
     </thead>
-            <tbody>';
+            <tbody style="font-size: 9px;">';
 
 
     $diasMes = cal_days_in_month(CAL_GREGORIAN, $mesRelatorio, $anoRelatorio);
@@ -219,7 +219,7 @@ foreach ($matriculasSelecionadas as $matriculas) {
                 // }
                 montadia:
                 $html .= ' <tr>
-    <td style="height: 20px">' . $dia . '</td>
+    <td style="height: 18px">' . $dia . '</td>
      <td>' . $hrEntradaSaida . '</td>
      <td>' . $diaDaSemana . '</td>
      <td>' . $hrAlmoco . '</td>
