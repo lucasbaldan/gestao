@@ -1,5 +1,9 @@
 <?php
 include("header_semantic_main.php");
+$Sessao = new \App\Controllers\Sessions();
+ if ($Sessao->verificaSessao() != false) {
+   $Sessao->finalizarSessao();
+}
 ?>
 
 <style type="text/css">
@@ -64,7 +68,7 @@ include("header_semantic_main.php");
             <p><b>Usuário e/ou senha incorretos!</b></p>
           </div>
           <div class="actions">
-          <p>Clique fora da mensagem para tentar novamente!</p>
+            <p>Clique fora da mensagem para tentar novamente!</p>
           </div>
         </div>
 

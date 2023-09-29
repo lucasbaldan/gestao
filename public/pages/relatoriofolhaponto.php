@@ -4,6 +4,13 @@ include_once("./header_semantic_main.php");
 include_once("./header.php");
 include_once("./footer_menu.php");
 
+$Sessao =  new \App\Controllers\Sessions();
+if ($Sessao->verificaSessao() == false){
+  echo  "<h1>VC NÃO ESTÁ LOGADO IDIOTA</h1>";
+  echo var_dump($Sessao->verificaSessao());
+}
+
+
 ?>
 <style>
   .botaoGerar {

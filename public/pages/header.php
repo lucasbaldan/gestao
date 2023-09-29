@@ -24,7 +24,7 @@
         <div class="item no-divider"><?=$nomePagina?></div>
       </div>
       <div class="right menu">
-        <div class="item right"><b>Usuário: LUCAS FAÉ BALDAN </b></div>
+        <div class="item right"><b>Usuário: <?= 'oi'?> </b></div>
         <div class="item ui icon button"><a href="login.php"><i class="sign out alternate icon"></i></a></div>
       </div>
     </div>
