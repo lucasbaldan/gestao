@@ -7,6 +7,13 @@ use Exception;
 require __DIR__ . '/../../vendor/autoload.php';
 
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao']) && isset($_POST['way'])) {
+    $method = $_POST['funcao'];
+    $Sessao = new Sessions;
+    $Sessao->$method($_POST);
+} else {
+}
+
 class Sessions
 {
     private $infoUsuario;
@@ -27,17 +34,16 @@ class Sessions
     public function verificaSessao()
     {
         session_start();
-        if(!isset($_SESSION["logado"])){
-            return 'NENHUMA SESSÃO ENCONTRADA';
+        if (isset($_SESSION['logado'])) {
+            if ($_SESSION['logado'] == true) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        } else {
+            return false;
         }
-                return 'SESSÃO ATIVA';
-    }
-
-
-
-    public function finalizarSessao()
-    {
-        session_destroy();
     }
 
     public function getResult()
@@ -49,7 +55,7 @@ class Sessions
     {
         try {
 
-            if (session_status() === PHP_SESSION_NONE) {
+            if (!isset($_SESSION['logado'])) {
                 ini_set('session.cookie_lifetime', 1800);
                 session_start();
 
@@ -62,5 +68,12 @@ class Sessions
         } catch (Exception $e) {
             return 'Erro ao iniciar a sessão: ' . $e->getMessage();
         }
+    }
+
+    public function deslogar()
+    {
+        session_start();
+        $_SESSION['logado'] = false;
+        echo 'deslogado';
     }
 }

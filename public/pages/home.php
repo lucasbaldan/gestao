@@ -2,6 +2,12 @@
 $nomePagina = "Página Inicial";
 include("./header_semantic_main.php");
 include("./header.php");
+$Sessao = new \App\Controllers\Sessions();
+if ($Sessao->verificaSessao() != true) {
+   $Sessao->deslogar();
+   header("Location: /gestao/public/pages/generalError.php");
+   exit;
+}
 ?>
 
 <body>

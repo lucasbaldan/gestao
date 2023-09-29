@@ -25,8 +25,34 @@
       </div>
       <div class="right menu">
         <div class="item right"><b>Usuário: <?= 'oi'?> </b></div>
-        <div class="item ui icon button"><a href="login.php"><i class="sign out alternate icon"></i></a></div>
+        <div class="item ui icon button" id="deslogarButton"><i class="sign out alternate icon"></i></a></div>
       </div>
     </div>
   </div>
 </header>
+
+<script>
+  document.getElementById("deslogarButton").addEventListener("click", function() {
+    $.ajax({
+        type: "POST",
+        url: "./../../App/Controllers/Sessions.php",
+        data: {
+          funcao: "deslogar",
+          way: "AJAX",
+        },
+        success: function(response) {
+          alert(response);
+          if(response === 'deslogado'){
+            window.location.href = "login.php";
+          }
+          else{
+            window.location.href = "generalError.php";
+          }
+
+        },
+        error: function() {
+          alert("Erro ao Deslogar");
+        },
+      });
+  });
+</script>

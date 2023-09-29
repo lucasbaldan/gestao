@@ -1,10 +1,9 @@
 <?php
 include("header_semantic_main.php");
 $Sessao = new \App\Controllers\Sessions();
-echo var_dump($Sessao->verificaSessao());
-//  if ($Sessao->verificaSessao() != false) {
-//    $Sessao->finalizarSessao();
-//}
+if ($Sessao->verificaSessao()) {
+   $Sessao->deslogar();
+}
 ?>
 
 <style type="text/css">
