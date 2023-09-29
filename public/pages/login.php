@@ -1,9 +1,10 @@
 <?php
 include("header_semantic_main.php");
 $Sessao = new \App\Controllers\Sessions();
- if ($Sessao->verificaSessao() != false) {
-   $Sessao->finalizarSessao();
-}
+echo var_dump($Sessao->verificaSessao());
+//  if ($Sessao->verificaSessao() != false) {
+//    $Sessao->finalizarSessao();
+//}
 ?>
 
 <style type="text/css">
@@ -28,7 +29,7 @@ $Sessao = new \App\Controllers\Sessions();
   }
 </style>
 
-<script src="./../js/login.js"></script>
+<script src="./../js/login.js"></script> 
 
 
 <body>

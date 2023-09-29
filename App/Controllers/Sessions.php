@@ -25,13 +25,14 @@ class Sessions
     }
 
     public function verificaSessao()
-{
-     // Inicia a sessão
-    if (session_status() == PHP_SESSION_ACTIVE) {
-        return 'oi';
+    {
+        session_start();
+        if(!isset($_SESSION["logado"])){
+            return 'NENHUMA SESSÃO ENCONTRADA';
+        }
+                return 'SESSÃO ATIVA';
     }
-    return false;
-}
+
 
 
     public function finalizarSessao()
@@ -47,10 +48,10 @@ class Sessions
     public function gerarSessao()
     {
         try {
-            ini_set('session.cookie_lifetime', 1800);
-            session_start();
 
-            if (!isset($_SESSION['logado'])) {
+            if (session_status() === PHP_SESSION_NONE) {
+                ini_set('session.cookie_lifetime', 1800);
+                session_start();
 
                 $_SESSION['infoUsuario'] = $this->infoUsuario;
                 $_SESSION['logado'] = true;
