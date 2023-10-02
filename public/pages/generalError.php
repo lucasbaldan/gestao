@@ -23,6 +23,7 @@ include("header_semantic_main.php");
       <div class="content">
         <h2 class="header" style=" font-size: 4em;">ERRO CRÍTICO</h2>
         <p>Contate o administrador do sistema.</p>
+        <h3>Para sua segurança, sua sessão foi encerrada automaticamente</h3>
         <i class="massive exclamation circle icon"></i>
         <div class="ui hidden divider"></div>
         <div class="ui center aligned">

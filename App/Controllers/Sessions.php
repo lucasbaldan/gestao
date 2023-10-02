@@ -56,7 +56,7 @@ class Sessions
         try {
 
             if (!isset($_SESSION['logado'])) {
-                ini_set('session.cookie_lifetime', 1800);
+                ini_set('session.cookie_lifetime', 120);
                 session_start();
 
                 $_SESSION['infoUsuario'] = $this->infoUsuario;
