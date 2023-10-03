@@ -28,12 +28,18 @@ class Sessions
 
     public function getInfoUsuario()
     {
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        $this->infoUsuario = $_SESSION['infoUsuario'];
         return $this->infoUsuario;
     }
 
     public function verificaSessao()
     {
-        session_start();
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
         if (isset($_SESSION['logado'])) {
             if ($_SESSION['logado'] == true) {
                 return true;
@@ -72,7 +78,9 @@ class Sessions
 
     public function deslogar()
     {
-        session_start();
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
         $_SESSION['logado'] = false;
         echo 'deslogado';
     }

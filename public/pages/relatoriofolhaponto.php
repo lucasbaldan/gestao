@@ -3,14 +3,6 @@ $nomePagina = "Relatório - Folha de Ponto";
 include_once("./header_semantic_main.php");
 include_once("./header.php");
 include_once("./footer_menu.php");
-
-$Sessao =  new \App\Controllers\Sessions();
-if ($Sessao->verificaSessao() == false){
-  echo  "<h1>VC NÃO ESTÁ LOGADO IDIOTA</h1>";
-  echo var_dump($Sessao->verificaSessao());
-}
-
-
 ?>
 <style>
   .botaoGerar {
@@ -44,11 +36,18 @@ if ($Sessao->verificaSessao() == false){
     <input type="hidden" value="gerarRelatorio" name="metodo">
     <label for="" class="label">Opções</label>
     <select class="ui fluid dropdown" name="opcoesRelatorio" id="opcoesRelatorio">
-      <option value=""> </option>
       <option value="FUNCIONARIO">Por Funcionários</option>
       <option value="SETOR">Por Setor</option>
     </select>
     <br>
+
+    <div id="select-Setor" style="width: 100%;">
+      <label for="" class="label">Setor</label>
+      <select class="ui fluid dropdown" name="setor" id="setor">
+      </select>
+      <br>
+    <br>
+    </div>
 
     <div class="ui fluid container">
       <select name="from[]" id="search" class="form-control" size="5" multiple="multiple" style="width: 100%;">
@@ -75,42 +74,62 @@ if ($Sessao->verificaSessao() == false){
 </div>
 
 <script>
-
   $(document).ready(function() {
     $('#opcoesRelatorio').dropdown();
+    //$('#setor').dropdown();
     var dataInput = document.getElementById("mesRelatorio");
+    var opcaoList = document.getElementById("opcoesRelatorio");
+    var opcaoSetor = document.getElementById("select-Setor");
+
+    opcaoSetor.style.display = 'none';
+
+    opcaoList.addEventListener("change", function() {
+      if (opcaoList.value == 'SETOR') {
+        $('#search_to').empty();
+        $('#search').empty();
+        carregarDadosSetores();
+        opcaoSetor.style.display = 'block';
+      } else {
+        opcaoSetor.style.display = 'none';
+      }
+    });
+
     dataInput.addEventListener("change", function() {
-      carregarDadosFuncionarios($('#mesRelatorio').val());
+      if (opcaoList.value == 'FUNCIONARIO') {
+        carregarDadosFuncionarios($('#mesRelatorio').val());
+      }
     });
   });
 
-  async function carregarDadosFuncionarios(mesRelatorio) {
-  $.ajax({
-    type: "POST",
-    url: "./../../App/Controllers/Funcionarios.php",
-    data: {
-      funcao: "listRelFuncionario",
-      mesRelatorio: mesRelatorio
-    },
-    success: function (data) {
-      console.log(data);
-      const dadosFuncionarios = JSON.parse(data);
-      const selectFuncionarios = $("#search");
-      selectFuncionarios.empty();
+  async function carregarDadosFuncionarios(mesRelatorio, cdSetor = null) {
+    $.ajax({
+      type: "POST",
+      url: "./../../App/Controllers/Funcionarios.php",
+      data: {
+        funcao: "listRelFuncionario",
+        mesRelatorio: mesRelatorio,
+        setor: cdSetor
+      },
+      success: function(data) {
+        console.log(data);
+        const dadosFuncionarios = JSON.parse(data);
+        const selectFuncionarios = $("#search");
+        selectFuncionarios.empty();
+        $('#search_to').empty();
 
-      dadosFuncionarios.forEach((funcionario) => {
-        const option = $("<option>")
-          .val(funcionario.MATRICULA)
-          .text(funcionario.OPCAO_FUNCIONARIO);
-        selectFuncionarios.append(option);
-      });
-    },
-    error: function () {
-      alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
-      location.reload();
-    },
-  });
-}
+        dadosFuncionarios.forEach((funcionario) => {
+          const option = $("<option>")
+            .val(funcionario.MATRICULA)
+            .text(funcionario.OPCAO_FUNCIONARIO);
+          selectFuncionarios.append(option);
+        });
+      },
+      error: function() {
+        alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
+        location.reload();
+      },
+    });
+  }
 
 
   jQuery(document).ready(function($) {
@@ -126,4 +145,37 @@ if ($Sessao->verificaSessao() == false){
       },
     });
   });
+
+  async function carregarDadosSetores() {
+    let options = [];
+
+    $.ajax({
+      type: "POST",
+      url: "./../../App/Controllers/Setores.php",
+      data: {
+        funcao: "listSetoresJSON",
+      },
+      success: function(data) {
+        const dadosSetores = JSON.parse(data);
+        options = dadosSetores.map((item) => ({
+          id: item.CD_SETOR.toString(),
+          text: item.NOME,
+        }));
+
+        options.unshift({
+          id: "",
+          text: "",
+        });
+
+        $("#setor").select2({
+          data: options,
+          placeholder: "Selecione tipo Exceção",
+          allowClear: true
+        });
+      },
+      error: function() {
+        alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
+      },
+    });
+  }
 </script>

@@ -1,3 +1,14 @@
+<?php
+$Sessao = new \App\Controllers\Sessions();
+$dados = $Sessao->getInfoUsuario();
+$nomeUsuario = $dados['NOME'];
+if ($Sessao->verificaSessao() != true) {
+   $Sessao->deslogar();
+   header("Location: /gestao/public/pages/generalError.php");
+   exit;
+}
+
+?>
 <style>
   header {
     padding-top: 25px;
@@ -24,7 +35,7 @@
         <div class="item no-divider"><?=$nomePagina?></div>
       </div>
       <div class="right menu">
-        <div class="item right"><b>Usuário: <?= 'oi'?> </b></div>
+        <div class="item right"><b>Usuário: <?=$nomeUsuario?> </b></div>
         <div class="item ui icon button" id="deslogarButton"><i class="sign out alternate icon"></i></a></div>
       </div>
     </div>
