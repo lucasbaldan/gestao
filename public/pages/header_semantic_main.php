@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/../../vendor/autoload.php';
-$conn = \App\Conn\Conn::verificaBanco();
+//$conn = \App\Conn\Conn::verificaBanco();
 ?>
 
 <!DOCTYPE html>

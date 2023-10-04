@@ -26,16 +26,10 @@ include_once("./footer_menu.php");
   <h4 class="ui dividing header">Selecione as opções para gerar o relatório</h4>
   <form action="../../App/ControllersRel/Rel_folha_ponto.php" method="POST">
 
-    <label for="" class="label">Mês</label>
-    <br>
-    <div class="ui input">
-      <input type="month" name="mesRelatorio" id="mesRelatorio">
-    </div>
-    <br>
-    <br>
     <input type="hidden" value="gerarRelatorio" name="metodo">
     <label for="" class="label">Opções</label>
     <select class="ui fluid dropdown" name="opcoesRelatorio" id="opcoesRelatorio">
+      <option value=""></option>
       <option value="FUNCIONARIO">Por Funcionários</option>
       <option value="SETOR">Por Setor</option>
     </select>
@@ -46,8 +40,16 @@ include_once("./footer_menu.php");
       <select class="ui fluid dropdown" name="setor" id="setor">
       </select>
       <br>
-    <br>
+      <br>
     </div>
+
+    <label for="" class="label">Mês</label>
+    <br>
+    <div class="ui input" id="mesRelatorioDIV">
+      <input type="month" name="mesRelatorio" id="mesRelatorio">
+    </div>
+    <br>
+    <br>
 
     <div class="ui fluid container">
       <select name="from[]" id="search" class="form-control" size="5" multiple="multiple" style="width: 100%;">
@@ -81,22 +83,41 @@ include_once("./footer_menu.php");
     var opcaoList = document.getElementById("opcoesRelatorio");
     var opcaoSetor = document.getElementById("select-Setor");
 
+    $('#mesRelatorioDIV').addClass('disabled');
     opcaoSetor.style.display = 'none';
 
     opcaoList.addEventListener("change", function() {
       if (opcaoList.value == 'SETOR') {
+        $('#mesRelatorioDIV').addClass('disabled');
+        $('#mesRelatorio').val('');
         $('#search_to').empty();
         $('#search').empty();
         carregarDadosSetores();
         opcaoSetor.style.display = 'block';
-      } else {
+        opcaoSetor.style.width = 'auto';
+      } else if (opcaoList.value == 'FUNCIONARIO') {
+        $('#mesRelatorioDIV').removeClass('disabled');
+        $('#mesRelatorio').val('');
         opcaoSetor.style.display = 'none';
+        $("#setor").select2('destroy');
+        $('#setor').val(null).trigger('change');
       }
     });
+
+    $('#setor').on("change", function() {
+      $('#mesRelatorio').val('');
+      $('#mesRelatorioDIV').removeClass('disabled');
+      $('#search_to').empty();
+        $('#search').empty();
+    });
+
+
 
     dataInput.addEventListener("change", function() {
       if (opcaoList.value == 'FUNCIONARIO') {
         carregarDadosFuncionarios($('#mesRelatorio').val());
+      } else if (opcaoList.value == 'SETOR' && ($('#setor').val() !== '' || $('#setor').val() !== null)) {
+        carregarDadosFuncionarios($('#mesRelatorio').val(), $('#setor').val());
       }
     });
   });
@@ -108,7 +129,7 @@ include_once("./footer_menu.php");
       data: {
         funcao: "listRelFuncionario",
         mesRelatorio: mesRelatorio,
-        setor: cdSetor
+        cdSetor: cdSetor
       },
       success: function(data) {
         console.log(data);
@@ -169,7 +190,7 @@ include_once("./footer_menu.php");
 
         $("#setor").select2({
           data: options,
-          placeholder: "Selecione tipo Exceção",
+          placeholder: "Selecione um Setor",
           allowClear: true
         });
       },

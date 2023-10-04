@@ -6,6 +6,8 @@
 
 <?php
 include("header_semantic_main.php");
+$Sessao = new App\Controllers\Sessions();
+$Sessao->deslogar();
 ?>
 <style type="text/css">
   h2 {

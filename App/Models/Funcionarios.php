@@ -80,15 +80,26 @@ class Funcionarios
         }
     }
 
-    public function listarTelaRelatorio($cdFuncionario = null, $dataSelect)
+    public function listarTelaRelatorio($cdFuncionario = null, $dataSelect, $cdSetor = null)
     {
         try {
+            $query = "SELECT DISTINCT V.MATRICULA, CONCAT(F.NM_FUNCIONARIO, ' - ', V.MATRICULA) AS OPCAO_FUNCIONARIO
+            FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS V
+            INNER JOIN FUNCIONARIOS F ON (V.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
+            INNER JOIN SETORES S ON (F.CD_SETOR = S.CD_SETOR)
+            AND DATE_FORMAT(DATA_INICIAL, '%Y-%m') <= :MREL
+            AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)";
+
+            $params = "MREL=$dataSelect";
+
+            if (!empty($cdSetor)) {
+                $query .= " AND S.CD_SETOR = :S";
+                $params .= "&S=$cdSetor";
+            }
+
+
             $read = new \App\Conn\Read();
-                $read->FullRead("SELECT DISTINCT V.MATRICULA, CONCAT(F.NM_FUNCIONARIO, ' - ', V.MATRICULA) AS OPCAO_FUNCIONARIO
-        FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS V
-        INNER JOIN FUNCIONARIOS F ON (V.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
-        AND DATE_FORMAT(DATA_INICIAL, '%Y-%m') <= :MREL
-        AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)", "MREL=$dataSelect");
+            $read->FullRead($query, $params);
             return $read->getResult();
         } catch (Exception $th) {
             header("Location: /gestao/public/pages/generalError.php");

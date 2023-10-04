@@ -52,7 +52,6 @@ if ($Sessao->verificaSessao() != true) {
           way: "AJAX",
         },
         success: function(response) {
-          alert(response);
           if(response === 'deslogado'){
             window.location.href = "login.php";
           }

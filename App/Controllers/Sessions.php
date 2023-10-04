@@ -26,6 +26,10 @@ class Sessions
         ];
     }
 
+    public function getResult()
+    {
+        return $this->Result;
+    }
     public function getInfoUsuario()
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -43,8 +47,7 @@ class Sessions
         if (isset($_SESSION['logado'])) {
             if ($_SESSION['logado'] == true) {
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
         } else {
@@ -52,10 +55,6 @@ class Sessions
         }
     }
 
-    public function getResult()
-    {
-        return $this->Result;
-    }
 
     public function gerarSessao()
     {

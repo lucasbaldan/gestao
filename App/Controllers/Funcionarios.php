@@ -37,9 +37,10 @@ class Funcionarios
         try {
             $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
             $dataSelect = isset($dados['mesRelatorio']) ? $dados['mesRelatorio'] : '';
+            $setor = isset($dados['cdSetor']) ? $dados['cdSetor'] : '';
 
             $pegalista = new \App\Models\Funcionarios;
-            $lista = $pegalista->listarTelaRelatorio($this->codigo, $dataSelect);
+            $lista = $pegalista->listarTelaRelatorio($this->codigo, $dataSelect, $setor);
             echo json_encode($lista);
         } catch (Exception $th) {
             return json_encode('erro');
