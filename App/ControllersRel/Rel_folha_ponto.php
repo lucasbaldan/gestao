@@ -255,4 +255,4 @@ $dompdf->setPaper('A4', 'landscape');
 
 $dompdf->render();
 
-$dompdf->stream();
+$dompdf->stream("Folha Ponto ".$_POST['mesRelatorio'].".pdf");
