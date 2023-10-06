@@ -3,13 +3,27 @@ $nomePagina = "Tipos de Exceções - Listagem";
 include("./header_semantic_main.php");
 include("./header.php");
 include("./footer_menu.php");
-$pegaTipoExcecao = new \App\Controllers\TiposExcecoes();
-$dados = $pegaTipoExcecao->list();
 ?>
 
 <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" />
 
 <script src="./../js/listtiposexcecoes.js"></script>
+
+<style>
+.dataTables_wrapper .dataTables_processing {
+position: absolute;
+top: 110%;
+left: 55%;
+width: 30%;
+height: 40px;
+margin-left: -20%;
+margin-top: -25px;
+padding-top: 20px;
+text-align: center;
+font-size: 1.5em;
+background: border-box;
+}
+</style>
 
 <body>
     </br>
@@ -24,24 +38,14 @@ $dados = $pegaTipoExcecao->list();
             </div>
         </div>
 
-        <table id="myTable" class="ui red celled table">
-            <thead>
+        <table id="myTable" class="ui red celled table" style="height: 100%;">
+        <thead>
                 <tr>
                     <th>Código</th>
                     <th>Nome</th>
                     <th>Ações</th>
                 </tr>
             </thead>
-            <tbody>
-                <?php foreach ($dados as $dadoTipoExcecao) { ?>
-                    <tr>
-                        <td><?= $dadoTipoExcecao['CD_TIPO_EXCECAO'] ?></td>
-                        <td><?= $dadoTipoExcecao['NM_TIPO_EXCECAO'] ?></td>
-                        <td><?= "<button class='ui mini icon button blue' onclick='editarRegistro(" . $dadoTipoExcecao['CD_TIPO_EXCECAO'] . ")'><i class='pencil alternate icon'></i></button>" ?>
-                            <?= "<button class='ui mini icon button red' onclick='excluirRegistro(" . $dadoTipoExcecao['CD_TIPO_EXCECAO'] . ")'><i class='trash alternate icon'></i></button>" ?></td>
-                    </tr>
-                <?php } ?>
-            </tbody>
         </table>
         <div id="hiddenDiv" class="hidden">
             <div class="ui negative message">

@@ -11,17 +11,17 @@ class TiposExcecoes
     private $codigo;
     private string $nome;
 
-    public function list()
-    {
+    // public function list()
+    // {
 
-        try {
-            $pegalista = new \App\Models\TiposExcecoes;
-            $lista = $pegalista->listar();
-            return $lista;
-        } catch (Exception $th) {
-            return false;
-        }
-    }
+    //     try {
+    //         $pegalista = new \App\Models\TiposExcecoes;
+    //         $lista = $pegalista->listar();
+    //         return $lista;
+    //     } catch (Exception $th) {
+    //         return false;
+    //     }
+    // }
 
     public function listJSON($dados)
     {

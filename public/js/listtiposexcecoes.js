@@ -1,7 +1,29 @@
 $(document).ready(function() { 
   $(".ui.negative.message").hide();
   $(".ui.positive.message").hide();
+
   var table = $("#myTable").DataTable({
+    processing: true,
+    "ajax": {
+        "type": "POST",
+        "url": "./../../App/Controllers/TiposExcecoes.php",
+        "data": {
+            "funcao": "listJSON"
+        },
+        "dataSrc": ""
+    },
+    "columns": [
+        { "data": "CD_TIPO_EXCECAO" },
+        { "data": "NM_TIPO_EXCECAO" },
+        {
+            "render": function(data, type, row) {
+                var editarBtn = "<button class='ui mini icon button blue' onclick='editarRegistro(" +row.CD_TIPO_EXCECAO+ ")'><i class='pencil alternate icon'></i></button>";
+                var excluirBtn = "<button class='ui mini icon button red' onclick='excluirRegistro(" +row.CD_TIPO_EXCECAO+ ")'><i class='trash alternate icon'></i></button>";
+                return editarBtn + excluirBtn;
+            }
+        }
+    ],
+
       language: {
           url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
       },
@@ -12,14 +34,6 @@ $(document).ready(function() {
               targets: "_all",
               className: "dt-center",
           },
-          // {
-          //     targets: 0, // Índice da coluna (neste exemplo, a primeira coluna)
-          //     width: '10px' // Defina o tamanho desejado em pixels
-          // },
-          // {
-          //     targets: 2, // Índice da coluna (neste exemplo, a terceira coluna)
-          //     width: '90px' // Defina o tamanho desejado em pixels
-          // },
       ],
       initComplete: function() {
           this.api()
