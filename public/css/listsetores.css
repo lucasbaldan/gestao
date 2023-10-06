@@ -1,3 +1,19 @@
+.dataTables_wrapper .dataTables_processing {
+    position: fixed;
+    top: 50%;
+    left: 55%;
+    width: 30%;
+    height: 40px;
+    margin-left: -20%;
+    margin-top: -25px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    /* border-radius: 10px;
+    border: 1px solid #000;
+    background-color: rgba(16, 15, 15, 1); */
+}
+
 .dataTables_filter {
     display: none;
 }
@@ -61,3 +77,10 @@
   th {
     white-space: nowrap;
   }
+
+  .header.editModal{
+    background-color: black;
+    color: white;
+  }
+
+  

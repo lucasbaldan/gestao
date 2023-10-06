@@ -9,22 +9,6 @@ include("./footer_menu.php");
 
 <script src="./../js/listtiposexcecoes.js"></script>
 
-<style>
-.dataTables_wrapper .dataTables_processing {
-position: absolute;
-top: 110%;
-left: 55%;
-width: 30%;
-height: 40px;
-margin-left: -20%;
-margin-top: -25px;
-padding-top: 20px;
-text-align: center;
-font-size: 1.5em;
-background: border-box;
-}
-</style>
-
 <body>
     </br>
     <div class="ui container">
@@ -39,7 +23,7 @@ background: border-box;
         </div>
 
         <table id="myTable" class="ui red celled table" style="height: 100%;">
-        <thead>
+            <thead>
                 <tr>
                     <th>Código</th>
                     <th>Nome</th>
@@ -61,8 +45,8 @@ background: border-box;
 
 <div class="ui modal" id="CADmodal">
     <i class="close icon"></i>
-    <div class="header">
-        Função - Cadastro
+    <div class="header" style="background-color: black; color:white;">
+        Tipo de Exceções - Cadastro
     </div>
 
     <div class="ui positive message">
@@ -76,19 +60,12 @@ background: border-box;
     <form class="ui form" method="POST" id="form-CAD-TipoExcecao">
         <input type="hidden" name="funcao" value="controlar">
         <input type="hidden" name="cdTipoExcecao" id="cdTipoExcecao">
-        <div class="field">
-            <div class="ui grid">
-                <div class="three wide column middle aligned">
-                    <label class="ui label large">Nome do Tipo de Excecao</label>
-                </div>
-                <div class="twelve wide column">
-                    <div class="ui input">
-                        <input type="text" name="nameTipoExcecao" id="nameTipoExcecao" placeholder="Nome do Tipo de Excecão...">
-                    </div>
-                </div>
-            </div>
-        </div>
 
+        <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
+            <label>Nome</label>
+            <input type="text" name="nameTipoExcecao" id="nameTipoExcecao" placeholder="Nome do Tipo de Excecão de Trabalho...">
+        </div>
+        <div class="ui divider"></div>
 
         <div class="button-container">
             <div class="ui orange basic button">

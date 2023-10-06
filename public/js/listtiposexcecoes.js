@@ -10,7 +10,10 @@ $(document).ready(function() {
         "data": {
             "funcao": "listJSON"
         },
-        "dataSrc": ""
+        "dataSrc": "",
+        error: function() {
+            window.location.href = "generalError.php";
+        },
     },
     "columns": [
         { "data": "CD_TIPO_EXCECAO" },

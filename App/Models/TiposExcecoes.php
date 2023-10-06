@@ -25,10 +25,10 @@ class TiposExcecoes
         try {
             $read = new \App\Conn\Read();
             if (empty($cdTipoExcecao) && empty($nmTipoExcecao)) {
+                sleep(7);
                 $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T");
             } else {
-
                 if ($nmTipoExcecao == null) {
                     $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T WHERE T.CD_TIPO_EXCECAO =:C", "C=$cdTipoExcecao");
