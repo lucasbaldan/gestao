@@ -7,8 +7,6 @@ include("./footer_menu.php");
 
 <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" />
 
-<script src="./../js/listtiposexcecoes.js"></script>
-
 <body>
     </br>
     <div class="ui container">
@@ -44,7 +42,6 @@ include("./footer_menu.php");
 </body>
 
 <div class="ui modal" id="CADmodal">
-    <i class="close icon"></i>
     <div class="header" style="background-color: black; color:white;">
         Tipo de Exceções - Cadastro
     </div>
@@ -59,7 +56,12 @@ include("./footer_menu.php");
 
     <form class="ui form" method="POST" id="form-CAD-TipoExcecao">
         <input type="hidden" name="funcao" value="controlar">
-        <input type="hidden" name="cdTipoExcecao" id="cdTipoExcecao">
+
+        <div class="disabled field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
+            <label>Código</label>
+            <input type="text" name="cdTipoExcecao" id="cdTipoExcecao" placeholder="Código gerado automaticamente ao inserir" readonly>
+        </div>
+        
 
         <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
             <label>Nome</label>
@@ -72,7 +74,7 @@ include("./footer_menu.php");
                 Fechar
             </div>
             <button type="submit" class="ui positive right labeled icon button">
-                Cadastrar
+                Salvar
                 <i class="checkmark icon"></i>
             </button>
         </div>
@@ -102,3 +104,5 @@ include("./footer_menu.php");
         <div id="botaoconfirmaExclusao" class="ui green button">Concordo <i class="trash icon"></i></div>
     </div>
 </div>
+
+<script src="./../js/listtiposexcecoes.js"></script>

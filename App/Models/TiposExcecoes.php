@@ -25,7 +25,6 @@ class TiposExcecoes
         try {
             $read = new \App\Conn\Read();
             if (empty($cdTipoExcecao) && empty($nmTipoExcecao)) {
-                sleep(7);
                 $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T");
             } else {
@@ -84,6 +83,7 @@ class TiposExcecoes
             $dadosinsert = ["NM_TIPO_EXCECAO" => $this->nome];
             $conn = \App\Conn\Conn::getConn(true);
             $insert = new \App\Conn\Insert($conn);
+            sleep(5);
             $insert->ExeInsert("TIPO_EXCECOES", $dadosinsert);
 
             if (!$insert->getResult()) {

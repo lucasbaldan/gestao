@@ -25,9 +25,8 @@
 
 .button-container {
     display: flex;
-    /* Cria um container flexível */
     justify-content: center;
-    /* Centraliza horizontalmente os itens do container */
+    margin-bottom: 10px;
 }
 
 .ui.negative.message {
