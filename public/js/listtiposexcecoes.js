@@ -67,19 +67,12 @@ $(document).ready(function () {
   });
 
   $("#form-CAD-TipoExcecao").form({
-    fields: {
-      user: {
-        identifier: "nameTipoExcecao",
-        rules: [
-          {
-            type: "empty",
-            prompt: ".",
-          },
-        ],
-      },
-    },
     onSuccess: function (event, fields) {
-      event.preventDefault(); // Impede o envio padrão do formulário
+      if ($('#nameTipoExcecao').val().trim() === '' || $('#nameTipoExcecao').val().trim().length < 3) {
+          $('#preencherNome').show();
+          event.preventDefault();
+          return false;
+      }
 
       var formData = $("#form-CAD-TipoExcecao").serialize();
 
@@ -89,7 +82,9 @@ $(document).ready(function () {
         data: formData,
         beforeSend: function () {
           // Adicione uma animação ou mensagem de "carregando" aqui, se desejar
-          $(".ui.positive.right.labeled.icon.button").addClass("loading disabled");
+          $(".ui.positive.right.labeled.icon.button").addClass(
+            "loading disabled"
+          );
           $(".ui.orange.basic.button").addClass("disabled");
         },
         success: function (response) {
@@ -100,27 +95,30 @@ $(document).ready(function () {
             setTimeout(function () {
               $(".ui.positive.message").transition("fade out");
               $("#CADmodal").modal("hide");
-              $(".ui.positive.right.labeled.icon.button").removeClass("loading disabled");
+              $(".ui.positive.right.labeled.icon.button").removeClass(
+                "loading disabled"
+              );
               $(".ui.orange.basic.button").removeClass("disabled");
             }, 2500);
             $("#myTable").DataTable().ajax.reload();
-          }
-          else if (response === "erro") {
+          } else if (response === "erro") {
             $(".ui.negative.message").transition("fade in");
-            $("#botaoconfirmaExclusao").removeClass("loading disabled");
-            $(".ui.red.basic.cancel.button").removeClass("disabled");
+            $(".ui.positive.right.labeled.icon.button").removeClass("loading disabled");
+            $(".ui.orange.basic.button").removeClass("disabled");
 
             setTimeout(function () {
-                $(".ui.negative.message").transition("fade out");
+              $(".ui.negative.message").transition("fade out");
             }, 1500);
-          }
-          else {
+          } else {
             window.location.href = "generalError.php";
           }
         },
         error: function () {
-            $(".ui.negative.message").transition("fade in");
-          alert("Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!");
+          $(".ui.negative.message").transition("fade in");
+          alert(
+            "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
+          );
+          $(".ui.red.basic.cancel.button").removeClass("disabled");
         },
       });
     },
@@ -129,6 +127,7 @@ $(document).ready(function () {
   $("#CAD").click(function () {
     $("#cdTipoExcecao").val("");
     $("#nameTipoExcecao").val("");
+    $('#preencherNome').hide();
     $("#CADmodal").modal({ closable: false }).modal("show");
   });
 
@@ -142,6 +141,7 @@ $(document).ready(function () {
 function editarRegistro(idTipoExcecao) {
   $("#cdTipoExcecao").val("");
   $("#nameTipoExcecao").val("");
+  $('#preencherNome').hide();
   $.ajax({
     type: "POST",
     url: "./../../App/Controllers/TiposExcecoes.php",
@@ -149,18 +149,22 @@ function editarRegistro(idTipoExcecao) {
       cdTipoExcecao: idTipoExcecao,
       funcao: "listJSON",
     },
+    beforeSend: function () {
+      $(".ui.dimmer").dimmer({closable: false}).dimmer("show");
+    },
     success: function (data) {
       var tipoExcecao = JSON.parse(data)[0];
 
       $("#nameTipoExcecao").val(tipoExcecao.NM_TIPO_EXCECAO);
       $("#cdTipoExcecao").val(tipoExcecao.CD_TIPO_EXCECAO);
+      $(".ui.dimmer").dimmer("hide");
+      $("#CADmodal").modal({ closable: false }).modal("show");
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador
       alert("Erro ao carregar os dados da Funcao.");
     },
   });
-  $("#CADmodal").modal({ closable: false }).modal("show");
 }
 
 function excluirRegistro(idTipoExcecao) {

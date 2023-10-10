@@ -11,18 +11,6 @@ class TiposExcecoes
     private $codigo;
     private string $nome;
 
-    // public function list()
-    // {
-
-    //     try {
-    //         $pegalista = new \App\Models\TiposExcecoes;
-    //         $lista = $pegalista->listar();
-    //         return $lista;
-    //     } catch (Exception $th) {
-    //         return false;
-    //     }
-    // }
-
     public function listJSON($dados)
     {
         try {
@@ -45,7 +33,7 @@ class TiposExcecoes
             $this->nome = isset($dados['nameTipoExcecao']) ? $dados['nameTipoExcecao'] : '';
 
             if (empty($this->codigo) && empty($this->nome)) {
-                throw new Exception("Campos Usuário e Senha não podem ser nulos!");
+                throw new Exception("");
             }
 
             if (empty($this->codigo)) {

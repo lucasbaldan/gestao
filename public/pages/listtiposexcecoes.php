@@ -61,11 +61,14 @@ include("./footer_menu.php");
             <label>Código</label>
             <input type="text" name="cdTipoExcecao" id="cdTipoExcecao" placeholder="Código gerado automaticamente ao inserir" readonly>
         </div>
-        
+
 
         <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
             <label>Nome</label>
             <input type="text" name="nameTipoExcecao" id="nameTipoExcecao" placeholder="Nome do Tipo de Excecão de Trabalho...">
+            <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
+                Preencha o campo NOME com mais de 3 caracteres
+            </div>
         </div>
         <div class="ui divider"></div>
 

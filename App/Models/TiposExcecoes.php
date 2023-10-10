@@ -28,7 +28,7 @@ class TiposExcecoes
                 $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T");
             } else {
-                if ($nmTipoExcecao == null) {
+                if ($nmTipoExcecao == null && isset($cdTipoExcecao)) {
                     $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T WHERE T.CD_TIPO_EXCECAO =:C", "C=$cdTipoExcecao");
                 } else {
@@ -83,7 +83,6 @@ class TiposExcecoes
             $dadosinsert = ["NM_TIPO_EXCECAO" => $this->nome];
             $conn = \App\Conn\Conn::getConn(true);
             $insert = new \App\Conn\Insert($conn);
-            sleep(5);
             $insert->ExeInsert("TIPO_EXCECOES", $dadosinsert);
 
             if (!$insert->getResult()) {
