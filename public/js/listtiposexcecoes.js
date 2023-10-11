@@ -139,6 +139,7 @@ $(document).ready(function () {
 });
 
 function editarRegistro(idTipoExcecao) {
+  $(".ui.dimmer").dimmer({closable: false,  interactive: false,}).dimmer("show");
   $("#cdTipoExcecao").val("");
   $("#nameTipoExcecao").val("");
   $('#preencherNome').hide();
@@ -149,16 +150,13 @@ function editarRegistro(idTipoExcecao) {
       cdTipoExcecao: idTipoExcecao,
       funcao: "listJSON",
     },
-    beforeSend: function () {
-      $(".ui.dimmer").dimmer({closable: false}).dimmer("show");
-    },
     success: function (data) {
       var tipoExcecao = JSON.parse(data)[0];
 
       $("#nameTipoExcecao").val(tipoExcecao.NM_TIPO_EXCECAO);
       $("#cdTipoExcecao").val(tipoExcecao.CD_TIPO_EXCECAO);
       $(".ui.dimmer").dimmer("hide");
-      $("#CADmodal").modal({ closable: false }).modal("show");
+      setTimeout(function(){$("#CADmodal").modal({ closable: false }).modal("show");}, 550);
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador
