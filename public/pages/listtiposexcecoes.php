@@ -46,14 +46,6 @@ include("./footer_menu.php");
         Tipo de Exceções - Cadastro
     </div>
 
-    <div class="ui positive message">
-        <i class="close icon"></i>
-        <div class="header">
-            <i class="check circle icon"></i>
-        </div>
-        <p>Operação efetuada com sucesso! <b>Aguarde, atualizando a tabela de registros</b></p>
-    </div>
-
     <form class="ui form" method="POST" id="form-CAD-TipoExcecao">
         <input type="hidden" name="funcao" value="controlar">
 

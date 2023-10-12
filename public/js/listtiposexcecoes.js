@@ -1,6 +1,5 @@
 $(document).ready(function () {
   $(".ui.negative.message").hide();
-  $(".ui.positive.message").hide();
 
   var table = $("#myTable").DataTable({
     processing: true,
@@ -68,10 +67,13 @@ $(document).ready(function () {
 
   $("#form-CAD-TipoExcecao").form({
     onSuccess: function (event, fields) {
-      if ($('#nameTipoExcecao').val().trim() === '' || $('#nameTipoExcecao').val().trim().length < 3) {
-          $('#preencherNome').show();
-          event.preventDefault();
-          return false;
+    event.preventDefault();
+      if (
+        $("#nameTipoExcecao").val().trim() === "" ||
+        $("#nameTipoExcecao").val().trim().length < 3
+      ) {
+        $("#preencherNome").show();
+        return false;
       }
 
       var formData = $("#form-CAD-TipoExcecao").serialize();
@@ -89,21 +91,21 @@ $(document).ready(function () {
         },
         success: function (response) {
           if (response === "inserido" || response === "alterado") {
-            $(".ui.positive.message").transition("fade in");
 
             // Agendar a remoção da mensagem após 4 segundos
             setTimeout(function () {
-              $(".ui.positive.message").transition("fade out");
               $("#CADmodal").modal("hide");
-              $(".ui.positive.right.labeled.icon.button").removeClass(
-                "loading disabled"
-              );
+              $(".ui.positive.right.labeled.icon.button").removeClass("loading disabled");
               $(".ui.orange.basic.button").removeClass("disabled");
-            }, 2500);
+              toastSucesso();
+            }, 500);
+
             $("#myTable").DataTable().ajax.reload();
           } else if (response === "erro") {
             $(".ui.negative.message").transition("fade in");
-            $(".ui.positive.right.labeled.icon.button").removeClass("loading disabled");
+            $(".ui.positive.right.labeled.icon.button").removeClass(
+              "loading disabled"
+            );
             $(".ui.orange.basic.button").removeClass("disabled");
 
             setTimeout(function () {
@@ -127,7 +129,7 @@ $(document).ready(function () {
   $("#CAD").click(function () {
     $("#cdTipoExcecao").val("");
     $("#nameTipoExcecao").val("");
-    $('#preencherNome').hide();
+    $("#preencherNome").hide();
     $("#CADmodal").modal({ closable: false }).modal("show");
   });
 
@@ -139,10 +141,12 @@ $(document).ready(function () {
 });
 
 function editarRegistro(idTipoExcecao) {
-  $(".ui.dimmer").dimmer({closable: false,  interactive: false,}).dimmer("show");
+  $(".ui.dimmer")
+    .dimmer({ closable: false, interactive: false })
+    .dimmer("show");
   $("#cdTipoExcecao").val("");
   $("#nameTipoExcecao").val("");
-  $('#preencherNome').hide();
+  $("#preencherNome").hide();
   $.ajax({
     type: "POST",
     url: "./../../App/Controllers/TiposExcecoes.php",
@@ -155,8 +159,12 @@ function editarRegistro(idTipoExcecao) {
 
       $("#nameTipoExcecao").val(tipoExcecao.NM_TIPO_EXCECAO);
       $("#cdTipoExcecao").val(tipoExcecao.CD_TIPO_EXCECAO);
-      $(".ui.dimmer").dimmer("hide");
-      setTimeout(function(){$("#CADmodal").modal({ closable: false }).modal("show");}, 550);
+      $(".ui.dimmer")
+        .dimmer({ closable: false, duration: 5, interactive: false })
+        .dimmer("hide");
+      setTimeout(function () {
+        $("#CADmodal").modal({ closable: false }).modal("show");
+      }, 25);
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador
@@ -184,11 +192,9 @@ function excluirRegistro(idTipoExcecao) {
       },
       success: function (response) {
         if (response === "excluido") {
-          $(".ui.positive.message").transition("fade in");
 
           // Agendar a remoção da mensagem após 4 segundos
           setTimeout(function () {
-            $(".ui.positive.message").transition("fade out");
             $("#confirmacaoExclusao").modal("hide");
             $("#botaoconfirmaExclusao").removeClass("loading disabled");
             $(".ui.red.basic.cancel.button").removeClass("disabled");
@@ -216,4 +222,16 @@ function excluirRegistro(idTipoExcecao) {
 
   // Vincula a função de callback ao evento de clique do botão de confirmação
   $("#botaoconfirmaExclusao").on("click", confirmadoExclusao);
+}
+
+function toastSucesso() {
+  $.toast({
+    title: 'SUCESSO!',
+    class: 'success',
+    position: 'bottom right',
+    displayTime: "20000",
+    showProgress: "top",
+    classProgress: "black",
+    message: "Operação efetuada com êxito!",
+  });
 }
