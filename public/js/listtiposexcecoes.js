@@ -102,24 +102,18 @@ $(document).ready(function () {
 
             $("#myTable").DataTable().ajax.reload();
           } else if (response === "erro") {
-            $(".ui.negative.message").transition("fade in");
+            toastErro('Erro ao inserir ou editar Tipo de Exceção de Trabalho');
             $(".ui.positive.right.labeled.icon.button").removeClass(
               "loading disabled"
             );
             $(".ui.orange.basic.button").removeClass("disabled");
-
-            setTimeout(function () {
-              $(".ui.negative.message").transition("fade out");
-            }, 1500);
           } else {
             window.location.href = "generalError.php";
           }
         },
         error: function () {
+          toastErro('Erro ao adicionar ou alterar Tipo de Exceções');
           $(".ui.negative.message").transition("fade in");
-          alert(
-            "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
-          );
           $(".ui.red.basic.cancel.button").removeClass("disabled");
         },
       });
@@ -142,7 +136,7 @@ $(document).ready(function () {
 
 function editarRegistro(idTipoExcecao) {
   $(".ui.dimmer")
-    .dimmer({ closable: false, interactive: false })
+    .dimmer({ closable: false, interactive: false, duration: 5})
     .dimmer("show");
   $("#cdTipoExcecao").val("");
   $("#nameTipoExcecao").val("");
@@ -160,11 +154,11 @@ function editarRegistro(idTipoExcecao) {
       $("#nameTipoExcecao").val(tipoExcecao.NM_TIPO_EXCECAO);
       $("#cdTipoExcecao").val(tipoExcecao.CD_TIPO_EXCECAO);
       $(".ui.dimmer")
-        .dimmer({ closable: false, duration: 5, interactive: false })
-        .dimmer("hide");
+      .dimmer({ closable: false, interactive: false, duration: 5 })
+      .dimmer("hide");
       setTimeout(function () {
         $("#CADmodal").modal({ closable: false }).modal("show");
-      }, 25);
+      }, 60);
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador
@@ -195,27 +189,25 @@ function excluirRegistro(idTipoExcecao) {
 
           // Agendar a remoção da mensagem após 4 segundos
           setTimeout(function () {
+            toastSucesso();
             $("#confirmacaoExclusao").modal("hide");
             $("#botaoconfirmaExclusao").removeClass("loading disabled");
             $(".ui.red.basic.cancel.button").removeClass("disabled");
           }, 2000);
           $("#myTable").DataTable().ajax.reload();
         } else if (response === "erro") {
-          $(".ui.negative.message").transition("fade in");
+          toastErro();
           $("#botaoconfirmaExclusao").removeClass("loading disabled");
           $(".ui.red.basic.cancel.button").removeClass("disabled");
-
-          setTimeout(function () {
-            $(".ui.negative.message").transition("fade out");
-          }, 1500);
         } else {
           window.location.href = "generalError.php";
         }
       },
       error: function (xhr, status, error) {
         console.error(error);
-        $(".ui.negative.message").transition("fade in");
-        alert("Erro ao Executar operação, tente novamente mais tarde");
+        toastErro();
+        $("#botaoconfirmaExclusao").removeClass("loading disabled");
+        $(".ui.red.basic.cancel.button").removeClass("disabled");
       },
     });
   }
@@ -233,5 +225,17 @@ function toastSucesso() {
     showProgress: "top",
     classProgress: "black",
     message: "Operação efetuada com êxito!",
+  });
+}
+
+function toastErro($mesagem) {
+  $.toast({
+    title: 'ERRO!',
+    class: 'error',
+    position: 'bottom right',
+    displayTime: "20000",
+    showProgress: "top",
+    classProgress: "black",
+    message: $mesagem,
   });
 }

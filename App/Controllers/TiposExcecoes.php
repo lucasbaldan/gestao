@@ -32,11 +32,10 @@ class TiposExcecoes
             $this->codigo = isset($dados['cdTipoExcecao']) ? $dados['cdTipoExcecao'] : '';
             $this->nome = isset($dados['nameTipoExcecao']) ? $dados['nameTipoExcecao'] : '';
 
-            if (empty($this->codigo) && empty($this->nome)) {
-                throw new Exception("");
-            }
-
             if (empty($this->codigo)) {
+                if(empty($this->nome)){
+                    throw new Exception("Preencha o campo Nome");
+                }
 
                 $cad = new \App\Models\TiposExcecoes;
                 $cad->setNome($this->nome);
@@ -47,6 +46,9 @@ class TiposExcecoes
                     echo 'erro';
                 }
             } else {
+                if(empty($this->nome)){
+                    throw new Exception("Preencha o campo Nome");
+                }
 
                 $cad = new \App\Models\TiposExcecoes;
                 $cad->setCodigo($this->codigo);
@@ -59,7 +61,7 @@ class TiposExcecoes
                 }
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            echo 'erro';
         }
     }
 

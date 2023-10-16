@@ -1,7 +1,3 @@
-.ui.modal {
-    z-index: 1000; /* Ajuste conforme necessário */
-  }
-
 .ui.red.celled.table thead, .ui.red.celled.table tbody{
     text-align: center;
 }

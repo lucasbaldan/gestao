@@ -79,13 +79,6 @@ include("./footer_menu.php");
 <div id="confirmacaoExclusao" class="ui modal">
     <div class="header" style="background-color: orange; color: white;">Confirmação</div>
     <div class="content">
-        <div class="ui positive message">
-            <i class="close icon"></i>
-            <div class="header">
-                <i class="check circle icon"></i>
-            </div>
-            <p>Operação efetuada com sucesso! <b>Aguarde, atualizando a tabela de registros</b></p>
-        </div>
         <div class="ui icon message">
             <i class="attention icon"></i>
             <div class="content">
