@@ -29,15 +29,6 @@ include("./footer_menu.php");
                 </tr>
             </thead>
         </table>
-        <div id="hiddenDiv" class="hidden">
-            <div class="ui negative message">
-                <i class="close icon"></i>
-                <div class="header">
-                    <i class="exclamation triangle icon" style="color: #fff;"></i>
-                </div>
-                <p><b>Erro ao Efetuar Operação!</b></p>
-            </div>
-        </div>
     </div>
 </body>
 

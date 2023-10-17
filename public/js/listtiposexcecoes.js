@@ -90,7 +90,8 @@ $(document).ready(function () {
           $(".ui.orange.basic.button").addClass("disabled");
         },
         success: function (response) {
-          if (response === "inserido" || response === "alterado") {
+          response = JSON.parse(response);
+          if (response.status === "inserido" || response.status === "alterado") {
 
             // Agendar a remoção da mensagem após 4 segundos
             setTimeout(function () {
@@ -101,15 +102,15 @@ $(document).ready(function () {
             }, 500);
 
             $("#myTable").DataTable().ajax.reload();
-          } else if (response === "erro") {
-            toastErro('Erro ao inserir ou editar Tipo de Exceção de Trabalho');
+          } else if (response.status === "erro") {
+            toastErro(response.response);
             $(".ui.positive.right.labeled.icon.button").removeClass(
               "loading disabled"
             );
             $(".ui.orange.basic.button").removeClass("disabled");
-          } else {
-            window.location.href = "generalError.php";
-          }
+           } else {
+             window.location.href = "generalError.php";
+           }
         },
         error: function () {
           toastErro('Erro ao adicionar ou alterar Tipo de Exceções');
@@ -168,7 +169,7 @@ function editarRegistro(idTipoExcecao) {
 }
 
 function excluirRegistro(idTipoExcecao) {
-  $("#confirmacaoExclusao").modal("show");
+  $("#confirmacaoExclusao").modal({closable: false}).modal("show");
 
   // Função de callback para executar o Ajax após a confirmação
   function confirmadoExclusao() {
@@ -221,21 +222,23 @@ function toastSucesso() {
     title: 'SUCESSO!',
     class: 'success',
     position: 'bottom right',
-    displayTime: "20000",
+    displayTime: "10000",
     showProgress: "top",
     classProgress: "black",
     message: "Operação efetuada com êxito!",
+    showIcon: 'check circle'
   });
 }
 
 function toastErro($mesagem) {
   $.toast({
     title: 'ERRO!',
-    class: 'error',
+    class: 'centered error',
     position: 'bottom right',
-    displayTime: "20000",
+    displayTime: "10000",
     showProgress: "top",
     classProgress: "black",
     message: $mesagem,
+    showIcon: 'skull crossbones',
   });
 }

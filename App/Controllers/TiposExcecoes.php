@@ -39,11 +39,16 @@ class TiposExcecoes
 
                 $cad = new \App\Models\TiposExcecoes;
                 $cad->setNome($this->nome);
+
+                $duplicado = $cad->listar(null, $this->nome);
+                if($duplicado){
+                    throw new Exception("Registro já Cadastrado!");
+                } 
                 $cad->inserir();
                 if ($cad->getResult() == true) {
-                    echo 'inserido';
+                    $status =  'inserido';
                 } else {
-                    echo 'erro';
+                    $status = 'erro';
                 }
             } else {
                 if(empty($this->nome)){
@@ -53,16 +58,25 @@ class TiposExcecoes
                 $cad = new \App\Models\TiposExcecoes;
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
+
+                $duplicado = $cad->listar(null, $this->nome);
+                if($duplicado && $duplicado[0]['CD_TIPO_EXCECAO'] != $this->codigo){
+                    throw new Exception("Registro já Cadastrado!");
+                }
                 $cad->alterar();
                 if ($cad->getResult() == true) {
-                    echo 'alterado';
+                    $status = 'alterado';
                 } else {
-                    echo 'erro';
+                    $status = 'erro';
                 }
             }
+            $resposta = null;
         } catch (Exception $th) {
-            echo 'erro';
+            $status = 'erro';
+            $resposta = $th->getMessage();
         }
+        $response = json_encode(array('status' => $status, 'response' => $resposta));
+        echo $response;
     }
 
     public function excluir($dados)
