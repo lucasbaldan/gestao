@@ -25,6 +25,7 @@ class TiposExcecoes
         try {
             $read = new \App\Conn\Read();
             if (empty($cdTipoExcecao) && empty($nmTipoExcecao)) {
+                sleep(5);
                 $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T");
             } else {

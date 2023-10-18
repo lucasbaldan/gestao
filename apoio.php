@@ -31,4 +31,26 @@
         ]
     });
 });
+
+initComplete: function () {
+      this.api()
+        .columns()
+        .every(function () {
+          var column = this;
+          var title = $(column.header()).text();
+
+          var input = $(
+            "<h4>" +
+              title +
+              '</h4><input class="ui input" type="text" placeholder="' /* + title*/ +
+              '" />'
+          )
+            .appendTo($(column.header()).empty())
+            .on("keyup change", function () {
+              if (column.search() !== this.value) {
+                column.search(this.value).draw();
+              }
+            });
+        });
+    },
             </script>
