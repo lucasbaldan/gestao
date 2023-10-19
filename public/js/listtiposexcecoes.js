@@ -116,18 +116,18 @@ $(document).ready(function () {
             response.status === "inserido" ||
             response.status === "alterado"
           ) {
+            $("#myTable").DataTable().clear().draw();
             // Agendar a remoção da mensagem após 4 segundos
             setTimeout(function () {
-              $("#myTable").DataTable().clear().draw();
               $("#CADmodal").modal("hide");
               $(".ui.positive.right.labeled.icon.button").removeClass(
                 "loading disabled"
               );
               $(".ui.orange.basic.button").removeClass("disabled");
               toastSucesso();
-            }, 500);
+              $("#myTable").DataTable().ajax.reload();
+            }, 1000);
 
-            $("#myTable").DataTable().ajax.reload();
           } else if (response.status === "erro") {
             toastErro(response.response);
             $(".ui.positive.right.labeled.icon.button").removeClass(
@@ -194,10 +194,23 @@ function editarRegistro(idTipoExcecao) {
 }
 
 function excluirRegistro(idTipoExcecao) {
-  $("#confirmacaoExclusao").modal({ closable: false }).modal("show");
+  $("#confirmacaoExclusao").modal({
+    closable: false,
+    onApprove: function() {
+      confirmadoExclusao(idTipoExcecao);
+      return false;
+    },
+  }).modal("show");
+  // $("#confirmacaoExclusao").modal({ closable: false }).modal("show");
+  // // Vincula a função de callback ao evento de clique do botão de confirmação
+  // $("#botaoconfirmaExclusao").on("click", function() {
+  //   // Chamar a função confirmadoExclusao passando o idTipoExcecao
+  //   confirmadoExclusao(idTipoExcecao);
+  // });
 
   // Função de callback para executar o Ajax após a confirmação
   function confirmadoExclusao() {
+    console.log('depois de confirmar' + idTipoExcecao);
     $.ajax({
       type: "POST",
       url: "./../../App/Controllers/TiposExcecoes.php",
@@ -206,22 +219,20 @@ function excluirRegistro(idTipoExcecao) {
         funcao: "excluir",
       },
       beforeSend: function () {
-        alert(idTipoExcecao);
         // Adicione uma animação ou mensagem de "carregando" aqui, se desejar
         $("#botaoconfirmaExclusao").addClass("loading disabled");
         $(".ui.red.basic.cancel.button").addClass("disabled");
-      },
+            },
       success: function (response) {
         if (response === "excluido") {
-          // Agendar a remoção da mensagem após 4 segundos
+          $("#myTable").DataTable().clear().draw();
           setTimeout(function () {
             toastSucesso();
-            $("#myTable").DataTable().clear().draw();
             $("#confirmacaoExclusao").modal("hide");
             $("#botaoconfirmaExclusao").removeClass("loading disabled");
             $(".ui.red.basic.cancel.button").removeClass("disabled");
+            $("#myTable").DataTable().ajax.reload();
           }, 2000);
-          $("#myTable").DataTable().ajax.reload();
         } else if (response === "erro") {
           toastErro();
           $("#botaoconfirmaExclusao").removeClass("loading disabled");
@@ -229,7 +240,7 @@ function excluirRegistro(idTipoExcecao) {
         } else {
           window.location.href = "generalError.php";
         }
-        idTipoExcecao = null;
+
       },
       error: function (xhr, status, error) {
         console.error(error);
@@ -239,9 +250,6 @@ function excluirRegistro(idTipoExcecao) {
       },
     });
   }
-
-  // Vincula a função de callback ao evento de clique do botão de confirmação
-  $("#botaoconfirmaExclusao").on("click", confirmadoExclusao);
 }
 
 function toastSucesso() {

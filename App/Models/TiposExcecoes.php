@@ -25,7 +25,6 @@ class TiposExcecoes
         try {
             $read = new \App\Conn\Read();
             if (empty($cdTipoExcecao) && empty($nmTipoExcecao)) {
-                sleep(5);
                 $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
         FROM TIPO_EXCECOES T");
             } else {
@@ -34,7 +33,7 @@ class TiposExcecoes
         FROM TIPO_EXCECOES T WHERE T.CD_TIPO_EXCECAO =:C", "C=$cdTipoExcecao");
                 } else {
                     $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
-        FROM TIPO_EXCECOES T WHERE T.NM_TIPO_EXCECAO LIKE '%" . $nmTipoExcecao . "%'");
+        FROM TIPO_EXCECOES T WHERE T.NM_TIPO_EXCECAO = '" . $nmTipoExcecao . "'");
                 }
             }
 
