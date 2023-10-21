@@ -6,6 +6,12 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Exception;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
+    $method = $_POST['funcao'];
+    $TipoExcecao = new TiposExcecoes;
+    $TipoExcecao->$method($_POST);
+}
+
 class TiposExcecoes
 {
     private $codigo;
@@ -89,6 +95,14 @@ class TiposExcecoes
                 throw new Exception("Erro");
             }
 
+            //verifica integridade da operação;
+            $Excecao = new \App\Models\Excecoes;
+            $integridade = $Excecao->listar(null, $this->codigo);
+            if($integridade){
+                echo 'integridade';
+                die;
+            }
+
             $cad = new \App\Models\TiposExcecoes;
             $cad->setCodigo($this->codigo);
             $cad->excluir();
@@ -101,10 +115,4 @@ class TiposExcecoes
             echo 'erro operação';
         }
     }
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
-    $method = $_POST['funcao'];
-    $TipoExcecao = new TiposExcecoes;
-    $TipoExcecao->$method($_POST);
 }

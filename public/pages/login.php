@@ -28,7 +28,7 @@ if ($Sessao->verificaSessao()) {
   }
 </style>
 
-<script src="./../js/login.js"></script> 
+<script src="./../js/pages/login.js"></script> 
 
 
 <body>

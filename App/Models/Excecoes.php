@@ -45,16 +45,20 @@ class Excecoes
     }
 
 
-    public function listar($cdExcecao = null)
+    public function listar($cdExcecao = null, $tpExcecao = null)
     {
         try {
             $read = new \App\Conn\Read();
-            if (empty($cdExcecao)) {
+            if (empty($cdExcecao) && empty($tpExcecao)) {
                 $read->FullRead("SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO, T.CD_TIPO_EXCECAO
         FROM EXCECOES E
         INNER JOIN TIPO_EXCECOES T ON (E.CD_TIPO_EXCECAO = T.CD_TIPO_EXCECAO)
         INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)");
-            } else {
+        
+        } else if ($tpExcecao) {
+                $read->FullRead("SELECT E.CD_EXCECAO
+        FROM EXCECOES E WHERE E.CD_TIPO_EXCECAO =:C", "C=$tpExcecao");
+        } else {
                 $read->FullRead("SELECT E.CD_EXCECAO, E.DATA_INICIAL, E.DATA_FINAL
         FROM EXCECOES E WHERE E.CD_EXCECAO =:C", "C=$cdExcecao");
             }
@@ -152,7 +156,7 @@ class Excecoes
         AND DATE_FORMAT(E.DATA_INICIAL, '%Y-%m') <= :MREL
         AND DATE_FORMAT(E.DATA_FINAL, '%Y-%m') >= :MREL 
         OR E.DATA_FINAL IS NULL", "M=$matricula&MREL=$mesRelatorio");
-        
+
             return $read->getResult();
         } catch (Exception $th) {
             return 'erro';

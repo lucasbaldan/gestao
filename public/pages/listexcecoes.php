@@ -9,8 +9,6 @@ $dados = $pegaExcecao->list();
 
 <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" />
 
-<script src="./../js/listexcecoes.js"></script>
-
 <body>
     </br>
     <div class="ui container">
@@ -188,3 +186,5 @@ $dados = $pegaExcecao->list();
         <div id="botaoconfirmaExclusao" class="ui green button">Concordo <i class="trash icon"></i></div>
     </div>
 </div>
+
+<script src="./../js/pages/listexcecoes.js"></script>

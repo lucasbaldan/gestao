@@ -73,4 +73,4 @@ include_once("./footer_menu.php");
   </form>
 </div>
 
-<script src="./../js/relatoriofolhaponto.js"></script>
+<script src="./../js/pages/relatoriofolhaponto.js"></script>

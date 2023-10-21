@@ -9,7 +9,7 @@ $dados = $pegaFuncoes->list();
 
 <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" />
 
-<script src="./../js/listfuncoes.js"></script>
+<script src="./../js/pages/listfuncoes.js"></script>
 
 <body>
     </br>

@@ -233,10 +233,11 @@ function excluirRegistro(idTipoExcecao) {
             $(".ui.red.basic.cancel.button").removeClass("disabled");
             $("#myTable").DataTable().ajax.reload();
           }, 2000);
-        } else if (response === "erro") {
-          toastErro();
+        } else if (response === "erro" || response === "integridade") {
+          response === "integridade" ? toastAtencao("OPERAÇÃO NEGADA! Essa ação compromete a integridade da base de dados") : toastErro();
           $("#botaoconfirmaExclusao").removeClass("loading disabled");
           $(".ui.red.basic.cancel.button").removeClass("disabled");
+          
         } else {
           window.location.href = "generalError.php";
         }
@@ -250,30 +251,4 @@ function excluirRegistro(idTipoExcecao) {
       },
     });
   }
-}
-
-function toastSucesso() {
-  $.toast({
-    title: "SUCESSO!",
-    class: "success",
-    position: "bottom right",
-    displayTime: "10000",
-    showProgress: "top",
-    classProgress: "black",
-    message: "Operação efetuada com êxito!",
-    showIcon: "check circle",
-  });
-}
-
-function toastErro($mesagem) {
-  $.toast({
-    title: "ERRO!",
-    class: "centered error",
-    position: "bottom right",
-    displayTime: "10000",
-    showProgress: "top",
-    classProgress: "black",
-    message: $mesagem,
-    showIcon: "skull crossbones",
-  });
 }

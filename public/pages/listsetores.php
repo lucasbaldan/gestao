@@ -9,7 +9,7 @@ $dados = $sectors->listSetores();
 
 <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen"/>
 
-<script src="./../js/listsetores.js"></script>
+<script src="./../js/pages/listsetores.js"></script>
 
 <body>
     </br>

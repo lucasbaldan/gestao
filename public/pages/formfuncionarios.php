@@ -198,4 +198,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
 
   </div>
 
-  <script src="../js/formfuncionarios.js"></script>
+  <script src="../js/pages/formfuncionarios.js"></script>

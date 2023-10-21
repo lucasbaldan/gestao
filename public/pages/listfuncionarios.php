@@ -9,7 +9,7 @@ $dados = $pegaFuncionarios->list();
 
 <link rel="stylesheet" type="text/css" href="./../css/listsetores.css" media="screen" />
 
-<script src="./../js/listfuncionarios.js"></script>
+<script src="./../js/pages/listfuncionarios.js"></script>
 
 <body>
     </br>

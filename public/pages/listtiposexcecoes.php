@@ -84,4 +84,5 @@ include("./footer_menu.php");
     </div>
 </div>
 
-<script src="./../js/listtiposexcecoes.js"></script>
+<script src="./../js/default/toast.js"></script>
+<script src="./../js/pages/listtiposexcecoes.js"></script>
