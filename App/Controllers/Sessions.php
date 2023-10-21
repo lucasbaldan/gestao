@@ -41,9 +41,9 @@ class Sessions
 
     public function verificaSessao()
     {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
+        //  if (session_status() == PHP_SESSION_NONE) {
+        //      session_start();
+        //  }
         if (isset($_SESSION['logado'])) {
             if ($_SESSION['logado'] == true) {
                 return true;

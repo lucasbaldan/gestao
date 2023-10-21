@@ -56,7 +56,7 @@ include("./footer_menu.php");
         <div class="ui divider"></div>
 
         <div class="button-container">
-            <div class="ui orange basic button">
+            <div id="fechaModal" class="ui inverted red cancel button">
                 Fechar
             </div>
             <button type="submit" class="ui positive right labeled icon button">
@@ -79,7 +79,7 @@ include("./footer_menu.php");
         </div>
     </div>
     <div class="actions">
-        <div class="ui red basic cancel button">Cancelar</div>
+        <div id="fechaModal" class="ui inverted red cancel button">Cancelar</div>
         <div id="botaoconfirmaExclusao" class="ui positive green button">Concordo <i class="trash icon"></i></div>
     </div>
 </div>

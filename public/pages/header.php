@@ -1,12 +1,12 @@
 <?php
-// $Sessao = new \App\Controllers\Sessions();
-// $dados = $Sessao->getInfoUsuario();
-// $nomeUsuario = $dados['NOME'];
-// if ($Sessao->verificaSessao() != true) {
-//    $Sessao->deslogar();
-//    header("Location: /gestao/public/pages/generalError.php");
-//    exit;
-//}
+$Sessao = new \App\Controllers\Sessions();
+$dados = $Sessao->getInfoUsuario();
+$nomeUsuario = $dados['NOME'];
+if ($Sessao->verificaSessao() != true) {
+   $Sessao->deslogar();
+   header("Location: /gestao/public/pages/generalError.php");
+   exit;
+}
 
 ?>
 <style>

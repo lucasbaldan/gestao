@@ -1,7 +1,5 @@
-var table;
-
 $(document).ready(function () {
-  table = $("#myTable").DataTable({
+ var table = $("#myTable").DataTable({
     processing: true,
     ajax: {
       type: "POST",
@@ -153,7 +151,7 @@ $(document).ready(function () {
     $("#CADmodal").modal({ closable: false }).modal("show");
   });
 
-  $(".ui.orange.basic.button").click(function () {
+  $("#fechaModal").click(function () {
     $("#CADmodal").modal("hide");
     $("#cdTipoExcecao").val("");
     $("#nameTipoExcecao").val("");
