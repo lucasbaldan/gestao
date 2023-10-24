@@ -6,22 +6,16 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Exception;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
+    $method = $_POST['funcao'];
+    $Funcao = new Funcoes;
+    $Funcao->$method($_POST);
+}
+
 class Funcoes
 {
     private $codigo;
     private string $nome;
-
-    public function list()
-    {
-
-        try {
-            $pegalista = new \App\Models\Funcoes;
-            $lista = $pegalista->listar();
-            return $lista;
-        } catch (Exception $th) {
-            return false;
-        }
-    }
 
     public function listJSON($dados)
     {
@@ -43,35 +37,42 @@ class Funcoes
             $this->codigo = isset($dados['cdFuncao']) ? $dados['cdFuncao'] : '';
             $this->nome = isset($dados['nameFuncao']) ? $dados['nameFuncao'] : '';
 
-            if (empty($this->codigo) && empty($this->nome)) {
-                throw new Exception("Campos Usuário e Senha não podem ser nulos!");
-            }
-
             if (empty($this->codigo)) {
+                if(empty($this->nome)){
+                    throw new Exception("Preencha o campo Nome");
+                }
 
                 $cad = new \App\Models\Funcoes;
                 $cad->setNome($this->nome);
                 $cad->inserir();
                 if ($cad->getResult() == true) {
-                    echo 'inserido';
+                    $status = 'inserido';
                 } else {
-                    echo 'erro';
+                    $status = 'erro';
                 }
             } else {
+                if(empty($this->nome)){
+                    throw new Exception("Preencha o campo Nome");
+                }
 
                 $cad = new \App\Models\Funcoes;
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
                 $cad->alterar();
                 if ($cad->getResult() == true) {
-                    echo 'alterado';
+                    $status = 'alterado';
                 } else {
-                    echo 'erro';
+                    $status =  'erro';
                 }
             }
+            $response = null;
         } catch (Exception $th) {
-            echo 'erro operação';
+            $status = 'erro';
+            $response = $th->getMessage();
         }
+
+        $response = json_encode(array("status" => $status, "response" => $response));
+        echo $response;
     }
 
     public function excluir($dados)
@@ -83,6 +84,8 @@ class Funcoes
             if (empty($this->codigo)) {
                 throw new Exception("Erro");
             }
+            $vinculosFuncionais = new \App\Models\Funcionarios();
+
 
             $cad = new \App\Models\Funcoes;
             $cad->setCodigo($this->codigo);
@@ -96,10 +99,4 @@ class Funcoes
             echo 'erro operação';
         }
     }
-}
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
-    $method = $_POST['funcao'];
-    $Funcao = new Funcoes;
-    $Funcao->$method($_POST);
 }

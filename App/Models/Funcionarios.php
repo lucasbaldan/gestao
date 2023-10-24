@@ -313,8 +313,6 @@ class Funcionarios
     }
 
 
-
-
     public function getMessage()
     {
         return $this->Message;

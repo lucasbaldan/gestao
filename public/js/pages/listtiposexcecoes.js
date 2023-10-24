@@ -106,7 +106,7 @@ $(document).ready(function () {
           $(".ui.positive.right.labeled.icon.button").addClass(
             "loading disabled"
           );
-          $(".ui.orange.basic.button").addClass("disabled");
+          $("#fechaModalCAD").addClass("disabled");
         },
         success: function (response) {
           response = JSON.parse(response);
@@ -121,7 +121,7 @@ $(document).ready(function () {
               $(".ui.positive.right.labeled.icon.button").removeClass(
                 "loading disabled"
               );
-              $(".ui.orange.basic.button").removeClass("disabled");
+              $("#fechaModalCAD").removeClass("disabled");
               toastSucesso();
               $("#myTable").DataTable().ajax.reload();
             }, 1000);
@@ -131,14 +131,14 @@ $(document).ready(function () {
             $(".ui.positive.right.labeled.icon.button").removeClass(
               "loading disabled"
             );
-            $(".ui.orange.basic.button").removeClass("disabled");
+            $("#fechaModalCAD").removeClass("disabled");
           } else {
             window.location.href = "generalError.php";
           }
         },
         error: function () {
           toastErro("Erro ao adicionar ou alterar Tipo de Exceções");
-          $(".ui.red.basic.cancel.button").removeClass("disabled");
+          $("#fechaModalCAD").removeClass("disabled");
         },
       });
     },
@@ -151,7 +151,7 @@ $(document).ready(function () {
     $("#CADmodal").modal({ closable: false }).modal("show");
   });
 
-  $("#fechaModal").click(function () {
+  $("#fechaModalCAD").click(function () {
     $("#CADmodal").modal("hide");
     $("#cdTipoExcecao").val("");
     $("#nameTipoExcecao").val("");
@@ -208,7 +208,6 @@ function excluirRegistro(idTipoExcecao) {
 
   // Função de callback para executar o Ajax após a confirmação
   function confirmadoExclusao() {
-    console.log('depois de confirmar' + idTipoExcecao);
     $.ajax({
       type: "POST",
       url: "./../../App/Controllers/TiposExcecoes.php",
@@ -219,7 +218,7 @@ function excluirRegistro(idTipoExcecao) {
       beforeSend: function () {
         // Adicione uma animação ou mensagem de "carregando" aqui, se desejar
         $("#botaoconfirmaExclusao").addClass("loading disabled");
-        $(".ui.red.basic.cancel.button").addClass("disabled");
+        $("#fechaModalEXC").addClass("disabled");
             },
       success: function (response) {
         if (response === "excluido") {
@@ -228,13 +227,13 @@ function excluirRegistro(idTipoExcecao) {
             toastSucesso();
             $("#confirmacaoExclusao").modal("hide");
             $("#botaoconfirmaExclusao").removeClass("loading disabled");
-            $(".ui.red.basic.cancel.button").removeClass("disabled");
+            $("fechaModalEXC").removeClass("disabled");
             $("#myTable").DataTable().ajax.reload();
           }, 2000);
         } else if (response === "erro" || response === "integridade") {
           response === "integridade" ? toastAtencao("OPERAÇÃO NEGADA! Essa ação compromete a integridade da base de dados") : toastErro();
           $("#botaoconfirmaExclusao").removeClass("loading disabled");
-          $(".ui.red.basic.cancel.button").removeClass("disabled");
+          $("#fechaModalEXC").removeClass("disabled");
           
         } else {
           window.location.href = "generalError.php";
@@ -245,7 +244,7 @@ function excluirRegistro(idTipoExcecao) {
         console.error(error);
         toastErro();
         $("#botaoconfirmaExclusao").removeClass("loading disabled");
-        $(".ui.red.basic.cancel.button").removeClass("disabled");
+        $("#fechaModalEXC").removeClass("disabled");
       },
     });
   }

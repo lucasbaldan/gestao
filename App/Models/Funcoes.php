@@ -24,7 +24,7 @@ class Funcoes
     {
         try {
             $read = new \App\Conn\Read();
-            if (empty($cdSetor)) {
+            if (empty($cdFuncao)) {
                 $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
         FROM FUNCOES F");
             } else {

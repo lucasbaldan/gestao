@@ -42,7 +42,7 @@ include("./footer_menu.php");
 
         <div class="disabled field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
             <label>Código</label>
-            <input type="text" name="cdFuncao" id="cdFuncao" readonly>
+            <input type="text" name="cdFuncao" id="cdFuncao" placeholder="Código será gerado automaticamente ao inserir..." readonly>
         </div>
 
         <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
@@ -57,10 +57,10 @@ include("./footer_menu.php");
         <div class="ui divider"></div>
 
         <div class="button-container">
-            <div id="fechaModal" class="ui inverted red cancel button">
+            <div id="fechaModalCAD" class="ui inverted red cancel button">
                 Fechar
             </div>
-            <button type="submit" class="ui positive right labeled icon button">
+            <button type="submit" class="ui positive right labeled icon button" id="cadSubmit">
                 Salvar
                 <i class="checkmark icon"></i>
             </button>
@@ -80,9 +80,10 @@ include("./footer_menu.php");
         </div>
     </div>
     <div class="actions">
-        <div id="fechaModal" class="ui inverted red cancel button">Cancelar</div>
+        <div id="fechaModalEXC" class="ui inverted red cancel button">Cancelar</div>
         <div id="botaoconfirmaExclusao" class="ui positive green button">Concordo <i class="trash icon"></i></div>
     </div>
 </div>
 
+<script src="./../js/default/toast.js"></script>
 <script src="./../js/pages/listfuncoes.js"></script>
