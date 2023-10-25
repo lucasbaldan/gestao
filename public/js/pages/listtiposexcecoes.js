@@ -221,7 +221,9 @@ function excluirRegistro(idTipoExcecao) {
         $("#fechaModalEXC").addClass("disabled");
             },
       success: function (response) {
-        if (response === "excluido") {
+        response = JSON.parse(response);
+
+        if (response.status === "excluido") {
           $("#myTable").DataTable().clear().draw();
           setTimeout(function () {
             toastSucesso();
@@ -230,8 +232,9 @@ function excluirRegistro(idTipoExcecao) {
             $("fechaModalEXC").removeClass("disabled");
             $("#myTable").DataTable().ajax.reload();
           }, 2000);
-        } else if (response === "erro" || response === "integridade") {
-          response === "integridade" ? toastAtencao("OPERAÇÃO NEGADA! Essa ação compromete a integridade da base de dados") : toastErro();
+
+        } else if (response.status === "erro") {
+          response.response.includes("SQLSTATE[23000]") ? toastAtencao('OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados.') : toastErro(resposta.response);
           $("#botaoconfirmaExclusao").removeClass("loading disabled");
           $("#fechaModalEXC").removeClass("disabled");
           

@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Conn.class [ CONEXÃO ]
- * Classe abstrata de conexão padrão SingleTon.
- * Retorna um objeto PDO pelo método estático getCoon();
- * 
- * @copyright (c) 2017, Emanuel Marques CREATIVE DESIGN PROJECTS
- */
-
 namespace App\Conn;
 
 use PDO;

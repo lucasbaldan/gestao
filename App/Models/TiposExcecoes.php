@@ -106,16 +106,18 @@ class TiposExcecoes
             $delete = new \App\Conn\Delete($conn);
             $delete->ExeDelete("TIPO_EXCECOES", "WHERE CD_TIPO_EXCECAO=:C", "C=$this->codigo");
 
-            if ($delete->getRowCount() > 0) {
+            if ($delete->getResult()[0] == true) {
                 $delete->Commit();
                 $this->Result = true;
             } else {
                 $delete->Rollback();
                 $this->Result = false;
+                $this->Message = $delete->getResult()[1];
             }
         } catch (Exception $th) {
             $delete->Rollback();
             $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 

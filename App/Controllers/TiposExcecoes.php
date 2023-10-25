@@ -39,7 +39,7 @@ class TiposExcecoes
             $this->nome = isset($dados['nameTipoExcecao']) ? $dados['nameTipoExcecao'] : '';
 
             if (empty($this->codigo)) {
-                if(empty($this->nome)){
+                if (empty($this->nome)) {
                     throw new Exception("Preencha o campo Nome");
                 }
 
@@ -47,9 +47,9 @@ class TiposExcecoes
                 $cad->setNome($this->nome);
 
                 $duplicado = $cad->listar(null, $this->nome);
-                if($duplicado){
+                if ($duplicado) {
                     throw new Exception("Registro já Cadastrado!");
-                } 
+                }
                 $cad->inserir();
                 if ($cad->getResult() == true) {
                     $status =  'inserido';
@@ -57,7 +57,7 @@ class TiposExcecoes
                     $status = 'erro';
                 }
             } else {
-                if(empty($this->nome)){
+                if (empty($this->nome)) {
                     throw new Exception("Preencha o campo Nome");
                 }
 
@@ -66,7 +66,7 @@ class TiposExcecoes
                 $cad->setNome($this->nome);
 
                 $duplicado = $cad->listar(null, $this->nome);
-                if($duplicado && $duplicado[0]['CD_TIPO_EXCECAO'] != $this->codigo){
+                if ($duplicado && $duplicado[0]['CD_TIPO_EXCECAO'] != $this->codigo) {
                     throw new Exception("Registro já Cadastrado!");
                 }
                 $cad->alterar();
@@ -94,25 +94,20 @@ class TiposExcecoes
             if (empty($this->codigo)) {
                 throw new Exception("Erro");
             }
-
-            //verifica integridade da operação;
-            $Excecao = new \App\Models\Excecoes;
-            $integridade = $Excecao->listar(null, $this->codigo);
-            if($integridade){
-                echo 'integridade';
-                die;
-            }
-
             $cad = new \App\Models\TiposExcecoes;
             $cad->setCodigo($this->codigo);
             $cad->excluir();
             if ($cad->getResult() == true) {
-                echo 'excluido';
+                $status = 'excluido';
+                $response = '';
             } else {
-                echo 'erro';
+                $status = 'erro';
+                $response = $cad->getMessage();
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            $status = 'erro operação';
         }
+        $response = json_encode(['status' => $status, 'response' => $response]);
+        echo $response;
     }
 }

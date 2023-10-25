@@ -44,6 +44,12 @@ class Funcoes
 
                 $cad = new \App\Models\Funcoes;
                 $cad->setNome($this->nome);
+
+                $duplicado = $cad->listar(null, $this->nome);
+                if ($duplicado) {
+                    throw new Exception("Registro já Cadastrado!");
+                }
+
                 $cad->inserir();
                 if ($cad->getResult() == true) {
                     $status = 'inserido';
@@ -58,6 +64,12 @@ class Funcoes
                 $cad = new \App\Models\Funcoes;
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
+
+                $duplicado = $cad->listar(null, $this->nome);
+                if ($duplicado && $duplicado[0]['CD_FUNCAO'] != $this->codigo) {
+                    throw new Exception("Registro já Cadastrado!");
+                }
+
                 $cad->alterar();
                 if ($cad->getResult() == true) {
                     $status = 'alterado';
@@ -84,19 +96,24 @@ class Funcoes
             if (empty($this->codigo)) {
                 throw new Exception("Erro");
             }
-            $vinculosFuncionais = new \App\Models\Funcionarios();
-
 
             $cad = new \App\Models\Funcoes;
             $cad->setCodigo($this->codigo);
             $cad->excluir();
             if ($cad->getResult() == true) {
-                echo 'excluido';
+                $status = 'excluido';
+                $response = '';
             } else {
-                echo 'erro';
+                $status = 'erro';
+                $response = $cad->getMessage();
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            $status = 'erro operação';
+            $response = '';
         }
+
+        $response = json_encode(["status" => $status, "response" => $response]);
+        echo $response;
+
     }
 }

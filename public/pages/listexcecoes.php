@@ -187,4 +187,5 @@ $dados = $pegaExcecao->list();
     </div>
 </div>
 
+<script src="./../js/local_componentes/multiselect.min.js"></script>
 <script src="./../js/pages/listexcecoes.js"></script>

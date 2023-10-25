@@ -48,18 +48,6 @@
     box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
     /* Opcional: Adicione sombra para realçar o elemento */
 }
-.ui.negative.message .header i {
-    font-size: 24px;
-}
-.ui.negative.message {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 200px; /* Defina uma altura para o elemento para centralizar verticalmente */
-    background-color: #f44336; /* Personalize a cor de fundo conforme desejado */
-    color: #fff; /* Personalize a cor do texto conforme desejado */
-}
 
 .ui.negative.message .header {
     margin-bottom: 10px;

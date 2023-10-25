@@ -20,16 +20,20 @@ class Funcoes
         $this->nome = $nome;
     }
 
-    public function listar($cdFuncao = null)
+    public function listar($cdFuncao = null, $nmFuncao = null)
     {
         try {
             $read = new \App\Conn\Read();
-            if (empty($cdFuncao)) {
+            if (empty($cdFuncao) && empty($nmFuncao)) {
                 $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
         FROM FUNCOES F");
-            } else {
+            } else if(isset($nmFuncao)) {
                 $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
-        FROM FUNCOES F WHERE F.CD_FUNCAO =:C", "C=$cdFuncao");
+        FROM FUNCOES F WHERE F.NM_FUNCAO =:C", "C=$nmFuncao");
+            }
+            else{
+                $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
+                FROM FUNCOES F WHERE F.CD_FUNCAO =:C", "C=$cdFuncao");  
             }
             return $read->getResult();
         } catch (Exception $th) {
@@ -100,16 +104,18 @@ class Funcoes
             $delete = new \App\Conn\Delete($conn);
             $delete->ExeDelete("FUNCOES", "WHERE CD_FUNCAO=:C", "C=$this->codigo");
 
-            if ($delete->getRowCount() > 0) {
+            if ($delete->getResult()[0] == true) {
                 $delete->Commit();
                 $this->Result = true;
             } else {
                 $delete->Rollback();
                 $this->Result = false;
+                $this->Message = $delete->getResult()[1];
             }
         } catch (Exception $th) {
             $delete->Rollback();
             $this->Result = false;
+            $this->Message = 'Erro ao executar operação!';
         }
     }
 
