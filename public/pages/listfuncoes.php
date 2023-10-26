@@ -38,11 +38,11 @@ include("./footer_menu.php");
     </div>
 
     <form class="ui form" method="POST" id="form-CAD-funcao">
-        <input type="hidden" name="funcao" value="controlar">
+        <input type="hidden" name="funcao" value="controlar" required readonly>
 
         <div class="disabled field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
-            <label>Código</label>
-            <input type="text" name="cdFuncao" id="cdFuncao" placeholder="Código será gerado automaticamente ao inserir..." readonly>
+            <label>Código:</label>
+            <input type="text" name="cdFuncao" id="cdFuncao" placeholder="Código será gerado automaticamente ao inserir..." readonly required>
         </div>
 
         <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">

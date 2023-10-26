@@ -6,6 +6,12 @@ require __DIR__ . '/../../vendor/autoload.php';
 
 use Exception;
 
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
+    $method = $_POST['funcao'];
+    $Setor = new Setores;
+    $Setor->$method($_POST);
+}
+
 class Setores
 {
     private $codigo;
@@ -44,34 +50,50 @@ class Setores
             $this->nome = isset($dados['nameSetor']) ? $dados['nameSetor'] : '';
 
             if (empty($this->codigo) && empty($this->nome)) {
-                throw new Exception("Campos Usuário e Senha não podem ser nulos!");
+                throw new Exception("Erro ao efetuar a operação, tente novamente mais tarde!");
             }
 
             if (empty($this->codigo)) {
+
+                if (empty($this->nome)) {
+                    throw new Exception("Preencha o campo Nome!");
+                }
 
                 $cad = new \App\Models\Setores;
                 $cad->setNome($this->nome);
                 $cad->inserirSetor();
                 if ($cad->getResult() == true) {
-                    echo 'inserido';
+                    $status = 'inserido';
+                    $response = '';
                 } else {
-                    echo 'erro';
+                    $status = 'erro';
+                    $response = 'Erro ao executar a operação na base de dados <br> Erro : '. $cad->getMessage();
                 }
             } else {
+
+                if (empty($this->nome)) {
+                    throw new Exception("Preencha o campo Nome!");
+                }
 
                 $cad = new \App\Models\Setores;
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
                 $cad->alterarSetor();
                 if ($cad->getResult() == true) {
-                    echo 'alterado';
+                    $status =  'alterado';
+                    $response = '';
                 } else {
-                    echo 'erro';
+                    $status = 'erro';
+                    $response = 'Erro ao executar a operação na base de dados <br> Erro : '. $cad->getMessage();
                 }
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+         $status = 'erro';
+         $response = $th->getMessage();
         }
+
+        $response = json_encode(array("status" => $status, "response" => $response));
+        echo $response;
     }
 
     public function excluirSetores($dados)
@@ -88,18 +110,18 @@ class Setores
             $cad->setCodigo($this->codigo);
             $cad->excluirSetores();
             if ($cad->getResult() == true) {
-                echo 'excluido';
+                $status = 'excluido';
+                $response = '';
             } else {
-                echo 'erro';
+                $status = 'erro';
+                $response = $cad->getMessage();
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            $status = 'erro';
+            $response = $th->getMessage();
         }
-    }
-}
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
-    $method = $_POST['funcao'];
-    $Setor = new Setores;
-    $Setor->$method($_POST);
+        $response = json_encode(array("status" => $status, "response" => $response));
+        echo $response;
+    }
 }

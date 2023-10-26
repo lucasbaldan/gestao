@@ -9,7 +9,7 @@ $(document).ready(function () {
       },
       dataSrc: "",
       error: function () {
-        window.location.href = "generalError.php";
+        window.location.href = "generalError.php"; 
       },
     },
     columns: [

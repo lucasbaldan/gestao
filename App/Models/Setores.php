@@ -52,16 +52,15 @@ class Setores
 
                 $atualizado = !empty($update->getResult());
                 if ($atualizado) {
-                    $this->Result = true;
-                    //$this->Message = "Os dados do usuário go - $this->NomeLogin</strong> foram atualizados com sucesso";
                     $update->Commit();
+                    $this->Result = true;
                 } else {
-                    $this->Result = false;
-                    //$this->Message = "Não foi possível atualizar os dados usuário <strong>$this->Codigo - $this->NomeLogin</strong>. <br><small>" . \App\Helppers\Formats::TratamentoMensagemErro($update->getError()) . "</small>";
                     $update->Rollback();
+                    $this->Result = false;
+                    $this->Message = $update->getMessage();
                 }
             } else {
-                throw new Exception("ERRO AO ENCONTRAR REGISTRO PARA ATUALIZAÇÃO NA BASE DE DADOS.");
+                throw new Exception("O registro que foi solicitado alteração não foi encontrado na base de dados");
             }
         } catch (Exception $th) {
             $update->Rollback();
@@ -82,6 +81,7 @@ class Setores
             if (!$insert->getResult()) {
                 $insert->Rollback();
                 $this->Result = false;
+                $this->Message = $insert->getMessage();
             } else {
                 $insert->Commit();
                 $this->Result = true;
@@ -89,6 +89,7 @@ class Setores
         } catch (Exception $th) {
             $insert->Rollback();
             $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 
@@ -100,16 +101,18 @@ class Setores
             $delete = new \App\Conn\Delete($conn);
             $delete->ExeDelete("SETORES", "WHERE CD_SETOR=:C", "C=$this->codigo");
 
-            if ($delete->getRowCount() > 0) {
+            if ($delete->getResult()[0] == true) {
                 $delete->Commit();
                 $this->Result = true;
             } else {
                 $delete->Rollback();
                 $this->Result = false;
+                $this->Message = $delete->getResult()[1];
             }
         } catch (Exception $th) {
             $delete->Rollback();
             $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 
