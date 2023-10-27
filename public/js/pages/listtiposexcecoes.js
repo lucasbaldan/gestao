@@ -109,6 +109,7 @@ $(document).ready(function () {
           $("#fechaModalCAD").addClass("disabled");
         },
         success: function (response) {
+          console.log(response);
           response = JSON.parse(response);
           if (
             response.status === "inserido" ||

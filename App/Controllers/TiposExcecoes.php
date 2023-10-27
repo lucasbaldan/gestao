@@ -22,9 +22,10 @@ class TiposExcecoes
         try {
             $this->nome = isset($dados['nmTipoExcecao']) ? $dados['nmTipoExcecao'] : '';
             $this->codigo = isset($dados['cdTipoExcecao']) ? $dados['cdTipoExcecao'] : '';
+            $pesquisaLIKE = isset($dados['stringPesquisa']) ? $dados['stringPesquisa']: null;
 
             $pegalista = new \App\Models\TiposExcecoes;
-            $lista = $pegalista->listar($this->codigo, $this->nome);
+            $lista = $pegalista->generalSearch(null, $this->codigo, $this->nome, $pesquisaLIKE);
             echo json_encode($lista);
         } catch (Exception $th) {
             echo json_encode(array('error' => "Erro ao executar operação."));
@@ -46,7 +47,7 @@ class TiposExcecoes
                 $cad = new \App\Models\TiposExcecoes;
                 $cad->setNome($this->nome);
 
-                $duplicado = $cad->listar(null, $this->nome);
+                $duplicado = $cad->generalSearch(null, null, $this->nome);
                 if ($duplicado) {
                     throw new Exception("Registro já Cadastrado!");
                 }
@@ -65,7 +66,7 @@ class TiposExcecoes
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
 
-                $duplicado = $cad->listar(null, $this->nome);
+                $duplicado = $cad->generalSearch(null, null, $this->nome);
                 if ($duplicado && $duplicado[0]['CD_TIPO_EXCECAO'] != $this->codigo) {
                     throw new Exception("Registro já Cadastrado!");
                 }

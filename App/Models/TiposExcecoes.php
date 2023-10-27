@@ -20,24 +20,31 @@ class TiposExcecoes
         $this->nome = $nome;
     }
 
-    public function listar($cdTipoExcecao = null, $nmTipoExcecao = null)
+    public function generalSearch($colunas = null, $cdTipoExcecao = null, $nmTipoExcecao = null, $pesquisaLIKE = null)
     {
         try {
             $read = new \App\Conn\Read();
-            if (empty($cdTipoExcecao) && empty($nmTipoExcecao)) {
-                $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
-        FROM TIPO_EXCECOES T");
-            } else {
-                if ($nmTipoExcecao == null && isset($cdTipoExcecao)) {
-                    $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
-        FROM TIPO_EXCECOES T WHERE T.CD_TIPO_EXCECAO =:C", "C=$cdTipoExcecao");
-                } else {
-                    $read->FullRead("SELECT T.CD_TIPO_EXCECAO, T.NM_TIPO_EXCECAO
-        FROM TIPO_EXCECOES T WHERE T.NM_TIPO_EXCECAO = '" . $nmTipoExcecao . "'");
-                }
+            $colunas = $colunas ?? "*";
+
+            //LEMBRAR DE COLOCAR ESPAÇO NO FINAL DAS STINGS DE QUERY PARA PODER SER MONTADO CORRETAMENTE NA HORA DE EXCUTAR
+            $query = "SELECT ".$colunas." 
+            FROM TIPO_EXCECOES T
+            WHERE T.CD_TIPO_EXCECAO IS NOT NULL ";
+
+            if ($cdTipoExcecao) {
+                $query .= "AND T.CD_TIPO_EXCECAO = ".$cdTipoExcecao." ";
+            }
+            if ($nmTipoExcecao) {
+                $query .= "AND T.NM_TIPO_EXCECAO = '".$nmTipoExcecao."' ";
+            }
+            if ($pesquisaLIKE) {
+                $query .= "AND T.NM_TIPO_EXCECAO LIKE '%".$pesquisaLIKE."%' ";
             }
 
+            $read->FullRead($query);
+
             return $read->getResult();
+
         } catch (Exception $th) {
             header("Location: /gestao/public/pages/generalError.php");
         }

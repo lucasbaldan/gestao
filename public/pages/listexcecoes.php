@@ -77,56 +77,65 @@ include("./footer_menu.php");
             </div>
 
 
-                <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%">
+            <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%">
 
-                    <label>Tipo de Exceção...</label>
+                <label>Tipo de Exceção...</label>
 
-                    <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required>
-                    </select>
+                <div class="ui search">
+                    <div class="ui icon input">
+                        <input id="pesquisaTipoExcecao" class="prompt" type="text" placeholder="Selecione um tipo de Exceção de Trabalho...">
+                        <i class="search icon"></i>
+                    </div>
+                    <div class="results"></div>
                 </div>
 
+                <br>
+                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required>
+                </select>
+            </div>
 
-                <div class="field">
-                    <div class="ui grid">
-                        <div class="one wide column"></div>
-                        <div class="three wide column middle aligned">
-                            <label class="ui label large">Funcionários</label>
-                        </div>
-                        <div class="ten wide column">
 
-                            <div class="row">
+            <div class="field">
+                <div class="ui grid">
+                    <div class="one wide column"></div>
+                    <div class="three wide column middle aligned">
+                        <label class="ui label large">Funcionários</label>
+                    </div>
+                    <div class="ten wide column">
 
-                                <select name="from[]" id="search" class="form-control" size="5" multiple="multiple">
-                                </select>
+                        <div class="row">
 
-                                <div style="padding: 10px 10px 10px 0; display: flex; justify-content: center;">
-                                    <button type="button" id="search_rightAll" class="ui small blue icon button"><i class="angle double down icon"></i></button>
-                                    <button type="button" id="search_rightSelected" class="ui small blue icon button"><i class="angle down icon"></i></button>
-                                    <button type="button" id="search_leftSelected" class="ui small red icon button"><i class="angle up icon"></i></button>
-                                    <button type="button" id="search_leftAll" class="ui small red icon button"><i class="angle double up icon"></i></button>
-                                </div>
+                            <select name="from[]" id="search" class="form-control" size="5" multiple="multiple">
+                            </select>
 
-                                <div class="col-xs-5">
-                                    <select name="to[]" id="search_to" class="form-control" size="5" multiple="multiple"></select>
-                                </div>
+                            <div style="padding: 10px 10px 10px 0; display: flex; justify-content: center;">
+                                <button type="button" id="search_rightAll" class="ui small blue icon button"><i class="angle double down icon"></i></button>
+                                <button type="button" id="search_rightSelected" class="ui small blue icon button"><i class="angle down icon"></i></button>
+                                <button type="button" id="search_leftSelected" class="ui small red icon button"><i class="angle up icon"></i></button>
+                                <button type="button" id="search_leftAll" class="ui small red icon button"><i class="angle double up icon"></i></button>
                             </div>
 
+                            <div class="col-xs-5">
+                                <select name="to[]" id="search_to" class="form-control" size="5" multiple="multiple"></select>
+                            </div>
                         </div>
+
                     </div>
                 </div>
             </div>
-            </br></br>
+        </div>
+        </br></br>
 
-            <div class="button-container">
-                <div class="ui orange basic button">
-                    Fechar
-                </div>
-                <button type="submit" class="ui positive right labeled icon button">
-                    Cadastrar
-                    <i class="checkmark icon"></i>
-                </button>
+        <div class="button-container">
+            <div class="ui orange basic button">
+                Fechar
             </div>
-            </br>
+            <button type="submit" class="ui positive right labeled icon button">
+                Cadastrar
+                <i class="checkmark icon"></i>
+            </button>
+        </div>
+        </br>
     </form>
 </div>
 

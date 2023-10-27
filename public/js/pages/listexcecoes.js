@@ -8,6 +8,36 @@ $(document).ready(function () {
     },
   });
 
+  $('.ui.search')
+    .search({
+      fullTextSearch: false,
+      apiSettings: {
+        url: './../../App/Controllers/TiposExcecoes.php',
+        method: 'POST',
+        data: { // DefinIÇÃO DE parâmetros
+          funcao: 'listJSON',
+          stringPesquisa: function() {
+            return $('.prompt').val(); // Obtém o texto de pesquisa do campo de entrada
+          }
+        },
+        onResponse: function (response) {
+          var options = [];
+
+          // Processar os dados da resposta da API
+          $.each(response, function (index, item) {
+            options.push({
+              id: item.CD_TIPO_EXCECAO, // Substitua pelo campo desejado
+              title: item.NM_TIPO_EXCECAO // Substitua pelo campo desejado
+            });
+          });
+
+          return {
+            results: options
+          };
+        }
+      }
+    });
+
   var table = $("#myTable").DataTable({
     language: {
       url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
@@ -36,10 +66,10 @@ $(document).ready(function () {
 
           var input = $(
             "<h4>" +
-              title +
-              '</h4><input class="ui input responsive-input" type="text" placeholder="' +
-              title +
-              '..." />'
+            title +
+            '</h4><input class="ui input responsive-input" type="text" placeholder="' +
+            title +
+            '..." />'
           )
             .appendTo($(column.header()).empty())
             .on("keyup change", function () {
