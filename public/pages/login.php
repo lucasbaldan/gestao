@@ -75,7 +75,7 @@ if ($Sessao->verificaSessao()) {
       </form>
 
       <div class="ui message">
-        Versão - v.0.1
+        Versão - v.1.0
         </br>
         <hr>
         <?php echo date('Y') ?> - Lucas F. Baldan <i class="trademark icon"></i>

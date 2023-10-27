@@ -1,7 +1,13 @@
 ////// INICIA O JAVASRIPT DA PÁGINA
 $(document).ready(function () {
-  $(".ui.negative.message").hide();
-  $(".ui.positive.message").hide();
+  $(".ui.calendar").calendar({
+    text: ptBR_calendar,
+    type: "date",
+    formatter: {
+      date: "DD/MM(MMMM)/YYYY",
+    },
+  });
+
   var table = $("#myTable").DataTable({
     language: {
       url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
@@ -48,7 +54,6 @@ $(document).ready(function () {
   // CONTROLA O FORMULÁRIO DO CADASTRO
 
   $("#form-CAD-Excecao").form({
-    
     onSuccess: function (event, fields) {
       $("#search_to option").prop("selected", true);
       event.preventDefault(); // Impede o envio padrão do formulário
@@ -64,7 +69,6 @@ $(document).ready(function () {
           $(".ui.positive.right.labeled.icon.button").addClass("loading");
         },
         success: function (response) {
-          
           if (response === "inserido" || response === "alterado") {
             $(".ui.positive.message").transition("fade in");
 
@@ -100,7 +104,7 @@ $(document).ready(function () {
   });
 
   $("#CAD").click(function () {
-    $('#select-tipoExcecao').val('');
+    $("#select-tipoExcecao").val("");
     $("#dataExcecao").val("");
     $("#dataFinal").val("");
     carregardadosTiposExcecoes();
@@ -227,7 +231,7 @@ async function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
       $("#select-tipoExcecao").select2({
         data: options,
         placeholder: "Selecione tipo Exceção",
-        allowClear: true
+        allowClear: true,
       });
 
       if (tipoExcecaoSalvoNoBanco) {

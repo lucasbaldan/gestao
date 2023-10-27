@@ -61,6 +61,11 @@ class Setores
 
                 $cad = new \App\Models\Setores;
                 $cad->setNome($this->nome);
+
+                $duplicado = $cad->listarSetores(null, $this->nome);
+                if ($duplicado) {
+                    throw new Exception("Registro já Cadastrado!");
+                }
                 $cad->inserirSetor();
                 if ($cad->getResult() == true) {
                     $status = 'inserido';
@@ -78,6 +83,12 @@ class Setores
                 $cad = new \App\Models\Setores;
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
+
+                $duplicado = $cad->listarSetores(null, $this->nome);
+                if ($duplicado && $duplicado[0]['CD_SETOR'] != $this->codigo) {
+                    throw new Exception("Registro já Cadastrado!");
+                }
+
                 $cad->alterarSetor();
                 if ($cad->getResult() == true) {
                     $status =  'alterado';

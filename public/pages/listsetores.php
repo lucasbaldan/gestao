@@ -50,9 +50,9 @@ include("./footer_menu.php");
 
         <div class="required field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
             <label>Nome:</label>
-        <!-- <div class="ui input"> -->
+        <div class="ui input">
             <input type="text" name="nameSetor" id="nameSetor" placeholder="Nome do Setor...">
-        <!-- </div> -->
+        </div>
         <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
                 Preencha o campo NOME com mais de 3 caracteres
             </div>

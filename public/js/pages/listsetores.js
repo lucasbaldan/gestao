@@ -126,7 +126,7 @@ $(document).ready(function () {
             }, 1000);
           }
           if (response.status === "erro") {
-            toastErro(response.response);
+            response.response.includes("Cadastrado") ? toastAtencao(response.response) : toastErro(response.response);
             $("#cadSubmit").removeClass(
               "loading disabled"
             );

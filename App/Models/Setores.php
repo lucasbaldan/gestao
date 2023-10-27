@@ -20,13 +20,16 @@ class Setores
         $this->nome = $nome;
     }
 
-    public function listarSetores($cdSetor = null)
+    public function listarSetores($cdSetor = null, $nmSetor = null)
     {
         try {
             $read = new \App\Conn\Read();
-            if (empty($cdSetor)) {
+            if (empty($nmSetor) && empty($cdSetor)) {
                 $read->FullRead("SELECT S.CD_SETOR, S.NOME
         FROM SETORES S");
+            } else if (empty($cdSetor)) {
+                $read->FullRead("SELECT S.CD_SETOR, S.NOME
+        FROM SETORES S WHERE S.NOME =:C", "C=$nmSetor");
             } else {
                 $read->FullRead("SELECT S.CD_SETOR, S.NOME
         FROM SETORES S WHERE S.CD_SETOR =:C", "C=$cdSetor");
