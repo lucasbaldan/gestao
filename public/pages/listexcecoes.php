@@ -88,17 +88,12 @@ include("./footer_menu.php");
                     </div>
                     <div class="results"></div>
                 </div>
-
-                <br>
-                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required>
-                </select>
             </div>
 
 
-            <div class="field">
+            <div class="required field" style="margin-left: 15%;">
                 <div class="ui grid">
-                    <div class="one wide column"></div>
-                    <div class="three wide column middle aligned">
+                    <div class="two wide column middle aligned">
                         <label class="ui label large">Funcionários</label>
                     </div>
                     <div class="ten wide column">
@@ -124,16 +119,19 @@ include("./footer_menu.php");
                 </div>
             </div>
         </div>
-        </br></br>
 
-        <div class="button-container">
-            <div class="ui orange basic button">
-                Fechar
+        <div class="ui divider"></div>
+
+        <div class="actions">
+            <div class="button-container">
+                <div id="fechaModalCAD" class="ui inverted red cancel button">
+                    Fechar
+                </div>
+                <button type="submit" class="ui positive right labeled icon button" id="cadSubmit">
+                    Salvar
+                    <i class="checkmark icon"></i>
+                </button>
             </div>
-            <button type="submit" class="ui positive right labeled icon button">
-                Cadastrar
-                <i class="checkmark icon"></i>
-            </button>
         </div>
         </br>
     </form>
@@ -142,13 +140,6 @@ include("./footer_menu.php");
 <div id="confirmacaoExclusao" class="ui modal">
     <div class="header" style="background-color: orange; color: white;">Confirmação</div>
     <div class="content">
-        <div class="ui positive message">
-            <i class="close icon"></i>
-            <div class="header">
-                <i class="check circle icon"></i>
-            </div>
-            <p>Operação efetuada com sucesso! <b>Aguarde, atualizando a tabela de registros</b></p>
-        </div>
         <div class="ui icon message">
             <i class="attention icon"></i>
             <div class="content">
@@ -158,8 +149,8 @@ include("./footer_menu.php");
         </div>
     </div>
     <div class="actions">
-        <div class="ui red basic cancel button">Cancelar</div>
-        <div id="botaoconfirmaExclusao" class="ui green button">Concordo <i class="trash icon"></i></div>
+        <div id="fechaModalEXC" class="ui inverted red cancel button">Cancelar</div>
+        <div id="botaoconfirmaExclusao" class="ui positive green button">Concordo <i class="trash icon"></i></div>
     </div>
 </div>
 

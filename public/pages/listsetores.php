@@ -86,5 +86,6 @@ include("./footer_menu.php");
         <div id="botaoconfirmaExclusao" class="ui positive green button">Concordo <i class="trash icon"></i></div>
     </div>
 </div>
+
 <script src="./../js/default/toast.js"></script>
 <script src="./../js/pages/listsetores.js"></script>

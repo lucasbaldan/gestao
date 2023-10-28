@@ -20,18 +20,6 @@ class Excecoes
     private $tpExcecao;
     private $funcionarios_selecionados;
 
-    public function list()
-    {
-
-        try {
-            $pegalista = new \App\Models\Excecoes;
-            $lista = $pegalista->listar();
-            return $lista;
-        } catch (Exception $th) {
-            return false;
-        }
-    }
-
     public function listJSON($dados)
     {
         try {
