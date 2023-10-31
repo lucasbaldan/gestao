@@ -30,3 +30,13 @@ var ptBR_calendar = {
       "Dez",
     ],
   }
+
+  function acionarCalendario(){
+  $(".ui.calendar").calendar({
+    text: ptBR_calendar,
+    type: "date",
+    formatter: {
+      date: "DD/MM/YYYY",
+    },
+  });
+}

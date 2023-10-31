@@ -81,7 +81,9 @@ include("./footer_menu.php");
 
                 <label>Tipo de Exceção...</label>
 
-                <div class="ui search">
+                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required></select>
+
+                <!-- <div id="selectTipoExcecao" class="ui search">
                     <div class="ui icon input">
                         <input id="pesquisaTipoExcecao" class="prompt" type="text" placeholder="Selecione um tipo de Exceção de Trabalho...">
                         <i class="search icon"></i>
@@ -89,7 +91,8 @@ include("./footer_menu.php");
                     <div class="results"></div>
                 </div>
             </div>
-
+            <input id="tipoExcecao" type="hidden" required readonly> -->
+            
 
             <div class="required field" style="margin-left: 15%;">
                 <div class="ui grid">

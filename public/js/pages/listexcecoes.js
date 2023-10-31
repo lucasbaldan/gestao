@@ -1,183 +1,147 @@
 ////// INICIA O JAVASRIPT DA PÁGINA
 $(document).ready(function () {
-  $(".ui.calendar").calendar({
-    text: ptBR_calendar,
-    type: "date",
-    formatter: {
-      date: "DD/MM/YYYY",
+  acionarCalendario();
+  var table = $("#myTable").DataTable({
+    processing: true,
+    ajax: {
+      type: "POST",
+      url: "./../../App/Controllers/Excecoes.php",
+      data: {
+        funcao: "listJSON",
+      },
+      dataSrc: "",
+      error: function () {
+        window.location.href = "generalError.php";
+      },
+    },
+    columns: [
+      { data: "CD_EXCECAO" },
+      { data: "NM_TIPO_EXCECAO" },
+      { data: "DATA_INICIAL" },
+      { data: "DATA_FINAL" },
+      { data: "NM_FUNCIONARIO" },
+      {
+        render: function (data, type, row) {
+          var editarBtn =
+            "<button class='ui mini icon button blue' onclick='editarRegistro(" +
+            row.CD_EXCECAO +
+            ")'><i class='pencil alternate icon'></i></button>";
+          var excluirBtn =
+            "<button class='ui mini icon button red' onclick='excluirRegistro(" +
+            row.CD_EXCECAO +
+            ")'><i class='trash alternate icon'></i></button>";
+          return editarBtn + excluirBtn;
+        },
+      },
+    ],
+
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
+    },
+    order: [[0, "desc"]],
+    columnDefs: [
+      {
+        targets: "_all",
+        className: "dt-center",
+      },
+    ],
+    initComplete: function () {
+      var api = this.api();
+
+      api.columns().every(function () {
+        var column = this;
+        var title = $(column.header()).text();
+
+        var input;
+
+        if (column.index() === 0) {
+          input = $(
+            '<div class="ui fluid input focus"><input type="number" placeholder="Procurar..."></div>'
+          );
+        } else if (column.index() === 1) {
+          input = $(
+            '<div class="ui fluid input focus"><input type="text" placeholder="Procurar..."></div>'
+          );
+        } else if (column.index() === 2) {
+          input = $(
+            '<div class="ui fluid input focus"><input type="date" placeholder=" "></div>'
+          );
+        } else if (column.index() === 3) {
+          input = $(
+            '<div class="ui fluid input focus"><input type="date" placeholder="Procurar..."></div>'
+          );
+        } else if (column.index() === 4) {
+          input = $(
+            '<div class="ui fluid input focus"><input type="text" placeholder="Procurar..."></div>'
+          );
+        } else {
+        }
+
+        $(column.header())
+          .empty()
+          .append($("<h4>" + title + "</h4>"))
+          .append(input);
+
+        // Adicione um ouvinte de eventos para atualizar a pesquisa ao digitar ou alterar
+        input.find("input").on("keyup change", function () {
+          if (column.search() !== this.value) {
+            column.search(this.value).draw();
+          }
+        });
+
+        input.on("click", function (e) {
+          e.stopPropagation();
+        });
+      });
     },
   });
 
-  $('.ui.search')
-    .search({
-      fullTextSearch: false,
-      minCharacters: 2,
-      apiSettings: {
-        url: './../../App/Controllers/TiposExcecoes.php',
-        method: 'POST',
-        data: { // DefinIÇÃO DE parâmetros
-          funcao: 'listJSON',
-          stringPesquisa: function() {
-            return $('.prompt').val(); // Obtém o texto de pesquisa do campo de entrada
-          }
-        },
-        onResponse: function (response) {
-          var options = [];
-
-          // Processar os dados da resposta da API
-          $.each(response, function (index, item) {
-            options.push({
-              id: item.CD_TIPO_EXCECAO, // Substitua pelo campo desejado
-              title: item.NM_TIPO_EXCECAO // Substitua pelo campo desejado
-            });
-          });
-
-          return {
-            results: options
-          };
-        }
-      }
-    });
-
-    var table = $("#myTable").DataTable({
-      processing: true,
-      ajax: {
-        type: "POST",
-        url: "./../../App/Controllers/Excecoes.php",
-        data: {
-          funcao: "listJSON",
-        },
-        dataSrc: "",
-        error: function () {
-          window.location.href = "generalError.php";
-        },
-      },
-      columns: [
-        { data: "CD_EXCECAO" },
-        { data: "NM_TIPO_EXCECAO" },
-        { data: "DATA_INICIAL" },
-        { data: "DATA_FINAL" },
-        { data: "NM_FUNCIONARIO" },
-        {
-          render: function (data, type, row) {
-            var editarBtn =
-              "<button class='ui mini icon button blue' onclick='editarRegistro(" +
-              row.CD_EXCECAO +
-              ")'><i class='pencil alternate icon'></i></button>";
-            var excluirBtn =
-              "<button class='ui mini icon button red' onclick='excluirRegistro(" +
-              row.CD_EXCECAO +
-              ")'><i class='trash alternate icon'></i></button>";
-            return editarBtn + excluirBtn;
-          },
-        },
-      ],
-  
-      language: {
-        url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
-      },
-      order: [[0, "desc"]],
-      columnDefs: [
-        {
-          targets: "_all",
-          className: "dt-center",
-        },
-      ],
-      initComplete: function () {
-        var api = this.api();
-  
-        api.columns().every(function () {
-          var column = this;
-          var title = $(column.header()).text();
-  
-          var input;
-  
-          if (column.index() === 0) {
-            input = $(
-              '<div class="ui fluid input focus"><input type="number" placeholder="Procurar..."></div>'
-            );
-          } else if (column.index() === 1) {
-            input = $(
-              '<div class="ui fluid input focus"><input type="text" placeholder="Procurar..."></div>'
-            );
-          } else if (column.index() === 2) {
-            input = $(
-              '<div class="ui fluid input focus"><input type="date" placeholder="Procurar..."></div>'
-            );
-          } else if (column.index() === 3) {
-            input = $(
-              '<div class="ui fluid input focus"><input type="date" placeholder="Procurar..."></div>'
-            );
-          } else if (column.index() === 4) {
-            input = $(
-              '<div class="ui fluid input focus"><input type="text" placeholder="Procurar..."></div>'
-            );
-          } else {
-          }
-  
-          $(column.header())
-            .empty()
-            .append($("<h4>" + title + "</h4>"))
-            .append(input);
-  
-          // Adicione um ouvinte de eventos para atualizar a pesquisa ao digitar ou alterar
-          input.find("input").on("keyup change", function () {
-            if (column.search() !== this.value) {
-              column.search(this.value).draw();
-            }
-          });
-  
-          input.on("click", function (e) {
-            e.stopPropagation();
-          });
-        });
-      },
-    });
-
   // CONTROLA O FORMULÁRIO DO CADASTRO
 
-  $("#form-CAD-Excecao").form({
+  $("#form-CAD-excecao").form({
     onSuccess: function (event, fields) {
-      $("#search_to option").prop("selected", true);
+      $("#search_to option").prop("selected", true); // que merda é essa?
+
       event.preventDefault(); // Impede o envio padrão do formulário
 
       // Obtém os dados do formulário
-      var formData = $("#form-CAD-Excecao").serialize();
+      var formData = $("#form-CAD-excecao").serialize();
 
       $.ajax({
         type: "POST",
         url: "./../../App/Controllers/Excecoes.php",
         data: formData,
         beforeSend: function () {
-          $(".ui.positive.right.labeled.icon.button").addClass("loading");
+          $("#cadSumbit").addClass("loading disabled");
+          $("#fechaModalCAD").addClass("loading disabled");
         },
         success: function (response) {
+          response = JSON.parse(response);
+
           if (response === "inserido" || response === "alterado") {
-            $(".ui.positive.message").transition("fade in");
 
-            $(".ui.positive.right.labeled.icon.button").removeClass("loading");
+            $("#myTable").DataTable().clear().draw();
 
             setTimeout(function () {
-              $(".ui.positive.message").transition("fade out");
               $("#CADmodal").modal("hide");
-              location.reload();
-            }, 1500);
+              $("#cadSubmit").removeClass("loading disabled");
+              $("#fechaModalCAD").removeClass("disabled");
+              toastSucesso();
+              $("#myTable").DataTable().ajax.reload();
+            }, 1000);
           }
-          if (response === "erro") {
-            $("#CADmodal").modal("hide");
-            $(".ui.negative.message").transition("fade in");
-
-            setTimeout(function () {
-              location.reload();
-              $(".ui.negative.message").transition("fade out");
-            }, 1500);
+          if (response.status === "erro") {
+            response.response.includes("Cadastrado") ? toastAtencao(response.response) : toastErro(response.response);
+            $("#cadSubmit").removeClass(
+              "loading disabled"
+            );
+            $("#fechaModalCAD").removeClass("disabled");
           }
         },
         error: function () {
           alert(
             "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
           );
-          location.reload();
         },
         complete: function () {
           // Remova a animação de "carregando" aqui, se necessário
@@ -187,17 +151,12 @@ $(document).ready(function () {
   });
 
   $("#CAD").click(function () {
-    $("#select-tipoExcecao").val("");
+    $("#select-tipoExcecao").val("").trigger("change");
     $("#dataExcecao").val("");
     $("#dataFinal").val("");
-    carregardadosTiposExcecoes();
     $("#search_to").empty();
     carregarDadosFuncionario();
     $("#CADmodal").modal("show");
-  });
-
-  $(".ui.orange.basic.button").click(function () {
-    $("#CADmodal").modal("hide");
   });
 });
 
