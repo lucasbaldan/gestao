@@ -119,7 +119,6 @@ $(document).ready(function () {
           response = JSON.parse(response);
 
           if (response === "inserido" || response === "alterado") {
-
             $("#myTable").DataTable().clear().draw();
 
             setTimeout(function () {
@@ -131,10 +130,10 @@ $(document).ready(function () {
             }, 1000);
           }
           if (response.status === "erro") {
-            response.response.includes("Cadastrado") ? toastAtencao(response.response) : toastErro(response.response);
-            $("#cadSubmit").removeClass(
-              "loading disabled"
-            );
+            response.response.includes("Cadastrado")
+              ? toastAtencao(response.response)
+              : toastErro(response.response);
+            $("#cadSubmit").removeClass("loading disabled");
             $("#fechaModalCAD").removeClass("disabled");
           }
         },
@@ -151,11 +150,13 @@ $(document).ready(function () {
   });
 
   $("#CAD").click(function () {
-    $("#select-tipoExcecao").val("").trigger("change");
     $("#dataExcecao").val("");
     $("#dataFinal").val("");
     $("#search_to").empty();
+    $("#dimmerCarregando").dimmer({ closable: false, interactive: false, duration: 2 }).dimmer("show");
     carregarDadosFuncionario();
+    carregardadosTiposExcecoes();
+    $("#select-tipoExcecao").val("").trigger("change");
     $("#CADmodal").modal("show");
   });
 });
@@ -249,45 +250,43 @@ function excluirRegistro(idExcecao) {
 }
 
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
-async function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
-  let options = [];
+function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
+  $("#select-tipoExcecao").select2({
+    ajax: {
+      url: "./../../App/Controllers/TiposExcecoes.php",
+      type: "POST",
+      dataType: "json",
+      delay: 250,
+      data: function (params) {
+        return {
+          funcao: "listJSON",
+          stringPesquisa: params.term,
+        };
+      },
+      processResults: function (data) {
+        // Mapear os campos do JSON para os campos específicos do Select2
+        var mappedData = data.map(function (item) {
+          return {
+            id: item.CD_TIPO_EXCECAO,
+            text: item.NM_TIPO_EXCECAO,
+          };
+        });
 
-  $.ajax({
-    type: "POST",
-    url: "./../../App/Controllers/TiposExcecoes.php",
-    data: {
-      funcao: "listJSON",
+        return {
+          results: mappedData,
+        };
+      },
+      cache: true,
     },
-    success: function (data) {
-      const dadosTipoExcecoes = JSON.parse(data);
-      options = dadosTipoExcecoes.map((item) => ({
-        id: item.CD_TIPO_EXCECAO.toString(),
-        text: item.NM_TIPO_EXCECAO,
-      }));
-
-      options.unshift({
-        id: "",
-        text: "",
-      });
-
-      $("#select-tipoExcecao").select2({
-        data: options,
-        placeholder: "Selecione tipo Exceção",
-        allowClear: true,
-      });
-
-      if (tipoExcecaoSalvoNoBanco) {
-        $("#select-tipoExcecao").val(tipoExcecaoSalvoNoBanco).trigger("change");
-      }
-    },
-    error: function () {
-      alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
-    },
+    //minimumInputLength: 1, // Pesquisa automática a partir do primeiro caractere
+    tags: false,
+    placeholder: "Selecione tipo Exceção",
+    allowClear: true,
   });
 }
 
 //PEGA OS FUNCIONÁRIOS PARA SEREM CARREGADOS NO MULTISELECT DO JQUERY DO MODAL DE CADASTRO DE EXCECÃO.
-async function carregarDadosFuncionario(id = null) {
+function carregarDadosFuncionario(id = null) {
   $.ajax({
     type: "POST",
     url: "./../../App/Controllers/Funcionarios.php",
@@ -306,26 +305,24 @@ async function carregarDadosFuncionario(id = null) {
           .text(funcionario.NM_FUNCIONARIO);
         selectFuncionarios.append(option);
       });
+
+      $("#dimmerCarregando").dimmer("hide");
+
+      $("#search").multiselect({
+        submitAllLeft: false,
+        submitAllRigh: true,
+        search: {
+          left: '<input type="text" class="form-control" placeholder="Procurar Funcionário..." />',
+          right:
+            '<input type="text" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
+        },
+        fireSearch: function (value) {
+          return value.length > 0;
+        },
+      });
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
-      location.reload();
     },
   });
 }
-
-// INICIALIZA O JQUERY CONTENDO AS FUNCIONALIDADES DO MULTISELECT
-jQuery(document).ready(function ($) {
-  $("#search").multiselect({
-    submitAllLeft: false,
-    submitAllRigh: true,
-    search: {
-      left: '<input type="text" class="form-control" placeholder="Procurar Funcionário..." />',
-      right:
-        '<input type="text" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
-    },
-    fireSearch: function (value) {
-      return value.length > 0;
-    },
-  });
-});
