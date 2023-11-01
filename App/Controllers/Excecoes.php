@@ -93,19 +93,27 @@ class Excecoes
             $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
 
             if (empty($this->codigo)) {
-                throw new Exception("Erro");
+                throw new Exception("Erro ao processar requisição. Tente novamente!");
             }
 
             $cad = new \App\Models\Excecoes;
             $cad->setCodigo($this->codigo);
             $cad->excluir();
-            if ($cad->getResult() == true) {
-                echo 'excluido';
+            if ($cad->getResult()) {
+                $status = 'excluido';
+                $response = '';
             } else {
-                echo 'erro';
+                $status = 'erro';
+                $response = $cad->getMessage();
             }
         } catch (Exception $th) {
-            echo 'erro operação';
+            $status = 'erro';
+            $respose = $th->getMessage();
         }
+
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
+
     }
 }

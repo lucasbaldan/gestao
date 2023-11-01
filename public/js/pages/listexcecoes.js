@@ -153,11 +153,10 @@ $(document).ready(function () {
     $("#dataExcecao").val("");
     $("#dataFinal").val("");
     $("#search_to").empty();
-    $("#dimmerCarregando").dimmer({ closable: false, interactive: false, duration: 2 }).dimmer("show");
     carregarDadosFuncionario();
     carregardadosTiposExcecoes();
     $("#select-tipoExcecao").val("").trigger("change");
-    $("#CADmodal").modal("show");
+    $("#CADmodal").modal({ closable: false }).modal("show");
   });
 });
 
@@ -167,7 +166,7 @@ function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
   $("#dataFinal").val("");
   carregardadosTiposExcecoes(idTipoExcecao);
   carregarDadosFuncionario(idFuncionario);
-  $("#CADmodal").modal("show");
+  $("#CADmodal").modal({ closable: false }).modal("show");
 
   $.ajax({
     type: "POST",
@@ -190,63 +189,55 @@ function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
   });
 }
 
-//EXCLUSÃO DE REGISTRO VIA GRID
 function excluirRegistro(idExcecao) {
-  $("#confirmacaoExclusao").modal("show");
-
-  // Função de callback para executar o Ajax após a confirmação
-  function confirmadoExclusao() {
-    $.ajax({
-      type: "POST",
-      url: "./../../App/Controllers/Excecoes.php",
-      data: {
-        cdExcecao: idExcecao,
-        funcao: "excluir",
+  $("#confirmacaoExclusao").modal({
+      closable: false,
+      onApprove: function() {
+        confirmadoExclusao(idExcecao);
+        return false;
       },
-      beforeSend: function () {
-        // Adicione uma animação ou mensagem de "carregando" aqui, se desejar
-        $("#botaoconfirmaExclusao").addClass("loading");
-      },
-      success: function (response) {
-        if (response === "excluido") {
-          $(".ui.positive.message").transition("fade in");
+    }).modal("show");
 
-          $(".ui.positive.right.labeled.icon.button").removeClass("loading");
+// Função de callback para executar o Ajax após a confirmação
+function confirmadoExclusao() {
+  $.ajax({
+    type: "POST",
+    url: "./../../App/Controllers/Excecoes.php",
+    data: {
+      cdExcecao: idExcecao,
+      funcao: "excluir",
+    },
+    beforeSend: function () {
+      $("#botaoconfirmaExclusao").addClass("loading disabled");
+      $("#fechaModalEXC").addClass("disabled");
+    },
+    success: function (response) {
 
-          // Agendar a remoção da mensagem após 4 segundos
-          setTimeout(function () {
-            $(".ui.positive.message").transition("fade out");
-            $("#CADmodal").modal("hide");
-            location.reload();
-          }, 2000);
-        } else if (response === "erro") {
+      if (response.status === "excluido") {
+        $("#myTable").DataTable().clear().draw();
+        setTimeout(function () {
+          toastSucesso();
+          $("#botaoconfirmaExclusao").removeClass("loading disabled");
+          $("#fechaModalEXC").removeClass("disabled");
           $("#confirmacaoExclusao").modal("hide");
-          $(".ui.negative.message").transition("fade in");
+          $("#myTable").DataTable().ajax.reload();
+        }, 2000);
+      } else if (response.status === "erro") {
+        response.response.includes("SQLSTATE[23000]") ? toastAtencao('OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados.') : toastErro(resposta.response);
+        $("#botaoconfirmaExclusao").removeClass("loading disabled");
+        $("#fechaModalEXC").removeClass("disabled");
+        
+      } else {
+        window.location.href = "generalError.php";
+      }
 
-          setTimeout(function () {
-            $(".ui.negative.message").transition("fade out");
-            location.reload();
-          }, 1500);
-        } else {
-          $("#confirmacaoExclusao").modal("hide");
-          $(".ui.negative.message").transition("fade in");
-
-          setTimeout(function () {
-            //location.reload();
-            $(".ui.negative.message").transition("fade out");
-            location.reload();
-          }, 1500);
-        }
-      },
-      error: function (xhr, status, error) {
-        console.error(error);
-        alert("Erro ao Executar operação");
-      },
-    });
-  }
-
-  // Vincula a função de callback ao evento de clique do botão de confirmação
-  $("#botaoconfirmaExclusao").on("click", confirmadoExclusao);
+    },
+    error: function (xhr, status, error) {
+      console.error(error);
+      alert("Erro ao Executar operação");
+    },
+  });
+}
 }
 
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
@@ -285,7 +276,6 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
   });
 }
 
-//PEGA OS FUNCIONÁRIOS PARA SEREM CARREGADOS NO MULTISELECT DO JQUERY DO MODAL DE CADASTRO DE EXCECÃO.
 function carregarDadosFuncionario(id = null) {
   $.ajax({
     type: "POST",
@@ -293,6 +283,9 @@ function carregarDadosFuncionario(id = null) {
     data: {
       funcao: "listJSON",
       cdFuncionario: id,
+    },
+    beforeSend: function (){
+      $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
     },
     success: function (data) {
       const dadosFuncionarios = JSON.parse(data);
@@ -306,20 +299,20 @@ function carregarDadosFuncionario(id = null) {
         selectFuncionarios.append(option);
       });
 
-      $("#dimmerCarregando").dimmer("hide");
-
+      
       $("#search").multiselect({
         submitAllLeft: false,
         submitAllRigh: true,
         search: {
           left: '<input type="text" class="form-control" placeholder="Procurar Funcionário..." />',
           right:
-            '<input type="text" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
+          '<input type="text" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
         },
         fireSearch: function (value) {
           return value.length > 0;
         },
       });
+      $("#dimmerCarregando").removeClass("active");
     },
     error: function () {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");

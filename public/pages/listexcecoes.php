@@ -157,6 +157,7 @@ include("./footer_menu.php");
     </div>
 </div>
 
+<script src="./../js/default/toast.js"></script>
 <script src="./../js/default/ptBR-calendar.js"></script>
 <script src="./../js/local_componentes/multiselect.min.js"></script>
 <script src="./../js/pages/listexcecoes.js"></script>

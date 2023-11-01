@@ -129,16 +129,19 @@ class Excecoes
             $delete = new \App\Conn\Delete($conn);
             $delete->ExeDelete("EXCECOES", "WHERE CD_EXCECAO=:C", "C=$this->codigo");
 
-            if ($delete->getRowCount() > 0) {
+            if ($delete->getResult()[0] == true) {
                 $delete->Commit();
                 $this->Result = true;
             } else {
                 $delete->Rollback();
                 $this->Result = false;
+                $this->Message = $delete->getResult()[1];
             }
+
         } catch (Exception $th) {
             $delete->Rollback();
             $this->Result = false;
+            $this->Message = $delete->getResult()[1];
         }
     }
 
