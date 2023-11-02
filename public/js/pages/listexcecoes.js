@@ -97,10 +97,10 @@ $(document).ready(function () {
   });
 
   // CONTROLA O FORMULÁRIO DO CADASTRO
-
   $("#form-CAD-excecao").form({
     onSuccess: function (event, fields) {
       $("#search_to option").prop("selected", true); // que merda é essa?
+
 
       event.preventDefault(); // Impede o envio padrão do formulário
 
@@ -112,13 +112,12 @@ $(document).ready(function () {
         url: "./../../App/Controllers/Excecoes.php",
         data: formData,
         beforeSend: function () {
-          $("#cadSumbit").addClass("loading disabled");
-          $("#fechaModalCAD").addClass("loading disabled");
+          $("#cadSubmit").addClass("loading disabled");
+          $("#fechaModalCAD").addClass("disabled");
         },
         success: function (response) {
-          response = JSON.parse(response);
 
-          if (response === "inserido" || response === "alterado") {
+          if (response.status === "inserido" || response.status === "alterado") {
             $("#myTable").DataTable().clear().draw();
 
             setTimeout(function () {
@@ -142,14 +141,12 @@ $(document).ready(function () {
             "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
           );
         },
-        complete: function () {
-          // Remova a animação de "carregando" aqui, se necessário
-        },
       });
     },
   });
 
   $("#CAD").click(function () {
+    $("#cdExcecao").val("");
     $("#dataExcecao").val("");
     $("#dataFinal").val("");
     $("#search_to").empty();
@@ -157,6 +154,10 @@ $(document).ready(function () {
     carregardadosTiposExcecoes();
     $("#select-tipoExcecao").val("").trigger("change");
     $("#CADmodal").modal({ closable: false }).modal("show");
+  });
+
+  $("#fechaModalCAD").click(function(){
+    $("#CADmodal").modal("hide");
   });
 });
 

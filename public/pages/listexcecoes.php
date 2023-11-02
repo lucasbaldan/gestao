@@ -37,7 +37,7 @@ include("./footer_menu.php");
     </div>
 </body>
 
-<div class="ui modal" id="CADmodal">
+<div class="ui modal" id="CADmodal" data-closable="false">
     <div class="header" style="background-color: black; color:white;">
         Exceções de Trabalho - Cadastro
     </div>
@@ -59,7 +59,7 @@ include("./footer_menu.php");
                     <div class="ui calendar">
                         <div class="ui input left icon">
                             <i class="calendar icon"></i>
-                            <input type="text" name="dataExcecao" id="dataExcecao" placeholder="Data">
+                            <input type="text" name="dataExcecao" id="dataExcecao" placeholder="Data" autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -69,7 +69,7 @@ include("./footer_menu.php");
                     <div class="ui calendar">
                         <div class="ui input left icon">
                             <i class="calendar icon"></i>
-                            <input type="text" name="dataFinal" id="dataFinal" placeholder="Data final...">
+                            <input type="text" name="dataFinal" id="dataFinal" placeholder="Data final..." autocomplete="off">
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ include("./footer_menu.php");
 
                 <label>Tipo de Exceção...</label>
 
-                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required style="width: 100%;"></select>
+                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required style="width: 100%;" autocomplete="off"></select>
 
                 <!-- <div id="selectTipoExcecao" class="ui search">
                     <div class="ui icon input">
@@ -125,7 +125,7 @@ include("./footer_menu.php");
 
         <div class="ui divider"></div>
 
-        <div class="actions">
+        <!-- <div class="actions"> -->
             <div class="button-container">
                 <div id="fechaModalCAD" class="ui inverted red cancel button">
                     Fechar
@@ -135,7 +135,7 @@ include("./footer_menu.php");
                     <i class="checkmark icon"></i>
                 </button>
             </div>
-        </div>
+        <!-- </div> -->
         </br>
     </form>
 </div>

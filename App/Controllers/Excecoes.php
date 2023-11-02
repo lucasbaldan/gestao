@@ -37,13 +37,13 @@ class Excecoes
     {
         try {
             $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
-            $this->data = isset($dados['dataExcecao']) ? $dados['dataExcecao'] : '';
-            $this->dataFinal = isset($dados['dataFinal']) ? $dados['dataFinal'] : '';
+            $this->data = isset($dados['dataExcecao']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataExcecao']))) : '';
+            $this->dataFinal = isset($dados['dataFinal']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataFinal']))) : '';
             $this->tpExcecao = isset($dados['tipoExcecao']) ? $dados['tipoExcecao'] : '';
             $this->funcionarios_selecionados = isset($dados['to']) ? ($dados['to']) : '';
 
-            if (empty($this->data) || empty($this->data) || empty($this->tpExcecao) || (empty($this->funcionarios_selecionados) && !isset($this->codigo))) {
-                throw new Exception("Campos Usuário e Senha não podem ser nulos!");
+            if (empty($this->data) || empty($this->tpExcecao) || (empty($this->funcionarios_selecionados) && !isset($this->codigo))) {
+                throw new Exception("Erro ao processa a operação, tente novamente mais tarde!");
             }
 
             if (empty($this->codigo)) {
@@ -58,15 +58,14 @@ class Excecoes
                     $cad->setTipoExcecao($this->tpExcecao);
                     $cad->setFuncionario(intval($funcionario));
                     $cad->inserir($insert);
-                    if ($cad->getResult() == false) {
-                        echo 'erro';
-                        $insert->Rollback();
-                        break;
+
+                    if (!$cad->getResult()) {
+                        throw new Exception($cad->getMessage());
                     }
                 }
                 $insert->Commit();
-                echo 'inserido';
-            
+                $status = 'inserido';
+                $response = '';
             } else {
 
                 $cad = new \App\Models\Excecoes;
@@ -75,15 +74,23 @@ class Excecoes
                 $cad->setDataFinal($this->dataFinal);
                 $cad->setTipoExcecao($this->tpExcecao);
                 $cad->alterar();
-                if ($cad->getResult() == true) {
-                    echo 'alterado';
+
+                if ($cad->getResult()) {
+                    $status = 'alterado';
+                    $response = '';
                 } else {
-                    echo 'erro';
+                    $status = 'erro';
+                    $response = $cad->getMessage();
                 }
             }
         } catch (Exception $th) {
-            echo 'erro';
+            $status = 'erro';
+            $response = $th->getMessage();
         }
+
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function excluir($dados)
@@ -114,6 +121,5 @@ class Excecoes
         $response = json_encode(["status" => $status, "response" => $response]);
         header('Content-Type: application/json');
         echo $response;
-
     }
 }
