@@ -101,11 +101,11 @@ $(document).ready(function () {
     onSuccess: function (event, fields) {
       $("#search_to option").prop("selected", true); // que merda é essa?
 
-
       event.preventDefault(); // Impede o envio padrão do formulário
 
       // Obtém os dados do formulário
       var formData = $("#form-CAD-excecao").serialize();
+      alert(formData);
 
       $.ajax({
         type: "POST",
@@ -162,6 +162,7 @@ $(document).ready(function () {
 });
 
 function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
+  $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
   $("#search_to").empty();
   $("#dataExcecao").val("");
   $("#dataFinal").val("");
@@ -179,9 +180,11 @@ function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
     success: function (data) {
       var Excecao = JSON.parse(data)[0];
 
-      $("#cdExcecao").val(Excecao.CD_EXCECAO);
-      $("#dataExcecao").val(Excecao.DATA_INICIAL);
-      $("#dataFinal").val(Excecao.DATA_FINAL);
+      $("#cdExcecao").val(Excecao.CD_EXCECAO);7
+      acionarCalendarioComData("dataExcecao", Excecao.DATA_INICIAL);
+      //$("#dataExcecao").val(Excecao.DATA_INICIAL);
+      //$("#dataFinal").val(Excecao.DATA_FINAL);
+      $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador

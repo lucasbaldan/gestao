@@ -38,7 +38,7 @@ class Excecoes
         try {
             $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
             $this->data = isset($dados['dataExcecao']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataExcecao']))) : '';
-            $this->dataFinal = isset($dados['dataFinal']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataFinal']))) : '';
+            $this->dataFinal = !empty($dados['dataFinal']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataFinal']))) : '';
             $this->tpExcecao = isset($dados['tipoExcecao']) ? $dados['tipoExcecao'] : '';
             $this->funcionarios_selecionados = isset($dados['to']) ? ($dados['to']) : '';
 
