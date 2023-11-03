@@ -31,13 +31,16 @@ var ptBR_calendar = {
   ],
 };
 
-function acionarCalendario() {
-   const inputCalendario = $(".ui.calendar").calendar({
+function uiCalendar(idInput) {
+ var inputCalendario = $('#'+idInput).calendar({
     text: ptBR_calendar,
     type: "date",
     formatter: {
       date: "DD/MM/YYYY",
     },
   });
-  inputCalendario.calendar('set date', '2023-03-01');
+  inputCalendario.calendar('clear');
+  return inputCalendario;
 }
+
+//inputCalendario.calendar('set date', '2023-03-01');

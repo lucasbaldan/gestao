@@ -56,7 +56,7 @@ include("./footer_menu.php");
 
                 <div class="required field">
                     <label>Data</label>
-                    <div class="ui calendar">
+                    <div class="ui calendar" id="dataExcecaoDiv">
                         <div class="ui input left icon">
                             <i class="calendar icon"></i>
                             <input type="text" name="dataExcecao" id="dataExcecao" placeholder="Data" autocomplete="off">
@@ -66,7 +66,7 @@ include("./footer_menu.php");
 
                 <div class="field">
                     <label>Data final</label>
-                    <div class="ui calendar">
+                    <div class="ui calendar" id="dataFinalDiv">
                         <div class="ui input left icon">
                             <i class="calendar icon"></i>
                             <input type="text" name="dataFinal" id="dataFinal" placeholder="Data final..." autocomplete="off">

@@ -24,12 +24,13 @@ class Excecoes
     {
         try {
             $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
+            $gridFormat = isset($dados['GridFormat']) ? $dados['GridFormat'] : false;
 
             $pegalista = new \App\Models\Excecoes;
-            $lista = $pegalista->listar($this->codigo);
+            $lista = $pegalista->listar(null, $this->codigo, $gridFormat);
             echo json_encode($lista);
         } catch (Exception $th) {
-            return json_encode(array('error' => "Erro ao executar operação."));
+            return json_encode($th->getMessage());
         }
     }
 

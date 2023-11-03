@@ -1,6 +1,5 @@
 ////// INICIA O JAVASRIPT DA PÁGINA
 $(document).ready(function () {
-  acionarCalendario();
   var table = $("#myTable").DataTable({
     processing: true,
     ajax: {
@@ -8,6 +7,7 @@ $(document).ready(function () {
       url: "./../../App/Controllers/Excecoes.php",
       data: {
         funcao: "listJSON",
+        GridFormat: true,
       },
       dataSrc: "",
       error: function () {
@@ -147,8 +147,8 @@ $(document).ready(function () {
 
   $("#CAD").click(function () {
     $("#cdExcecao").val("");
-    $("#dataExcecao").val("");
-    $("#dataFinal").val("");
+    uiCalendar('dataExcecaoDiv');
+    uiCalendar('dataFinalDiv');
     $("#search_to").empty();
     carregarDadosFuncionario();
     carregardadosTiposExcecoes();
@@ -161,14 +161,12 @@ $(document).ready(function () {
   });
 });
 
-function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
+function editarRegistro(idExcecao) {
   $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
   $("#search_to").empty();
-  $("#dataExcecao").val("");
-  $("#dataFinal").val("");
-  carregardadosTiposExcecoes(idTipoExcecao);
-  carregarDadosFuncionario(idFuncionario);
-  $("#CADmodal").modal({ closable: false }).modal("show");
+  var inputDataExcecao = uiCalendar('dataExcecaoDiv');
+  var inputDataFinal = uiCalendar('dataFinalDiv');
+  //carregarDadosFuncionario();
 
   $.ajax({
     type: "POST",
@@ -178,13 +176,15 @@ function editarRegistro(idExcecao, idFuncionario, idTipoExcecao) {
       funcao: "listJSON",
     },
     success: function (data) {
+      console.log(data);
       var Excecao = JSON.parse(data)[0];
 
-      $("#cdExcecao").val(Excecao.CD_EXCECAO);7
-      acionarCalendarioComData("dataExcecao", Excecao.DATA_INICIAL);
-      //$("#dataExcecao").val(Excecao.DATA_INICIAL);
-      //$("#dataFinal").val(Excecao.DATA_FINAL);
+      $("#cdExcecao").val(Excecao.CD_EXCECAO);
+      inputDataExcecao.calendar('set date', Excecao.DATA_INICIAL);
+      inputDataFinal.calendar('set date', Excecao.DATA_FINAL);
+      carregardadosTiposExcecoes(Excecao.CD_TIPO_EXCECAO);
       $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
+      $("#CADmodal").modal({ closable: false }).modal("show");
     },
     error: function (xhr, status, error) {
       console.error(error); // Mostra o erro no console do navegador
@@ -277,7 +277,12 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
     tags: false,
     placeholder: "Selecione tipo Exceção",
     allowClear: true,
+    if(tipoExcecaoSalvoNoBanco){
+      $("#select-tipoExcecao").val('97'); // Select the option with a value of '1'
+      $("#select-tipoExcecao").trigger('change');
+      }
   });
+
 }
 
 function carregarDadosFuncionario(id = null) {
