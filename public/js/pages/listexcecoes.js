@@ -105,7 +105,6 @@ $(document).ready(function () {
 
       // Obtém os dados do formulário
       var formData = $("#form-CAD-excecao").serialize();
-      alert(formData);
 
       $.ajax({
         type: "POST",
@@ -116,8 +115,10 @@ $(document).ready(function () {
           $("#fechaModalCAD").addClass("disabled");
         },
         success: function (response) {
-
-          if (response.status === "inserido" || response.status === "alterado") {
+          if (
+            response.status === "inserido" ||
+            response.status === "alterado"
+          ) {
             $("#myTable").DataTable().clear().draw();
 
             setTimeout(function () {
@@ -147,8 +148,8 @@ $(document).ready(function () {
 
   $("#CAD").click(function () {
     $("#cdExcecao").val("");
-    uiCalendar('dataExcecaoDiv');
-    uiCalendar('dataFinalDiv');
+    uiCalendar("dataExcecaoDiv");
+    uiCalendar("dataFinalDiv");
     $("#search_to").empty();
     carregarDadosFuncionario();
     carregardadosTiposExcecoes();
@@ -156,7 +157,7 @@ $(document).ready(function () {
     $("#CADmodal").modal({ closable: false }).modal("show");
   });
 
-  $("#fechaModalCAD").click(function(){
+  $("#fechaModalCAD").click(function () {
     $("#CADmodal").modal("hide");
   });
 });
@@ -164,9 +165,8 @@ $(document).ready(function () {
 function editarRegistro(idExcecao) {
   $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
   $("#search_to").empty();
-  var inputDataExcecao = uiCalendar('dataExcecaoDiv');
-  var inputDataFinal = uiCalendar('dataFinalDiv');
-  //carregarDadosFuncionario();
+  var inputDataExcecao = uiCalendar("dataExcecaoDiv");
+  var inputDataFinal = uiCalendar("dataFinalDiv");
 
   $.ajax({
     type: "POST",
@@ -180,9 +180,10 @@ function editarRegistro(idExcecao) {
       var Excecao = JSON.parse(data)[0];
 
       $("#cdExcecao").val(Excecao.CD_EXCECAO);
-      inputDataExcecao.calendar('set date', Excecao.DATA_INICIAL);
-      inputDataFinal.calendar('set date', Excecao.DATA_FINAL);
+      inputDataExcecao.calendar("set date", Excecao.DATA_INICIAL);
+      inputDataFinal.calendar("set date", Excecao.DATA_FINAL);
       carregardadosTiposExcecoes(Excecao.CD_TIPO_EXCECAO);
+      carregarDadosFuncionario(Excecao.CD_FUNCIONARIO);
       $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
       $("#CADmodal").modal({ closable: false }).modal("show");
     },
@@ -194,58 +195,85 @@ function editarRegistro(idExcecao) {
 }
 
 function excluirRegistro(idExcecao) {
-  $("#confirmacaoExclusao").modal({
+  $("#confirmacaoExclusao")
+    .modal({
       closable: false,
-      onApprove: function() {
+      onApprove: function () {
         confirmadoExclusao(idExcecao);
         return false;
       },
-    }).modal("show");
+    })
+    .modal("show");
 
-// Função de callback para executar o Ajax após a confirmação
-function confirmadoExclusao() {
-  $.ajax({
-    type: "POST",
-    url: "./../../App/Controllers/Excecoes.php",
-    data: {
-      cdExcecao: idExcecao,
-      funcao: "excluir",
-    },
-    beforeSend: function () {
-      $("#botaoconfirmaExclusao").addClass("loading disabled");
-      $("#fechaModalEXC").addClass("disabled");
-    },
-    success: function (response) {
-
-      if (response.status === "excluido") {
-        $("#myTable").DataTable().clear().draw();
-        setTimeout(function () {
-          toastSucesso();
+  // Função de callback para executar o Ajax após a confirmação
+  function confirmadoExclusao() {
+    $.ajax({
+      type: "POST",
+      url: "./../../App/Controllers/Excecoes.php",
+      data: {
+        cdExcecao: idExcecao,
+        funcao: "excluir",
+      },
+      beforeSend: function () {
+        $("#botaoconfirmaExclusao").addClass("loading disabled");
+        $("#fechaModalEXC").addClass("disabled");
+      },
+      success: function (response) {
+        if (response.status === "excluido") {
+          $("#myTable").DataTable().clear().draw();
+          setTimeout(function () {
+            toastSucesso();
+            $("#botaoconfirmaExclusao").removeClass("loading disabled");
+            $("#fechaModalEXC").removeClass("disabled");
+            $("#confirmacaoExclusao").modal("hide");
+            $("#myTable").DataTable().ajax.reload();
+          }, 2000);
+        } else if (response.status === "erro") {
+          response.response.includes("SQLSTATE[23000]")
+            ? toastAtencao(
+                "OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados."
+              )
+            : toastErro(resposta.response);
           $("#botaoconfirmaExclusao").removeClass("loading disabled");
           $("#fechaModalEXC").removeClass("disabled");
-          $("#confirmacaoExclusao").modal("hide");
-          $("#myTable").DataTable().ajax.reload();
-        }, 2000);
-      } else if (response.status === "erro") {
-        response.response.includes("SQLSTATE[23000]") ? toastAtencao('OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados.') : toastErro(resposta.response);
-        $("#botaoconfirmaExclusao").removeClass("loading disabled");
-        $("#fechaModalEXC").removeClass("disabled");
-        
-      } else {
-        window.location.href = "generalError.php";
-      }
-
-    },
-    error: function (xhr, status, error) {
-      console.error(error);
-      alert("Erro ao Executar operação");
-    },
-  });
-}
+        } else {
+          window.location.href = "generalError.php";
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+        alert("Erro ao Executar operação");
+      },
+    });
+  }
 }
 
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
 function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
+
+  if (tipoExcecaoSalvoNoBanco) {
+    $.ajax({
+      type: "POST",
+      url: "./../../App/Controllers/TiposExcecoes.php",
+      data: {
+        cdTipoExcecao: tipoExcecaoSalvoNoBanco,
+        funcao: "listJSON",
+      },
+      success: function (data) {
+        var tipoExcecao = JSON.parse(data)[0];
+        var novaOpcao = document.createElement('option');
+        novaOpcao.value = tipoExcecao.CD_TIPO_EXCECAO;
+        novaOpcao.text = tipoExcecao.NM_TIPO_EXCECAO;
+        var selectElement = document.getElementById('select-tipoExcecao');
+        selectElement.appendChild(novaOpcao);
+      },
+      error: function (xhr, status, error) {
+        console.error(error);
+        alert("Erro ao Buscar opção Tipo de Exceção Salva. Tente novamente mais tarde!");
+      },
+    });
+  }
+ 
   $("#select-tipoExcecao").select2({
     ajax: {
       url: "./../../App/Controllers/TiposExcecoes.php",
@@ -259,6 +287,7 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
         };
       },
       processResults: function (data) {
+        console.log(data);
         // Mapear os campos do JSON para os campos específicos do Select2
         var mappedData = data.map(function (item) {
           return {
@@ -277,15 +306,12 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
     tags: false,
     placeholder: "Selecione tipo Exceção",
     allowClear: true,
-    if(tipoExcecaoSalvoNoBanco){
-      $("#select-tipoExcecao").val('97'); // Select the option with a value of '1'
-      $("#select-tipoExcecao").trigger('change');
-      }
   });
-
 }
 
 function carregarDadosFuncionario(id = null) {
+  $("#search").empty();
+  $("#search_to").empty();
   $.ajax({
     type: "POST",
     url: "./../../App/Controllers/Funcionarios.php",
@@ -293,13 +319,12 @@ function carregarDadosFuncionario(id = null) {
       funcao: "listJSON",
       cdFuncionario: id,
     },
-    beforeSend: function (){
+    beforeSend: function () {
       $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
     },
     success: function (data) {
       const dadosFuncionarios = JSON.parse(data);
-      const selectFuncionarios = $("#search");
-      selectFuncionarios.empty();
+      const selectFuncionarios = id == null ? $("#search") : $("#search_to");
 
       dadosFuncionarios.forEach((funcionario) => {
         const option = $("<option>")
@@ -308,14 +333,13 @@ function carregarDadosFuncionario(id = null) {
         selectFuncionarios.append(option);
       });
 
-      
       $("#search").multiselect({
         submitAllLeft: false,
         submitAllRigh: true,
         search: {
           left: '<input type="text" class="form-control" placeholder="Procurar Funcionário..." />',
           right:
-          '<input type="text" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
+            '<input type="text" class="form-control" placeholder="Procurar Funcionário selecionado..." />',
         },
         fireSearch: function (value) {
           return value.length > 0;
