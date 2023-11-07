@@ -1,5 +1,6 @@
 ////// INICIA O JAVASRIPT DA PÁGINA
 $(document).ready(function () {
+  $(".ui.basic.red.pointing").hide();
   var table = $("#myTable").DataTable({
     processing: true,
     ajax: {
@@ -100,8 +101,36 @@ $(document).ready(function () {
   $("#form-CAD-excecao").form({
     onSuccess: function (event, fields) {
       $("#search_to option").prop("selected", true); // que merda é essa?
-
       event.preventDefault(); // Impede o envio padrão do formulário
+
+      //VALIDANDO O FORMULARIO PELA INTERFACE
+      var pararEnvio = false;
+      if ($("#dataExcecao").val().trim() === "") {
+        $("#preencherData").show();
+        pararEnvio = true;
+      }
+      else{
+        $("#preencherData").hide();
+      }
+      if ($("#select-tipoExcecao").val() === null || $("#select-tipoExcecao").val() === "") {
+          $("#preencherTipoExcecao").show();
+          pararEnvio = true;
+      }
+      else{
+        $("#preencherTipoExcecao").hide();
+      }
+      if ($("#search_to option:selected").length === 0) {
+        $("#preencherFuncionario").show();
+        pararEnvio = true;
+      }
+      else{
+        $("#preencherFuncionario").hide();
+      }
+
+      if(pararEnvio){
+        return false;
+      }
+
 
       // Obtém os dados do formulário
       var formData = $("#form-CAD-excecao").serialize();
@@ -250,7 +279,6 @@ function excluirRegistro(idExcecao) {
 
 // FUNÇÃO QUE PEGA OS DADOS DOS TIPOS DE EXCEÇÕES
 function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
-
   if (tipoExcecaoSalvoNoBanco) {
     $.ajax({
       type: "POST",
@@ -261,19 +289,21 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
       },
       success: function (data) {
         var tipoExcecao = JSON.parse(data)[0];
-        var novaOpcao = document.createElement('option');
+        var novaOpcao = document.createElement("option");
         novaOpcao.value = tipoExcecao.CD_TIPO_EXCECAO;
         novaOpcao.text = tipoExcecao.NM_TIPO_EXCECAO;
-        var selectElement = document.getElementById('select-tipoExcecao');
+        var selectElement = document.getElementById("select-tipoExcecao");
         selectElement.appendChild(novaOpcao);
       },
       error: function (xhr, status, error) {
         console.error(error);
-        alert("Erro ao Buscar opção Tipo de Exceção Salva. Tente novamente mais tarde!");
+        alert(
+          "Erro ao Buscar opção Tipo de Exceção Salva. Tente novamente mais tarde!"
+        );
       },
     });
   }
- 
+
   $("#select-tipoExcecao").select2({
     ajax: {
       url: "./../../App/Controllers/TiposExcecoes.php",

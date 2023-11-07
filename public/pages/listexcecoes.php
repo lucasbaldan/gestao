@@ -62,6 +62,9 @@ include("./footer_menu.php");
                             <input type="text" name="dataExcecao" id="dataExcecao" placeholder="Data" autocomplete="off">
                         </div>
                     </div>
+                    <div class="ui basic red pointing prompt label transition" id="preencherData">
+                        Preencha com uma data válida a Exceção de Trabalho.
+                    </div>
                 </div>
 
                 <div class="field">
@@ -73,7 +76,6 @@ include("./footer_menu.php");
                         </div>
                     </div>
                 </div>
-
             </div>
 
 
@@ -81,7 +83,7 @@ include("./footer_menu.php");
 
                 <label>Tipo de Exceção...</label>
 
-                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" required style="width: 100%;" autocomplete="off"></select>
+                <select id="select-tipoExcecao" name="tipoExcecao" class="select2" style="width: 100%;" autocomplete="off"></select>
 
                 <!-- <div id="selectTipoExcecao" class="ui search">
                     <div class="ui icon input">
@@ -91,8 +93,11 @@ include("./footer_menu.php");
                     <div class="results"></div>
                 </div>
                 <input id="tipoExcecao" type="hidden" required readonly> -->
+                <div class="ui basic red pointing prompt label transition" id="preencherTipoExcecao">
+                    Selecione uma opção de Tipo de Exceção para salvar.
+                </div>
             </div>
-            
+
 
             <div class="required field" style="margin-left: 15%;">
                 <div class="ui grid">
@@ -114,6 +119,9 @@ include("./footer_menu.php");
                             </div>
 
                             <div class="col-xs-5">
+                                <div class="ui basic red pointing below prompt label transition" id="preencherFuncionario" style="margin-left: 20%;">
+                                    Selecione pelo menos um Funcionário para aplicar a exceção de Trabalho.
+                                </div>
                                 <select name="to[]" id="search_to" class="form-control" size="5" multiple="multiple"></select>
                             </div>
                         </div>
@@ -126,15 +134,15 @@ include("./footer_menu.php");
         <div class="ui divider"></div>
 
         <!-- <div class="actions"> -->
-            <div class="button-container">
-                <div id="fechaModalCAD" class="ui inverted red cancel button">
-                    Fechar
-                </div>
-                <button type="submit" class="ui positive right labeled icon button" id="cadSubmit">
-                    Salvar
-                    <i class="checkmark icon"></i>
-                </button>
+        <div class="button-container">
+            <div id="fechaModalCAD" class="ui inverted red cancel button">
+                Fechar
             </div>
+            <button type="submit" class="ui positive right labeled icon button" id="cadSubmit">
+                Salvar
+                <i class="checkmark icon"></i>
+            </button>
+        </div>
         <!-- </div> -->
         </br>
     </form>
