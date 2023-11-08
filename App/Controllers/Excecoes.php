@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 require __DIR__ . '/../../vendor/autoload.php';
 
+use Error;
 use Exception;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
@@ -23,11 +24,12 @@ class Excecoes
     public function listJSON($dados)
     {
         try {
-            $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
+            $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : null;
             $gridFormat = isset($dados['GridFormat']) ? $dados['GridFormat'] : false;
 
             $pegalista = new \App\Models\Excecoes;
-            $lista = $pegalista->listar(null, $this->codigo, $gridFormat);
+            $pegalista->setCodigo($this->codigo);
+            $lista = $pegalista->generalSearch(null, $gridFormat);
             echo json_encode($lista);
         } catch (Exception $th) {
             return json_encode($th->getMessage());
@@ -38,16 +40,17 @@ class Excecoes
     {
         try {
             $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
-            $this->data = isset($dados['dataExcecao']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataExcecao']))) : '';
+            $this->data = !empty($dados['dataExcecao']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataExcecao']))) : '';
             $this->dataFinal = !empty($dados['dataFinal']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataFinal']))) : '';
             $this->tpExcecao = isset($dados['tipoExcecao']) ? $dados['tipoExcecao'] : '';
             $this->funcionarios_selecionados = isset($dados['to']) ? ($dados['to']) : '';
 
             if (empty($this->data) || empty($this->tpExcecao) || (empty($this->funcionarios_selecionados) && !isset($this->codigo))) {
-                throw new Exception("Erro ao processa a operação, tente novamente mais tarde!");
+                throw new Exception("Erro ao processar a operação, tente novamente mais tarde!");
             }
 
             if (empty($this->codigo)) {
+
                 $conn = \App\Conn\Conn::getConn(true);
                 $insert = new \App\Conn\Insert($conn);
 
@@ -58,6 +61,12 @@ class Excecoes
                     $cad->setDataFinal($this->dataFinal);
                     $cad->setTipoExcecao($this->tpExcecao);
                     $cad->setFuncionario(intval($funcionario));
+
+                    $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO, F.NM_FUNCIONARIO", null, $funcionario, false, true);
+                    if ($verificaDuplicidade) {
+                        throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário: " . $verificaDuplicidade[0]['NM_FUNCIONARIO']);
+                    }
+
                     $cad->inserir($insert);
 
                     if (!$cad->getResult()) {
@@ -67,6 +76,7 @@ class Excecoes
                 $insert->Commit();
                 $status = 'inserido';
                 $response = '';
+            
             } else {
 
                 $cad = new \App\Models\Excecoes;
@@ -74,6 +84,12 @@ class Excecoes
                 $cad->setData($this->data);
                 $cad->setDataFinal($this->dataFinal);
                 $cad->setTipoExcecao($this->tpExcecao);
+
+                $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO", $this->codigo, null, false, true);
+                if ($verificaDuplicidade) {
+                    throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário");
+                }
+
                 $cad->alterar();
 
                 if ($cad->getResult()) {

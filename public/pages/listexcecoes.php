@@ -48,7 +48,7 @@ include("./footer_menu.php");
 
             <div class="disabled field" style="margin-top: 10px; margin-left: 10%; margin-right: 10%;">
                 <label>Código:</label>
-                <input type="text" name="cdExcecao" id="cdExcecao" placeholder="Código da exceção gerao automaticamente ao inserir" required readonly>
+                <input type="text" name="cdExcecao" id="cdExcecao" placeholder="Código da exceção gerao automaticamente ao inserir" readonly>
             </div>
 
 
@@ -74,6 +74,9 @@ include("./footer_menu.php");
                             <i class="calendar icon"></i>
                             <input type="text" name="dataFinal" id="dataFinal" placeholder="Data final..." autocomplete="off">
                         </div>
+                    </div>
+                    <div class="ui basic red pointing prompt label transition" id="preencherDataFinal">
+                        A Data Final não pode ser inferior a Data de início da Exceção!
                     </div>
                 </div>
             </div>

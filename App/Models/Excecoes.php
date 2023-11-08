@@ -45,32 +45,42 @@ class Excecoes
     }
 
 
-    public function listar($colunas = null, $cdExcecao = null, $gridformat = false)
+    public function generalSearch($colunas = null, $gridformat = false, $verificaDuplicidade = false)
     {
 
         try {
             $read = new \App\Conn\Read();
             $colunas = $colunas ?? "*";
+            $parseString = null;
 
 
             $query = $gridformat == true ? "SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO, T.CD_TIPO_EXCECAO
                   FROM EXCECOES E
                   INNER JOIN TIPO_EXCECOES T ON (E.CD_TIPO_EXCECAO = T.CD_TIPO_EXCECAO)
-                  INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)" 
-                  : 
-                  "SELECT ".$colunas." 
+                  INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)"
+                :
+                "SELECT " . $colunas . " 
              FROM EXCECOES E
+             INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
              WHERE E.CD_EXCECAO IS NOT NULL ";
 
-            if ($cdExcecao) {
-                $query .= "AND E.CD_EXCECAO = $cdExcecao ";
+            if ($this->codigo) {
+                $query .= "AND E.CD_EXCECAO = $this->codigo ";
+            }
+            if ($verificaDuplicidade) {
+                $query .= " AND E.CD_FUNCIONARIO = :FUN
+                AND (:DTINI BETWEEN E.DATA_INICIAL AND E.DATA_FINAL
+                OR :DTFIN BETWEEN E.DATA_INICIAL AND E.DATA_FINAL)
+                OR E.DATA_INICIAL = :DTINI";
+
+                $parseString = "FUN=$this->cdfuncionario&DTINI=$this->data&DTFIN=$this->dataFinal";
             }
 
-            $read->FullRead($query);
+            $read->FullRead($query, $parseString);
             return $read->getResult();
         } catch (Exception $th) {
             return $th->getMessage();
-            //header("Location: /gestao/public/pages/generalError.php");
+            header("Location: /gestao/public/pages/generalError.php");
         }
 
         //         if (empty($cdExcecao) && empty($tpExcecao)) {

@@ -108,29 +108,39 @@ $(document).ready(function () {
       if ($("#dataExcecao").val().trim() === "") {
         $("#preencherData").show();
         pararEnvio = true;
-      }
-      else{
+      } else {
         $("#preencherData").hide();
       }
-      if ($("#select-tipoExcecao").val() === null || $("#select-tipoExcecao").val() === "") {
-          $("#preencherTipoExcecao").show();
-          pararEnvio = true;
+      if(new Date($("#dataExcecao").val()) > new Date($("#dataFinal").val())){
+        $("#preencherDataFinal").show();
+        pararEnvio = true;
       }
       else{
+        $("#preencherDataFinal").hide();
+      }
+
+
+      if (
+        $("#select-tipoExcecao").val() === null ||
+        $("#select-tipoExcecao").val() === ""
+      ) {
+        $("#preencherTipoExcecao").show();
+        pararEnvio = true;
+      } else {
         $("#preencherTipoExcecao").hide();
       }
       if ($("#search_to option:selected").length === 0) {
         $("#preencherFuncionario").show();
         pararEnvio = true;
-      }
-      else{
+      } else {
         $("#preencherFuncionario").hide();
       }
 
-      if(pararEnvio){
+      if (pararEnvio) {
+        toastAtencao("Atenção ao preencher o Cadastro!");
+        $("#CADmodal").modal('refresh');
         return false;
       }
-
 
       // Obtém os dados do formulário
       var formData = $("#form-CAD-excecao").serialize();
@@ -153,6 +163,7 @@ $(document).ready(function () {
             setTimeout(function () {
               $("#CADmodal").modal("hide");
               $("#cadSubmit").removeClass("loading disabled");
+              limparOpcoesTipoExecao();
               $("#fechaModalCAD").removeClass("disabled");
               toastSucesso();
               $("#myTable").DataTable().ajax.reload();
@@ -187,7 +198,11 @@ $(document).ready(function () {
   });
 
   $("#fechaModalCAD").click(function () {
+    $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
+    limparOpcoesTipoExecao();
+    $(".ui.basic.red.pointing").hide();
     $("#CADmodal").modal("hide");
+    $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
   });
 });
 
@@ -205,7 +220,6 @@ function editarRegistro(idExcecao) {
       funcao: "listJSON",
     },
     success: function (data) {
-      console.log(data);
       var Excecao = JSON.parse(data)[0];
 
       $("#cdExcecao").val(Excecao.CD_EXCECAO);
@@ -381,4 +395,11 @@ function carregarDadosFuncionario(id = null) {
       alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
     },
   });
+}
+
+function limparOpcoesTipoExecao(){
+  var selectElement = document.getElementById("select-tipoExcecao");
+    while (selectElement.options.length > 0) {
+      selectElement.remove(0);
+    }
 }
