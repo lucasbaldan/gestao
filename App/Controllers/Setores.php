@@ -14,46 +14,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
 
 class Setores
 {
-    private $codigo;
+    private int $codigo;
     private string $nome;
-
-    public function listSetores()
-    {
-
-        try {
-            $pegalistaDeSetores = new \App\Models\Setores;
-            $listaDeSetores = $pegalistaDeSetores->listarSetores();
-            return $listaDeSetores;
-        } catch (Exception $th) {
-            return false;
-        }
-    }
 
     public function listSetoresJSON($dados)
     {
-        try {
-            $this->codigo = isset($dados['cdSetor']) ? $dados['cdSetor'] : '';
-
-            $pegalistaDeSetores = new \App\Models\Setores;
-            $listaDeSetores = $pegalistaDeSetores->listarSetores($this->codigo);
-            echo json_encode($listaDeSetores);
-        } catch (Exception $th) {
-            return json_encode(array('error' => "Erro ao executar operação."));
-        }
+         try {
+             $this->codigo = isset($dados['cdSetor']) ? filter_input(INPUT_POST, 'cdSetor', FILTER_SANITIZE_NUMBER_INT) : 0;
+              $pegalistaDeSetores = new \App\Models\Setores;
+              $listaDeSetores = $pegalistaDeSetores->listarSetores($this->codigo);
+              echo json_encode($listaDeSetores);
+         } catch (Exception $th) {
+             return json_encode(array('error' => "Erro ao executar operação."));
+         }
     }
 
     public function controlarSetores($dados)
     {
 
         try {
-            $this->codigo = isset($dados['cdSetor']) ? $dados['cdSetor'] : '';
-            $this->nome = isset($dados['nameSetor']) ? $dados['nameSetor'] : '';
+            $this->codigo = !empty($dados['cdSetor']) ? filter_input(INPUT_POST, 'cdSetor', FILTER_SANITIZE_NUMBER_INT) : 0;
+            $this->nome = isset($dados['nameSetor']) ? htmlspecialchars($dados['nameSetor'], ENT_QUOTES, "UTF-8") : '';
 
-            if (empty($this->codigo) && empty($this->nome)) {
+            if ($this->codigo == 0 && empty($this->nome)) {
                 throw new Exception("Erro ao efetuar a operação, tente novamente mais tarde!");
             }
 
-            if (empty($this->codigo)) {
+            if ($this->codigo == 0) {
 
                 if (empty($this->nome)) {
                     throw new Exception("Preencha o campo Nome!");
@@ -111,7 +98,7 @@ class Setores
     {
 
         try {
-            $this->codigo = isset($dados['cdSetor']) ? $dados['cdSetor'] : '';
+            $this->codigo = !empty($dados['cdSetor']) ? filter_input(INPUT_POST, 'cdSetor', FILTER_SANITIZE_NUMBER_INT) : 0;
 
             if (empty($this->codigo)) {
                 throw new Exception("Erro");
