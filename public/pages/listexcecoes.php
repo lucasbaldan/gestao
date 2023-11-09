@@ -88,7 +88,7 @@ include("./footer_menu.php");
 
                 <select id="select-tipoExcecao" name="tipoExcecao" class="select2" style="width: 100%;" autocomplete="off"></select>
 
-                <!-- <div id="selectTipoExcecao" class="ui search">
+                <!-- <div id="selectTipoExcecao" class="ui search"> 
                     <div class="ui icon input">
                         <input id="pesquisaTipoExcecao" class="prompt" type="text" placeholder="Selecione um tipo de Exceção de Trabalho...">
                         <i class="search icon"></i>

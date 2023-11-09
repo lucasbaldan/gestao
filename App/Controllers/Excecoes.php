@@ -24,7 +24,7 @@ class Excecoes
     public function listJSON($dados)
     {
         try {
-            $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : null;
+            $this->codigo = isset($dados['cdExcecao']) ? filter_input(INPUT_POST, 'cdExcecao', FILTER_SANITIZE_NUMBER_INT) : null;
             $gridFormat = isset($dados['GridFormat']) ? $dados['GridFormat'] : false;
 
             $pegalista = new \App\Models\Excecoes;
@@ -69,7 +69,7 @@ class Excecoes
                     $cad->setTipoExcecao($this->tpExcecao);
                     $cad->setFuncionario(intval($funcionario));
 
-                    $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO, F.NM_FUNCIONARIO", null, $funcionario, false, true);
+                    $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO, F.NM_FUNCIONARIO", false, true);
                     if ($verificaDuplicidade) {
                         throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário: " . $verificaDuplicidade[0]['NM_FUNCIONARIO']);
                     }
@@ -91,8 +91,8 @@ class Excecoes
                 $cad->setDataFinal($this->dataFinal);
                 $cad->setTipoExcecao($this->tpExcecao);
 
-                $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO", $this->codigo, null, false, true);
-                if ($verificaDuplicidade) {
+                $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO", false, true);
+                if ($verificaDuplicidade[0]["CD_EXCECAO"] != $this->codigo) {
                     throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário");
                 }
 
