@@ -10,9 +10,9 @@ $(document).ready(function () {
         funcao: "listJSON",
         GridFormat: true,
       },
-      dataSrc: "",
-      error: function () {
-        window.location.href = "generalError.php";
+      dataSrc: "response",
+      error: function (xhr) {
+          window.location.href = "generalError.php";
       },
     },
     columns: [
@@ -33,6 +33,12 @@ $(document).ready(function () {
             ")'><i class='trash alternate icon'></i></button>";
           return editarBtn + excluirBtn;
         },
+      },
+    ],
+    columnDefs: [
+      {
+        targets: [2, 3], // Índices das colunas DATA_INICIAL e DATA_FINAL
+        type: "date-eu",  // Define o tipo de dados como data europeia (DD/MM/YYYY)
       },
     ],
 
@@ -220,7 +226,8 @@ function editarRegistro(idExcecao) {
       funcao: "listJSON",
     },
     success: function (data) {
-      var Excecao = JSON.parse(data)[0];
+      console.log(data);
+      var Excecao = data['response'][0];
 
       $("#cdExcecao").val(Excecao.CD_EXCECAO);
       inputDataExcecao.calendar("set date", Excecao.DATA_INICIAL);
@@ -231,8 +238,7 @@ function editarRegistro(idExcecao) {
       $("#CADmodal").modal({ closable: false }).modal("show");
     },
     error: function (xhr, status, error) {
-      console.error(error); // Mostra o erro no console do navegador
-      alert("Erro ao carregar os dados da Funcao.");
+      window.location.href = "generalError.php";
     },
   });
 }

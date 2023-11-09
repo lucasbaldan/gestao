@@ -2,6 +2,7 @@
 
 namespace App\Conn;
 
+use Exception;
 use PDO;
 use PDOException;
 
@@ -36,7 +37,7 @@ class Conn
                 self::$Connect = new \PDO($dsn, self::$User, self::$Pass, $options);
             }
         } catch (PDOException $e) {
-            header("Location: /gestao/public/pages/generalError.php");
+            throw new Exception($e->getMessage()); 
             die;
             exit();
         }
@@ -55,7 +56,7 @@ class Conn
             }
             return $conn;
         } catch (PDOException $th) {
-            header("Location: /gestao/public/pages/generalError.php");  
+            throw new Exception($th->getMessage()); 
         }
     }
 
@@ -73,10 +74,5 @@ class Conn
             $this->Conn->commit();
             $this->Conn->setAttribute(\PDO::ATTR_AUTOCOMMIT, 1);
         }
-    }
-
-    public static function verificaBanco()
-    {
-        self::Conectar();
     }
 }

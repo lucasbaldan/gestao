@@ -79,9 +79,10 @@ class Excecoes
             $read->FullRead($query, $parseString);
             return $read->getResult();
         } catch (Exception $th) {
-            return $th->getMessage();
-            header("Location: /gestao/public/pages/generalError.php");
+            throw new Exception($th->getMessage());
         }
+
+        //DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL
 
         //         if (empty($cdExcecao) && empty($tpExcecao)) {
         //             $read->FullRead("SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO, T.CD_TIPO_EXCECAO

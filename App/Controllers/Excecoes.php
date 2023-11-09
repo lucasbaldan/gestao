@@ -30,10 +30,17 @@ class Excecoes
             $pegalista = new \App\Models\Excecoes;
             $pegalista->setCodigo($this->codigo);
             $lista = $pegalista->generalSearch(null, $gridFormat);
-            echo json_encode($lista);
+            http_response_code(200);
+            $status = true;
+            $response = $lista;
         } catch (Exception $th) {
-            return json_encode($th->getMessage());
+            http_response_code(500);
+            $status = false;
+            $response = $th->getMessage();
         }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function controlar($dados)
@@ -76,7 +83,6 @@ class Excecoes
                 $insert->Commit();
                 $status = 'inserido';
                 $response = '';
-            
             } else {
 
                 $cad = new \App\Models\Excecoes;

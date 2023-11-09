@@ -8,6 +8,7 @@
  */
 
 namespace App\Conn;
+use Exception;
 
 class Read extends Conn {
 
@@ -114,8 +115,7 @@ class Read extends Conn {
                 $this->Rollback();
             }
             $this->Result = null;
-            $arquivo = explode('.', (array_reverse(explode("/", str_replace("\\", "/", $e->getTrace()[2]['file'])))[0]))[0];
-            throw new \PDOException("<b>Erro ao ler:</b> {$e->getMessage()}<br>{$arquivo} - #{$e->getTrace()[2]['line']}");
+            throw new Exception("<b>Erro ao ler:</b> {$e->getMessage()}<br> - #{$e->getTrace()[2]['line']}");
         }
     }
 
