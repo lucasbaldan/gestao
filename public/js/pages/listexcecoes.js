@@ -35,12 +35,6 @@ $(document).ready(function () {
         },
       },
     ],
-    columnDefs: [
-      {
-        targets: [2, 3], // Índices das colunas DATA_INICIAL e DATA_FINAL
-        type: "date-eu",  // Define o tipo de dados como data europeia (DD/MM/YYYY)
-      },
-    ],
 
     language: {
       url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
@@ -160,6 +154,7 @@ $(document).ready(function () {
           $("#fechaModalCAD").addClass("disabled");
         },
         success: function (response) {
+          console.log(response);
           if (
             response.status === "inserido" ||
             response.status === "alterado"
@@ -183,11 +178,15 @@ $(document).ready(function () {
             $("#fechaModalCAD").removeClass("disabled");
           }
         },
-        error: function () {
-          alert(
-            "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
-          );
-        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          // Aqui você pode acessar informações sobre o erro
+          console.log("Erro na requisição AJAX:");
+          console.log("Status: " + textStatus);
+          console.log("Erro lançado: " + errorThrown);
+  
+          // Exibe uma mensagem de alerta personalizada
+          alert("Ocorreu um erro ao processar a requisição. Tente novamente mais tarde!");
+      },
       });
     },
   });
@@ -276,7 +275,7 @@ function excluirRegistro(idExcecao) {
             $("#fechaModalEXC").removeClass("disabled");
             $("#confirmacaoExclusao").modal("hide");
             $("#myTable").DataTable().ajax.reload();
-          }, 2000);
+          }, 500);
         } else if (response.status === "erro") {
           response.response.includes("SQLSTATE[23000]")
             ? toastAtencao(

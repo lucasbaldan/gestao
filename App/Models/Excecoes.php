@@ -45,7 +45,7 @@ class Excecoes
     }
 
 
-    public function generalSearch($colunas = null, $gridformat = false, $verificaDuplicidade = false)
+    public function generalSearch($colunas = null, $gridformat = false)
     {
 
         try {
@@ -54,26 +54,17 @@ class Excecoes
             $parseString = null;
 
 
-            $query = $gridformat == true ? "SELECT E.CD_EXCECAO, E.DATA_INICIAL, E.DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO, T.CD_TIPO_EXCECAO
+            $query = $gridformat == true ? "SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO, T.CD_TIPO_EXCECAO
                   FROM EXCECOES E
                   INNER JOIN TIPO_EXCECOES T ON (E.CD_TIPO_EXCECAO = T.CD_TIPO_EXCECAO)
                   INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)"
                 :
                 "SELECT " . $colunas . " 
              FROM EXCECOES E
-             INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)
              WHERE E.CD_EXCECAO IS NOT NULL ";
 
             if ($this->codigo) {
                 $query .= "AND E.CD_EXCECAO = $this->codigo ";
-            }
-            if ($verificaDuplicidade) {
-                $query .= " AND E.CD_FUNCIONARIO = :F
-                AND (:DTINI BETWEEN E.DATA_INICIAL AND E.DATA_FINAL
-                OR :DTFIN BETWEEN E.DATA_INICIAL AND E.DATA_FINAL)
-                OR E.DATA_INICIAL = :DTINI";
-
-                $parseString = "F=$this->cdfuncionario&DTINI=$this->data&DTFIN=$this->dataFinal";
             }
 
             $read->FullRead($query, $parseString);
@@ -82,22 +73,7 @@ class Excecoes
             throw new Exception($th->getMessage());
         }
 
-        //DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL
-
-        //         if (empty($cdExcecao) && empty($tpExcecao)) {
-        //             $read->FullRead("SELECT E.CD_EXCECAO, DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.NM_FUNCIONARIO, T.NM_TIPO_EXCECAO, F.CD_FUNCIONARIO, T.CD_TIPO_EXCECAO
-        //     FROM EXCECOES E
-        //     INNER JOIN TIPO_EXCECOES T ON (E.CD_TIPO_EXCECAO = T.CD_TIPO_EXCECAO)
-        //     INNER JOIN FUNCIONARIOS F ON (E.CD_FUNCIONARIO = F.CD_FUNCIONARIO)");
-
-        //     } else if ($tpExcecao) {
-        //             $read->FullRead("SELECT E.CD_EXCECAO
-        //     FROM EXCECOES E WHERE E.CD_TIPO_EXCECAO =:C", "C=$tpExcecao");
-        //     } else {
-        //             $read->FullRead("SELECT E.CD_EXCECAO, E.DATA_INICIAL, E.DATA_FINAL
-        //     FROM EXCECOES E WHERE E.CD_EXCECAO =:C", "C=$cdExcecao");
-        //         }
-        //         
+        //DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL         
     }
 
     public function alterar()
@@ -195,6 +171,23 @@ class Excecoes
             return $read->getResult();
         } catch (Exception $th) {
             return 'erro';
+        }
+    }
+
+    public static function verificaDuplicidade($cdFuncionario, $data, $dataFinal)
+    {
+        $read = new \App\Conn\Read();
+        try {
+
+            $read->FullRead("SELECT * FROM EXCECOES E
+            WHERE E.CD_FUNCIONARIO = :F 
+            AND ((:dataInicial BETWEEN E.DATA_INICIAL AND E.DATA_FINAL)
+            OR ((:dataFinal BETWEEN E.DATA_INICIAL AND E.DATA_FINAL) OR :dataFinal IS NULL))", "F=$cdFuncionario&dataInicial=$data&dataFinal=$dataFinal");
+            //"F=$cdFuncionario&dataInicial=$data&dataFinal=$dataFinal"
+
+            return $read->getResult();
+        } catch (Exception $th) {
+            return $th->getMessage();
         }
     }
 }

@@ -61,19 +61,19 @@ class Excecoes
                 $conn = \App\Conn\Conn::getConn(true);
                 $insert = new \App\Conn\Insert($conn);
 
+                $cad = new \App\Models\Excecoes;
+                $cad->setData($this->data);
+                $cad->setDataFinal($this->dataFinal);
+                $cad->setTipoExcecao($this->tpExcecao);
+
                 foreach ($this->funcionarios_selecionados as $funcionario) {
 
-                    $cad = new \App\Models\Excecoes;
-                    $cad->setData($this->data);
-                    $cad->setDataFinal($this->dataFinal);
-                    $cad->setTipoExcecao($this->tpExcecao);
-                    $cad->setFuncionario(intval($funcionario));
-
-                    $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO, F.NM_FUNCIONARIO", false, true);
+                    $verificaDuplicidade = $cad->verificaDuplicidade(intval($funcionario), $this->data, $this->dataFinal);
                     if ($verificaDuplicidade) {
-                        throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário: " . $verificaDuplicidade[0]['NM_FUNCIONARIO']);
+                        throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário");
                     }
 
+                    $cad->setFuncionario(intval($funcionario));
                     $cad->inserir($insert);
 
                     if (!$cad->getResult()) {
