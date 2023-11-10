@@ -71,9 +71,7 @@ class Excecoes
             return $read->getResult();
         } catch (Exception $th) {
             throw new Exception($th->getMessage());
-        }
-
-        //DATE_FORMAT(E.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(E.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL         
+        }         
     }
 
     public function alterar()
@@ -174,16 +172,17 @@ class Excecoes
         }
     }
 
-    public static function verificaDuplicidade($cdFuncionario, $data, $dataFinal)
+    public static function verificaDuplicidade($data, $dataFinal, $cdFuncionario)
     {
         $read = new \App\Conn\Read();
+
         try {
 
             $read->FullRead("SELECT * FROM EXCECOES E
+            INNER JOIN FUNCIONARIOS FU ON (FU.CD_FUNCIONARIO = E.CD_FUNCIONARIO)
             WHERE E.CD_FUNCIONARIO = :F 
             AND ((:dataInicial BETWEEN E.DATA_INICIAL AND E.DATA_FINAL)
             OR ((:dataFinal BETWEEN E.DATA_INICIAL AND E.DATA_FINAL) OR :dataFinal IS NULL))", "F=$cdFuncionario&dataInicial=$data&dataFinal=$dataFinal");
-            //"F=$cdFuncionario&dataInicial=$data&dataFinal=$dataFinal"
 
             return $read->getResult();
         } catch (Exception $th) {

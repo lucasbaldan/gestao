@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
 
 class Excecoes
 {
-    private $codigo;
+    private int $codigo;
     private $data;
     private $dataFinal;
     private $tpExcecao;
@@ -24,7 +24,7 @@ class Excecoes
     public function listJSON($dados)
     {
         try {
-            $this->codigo = isset($dados['cdExcecao']) ? filter_input(INPUT_POST, 'cdExcecao', FILTER_SANITIZE_NUMBER_INT) : null;
+            $this->codigo = isset($dados['cdExcecao']) ? filter_input(INPUT_POST, 'cdExcecao', FILTER_SANITIZE_NUMBER_INT) : 0;
             $gridFormat = isset($dados['GridFormat']) ? $dados['GridFormat'] : false;
 
             $pegalista = new \App\Models\Excecoes;
@@ -46,8 +46,8 @@ class Excecoes
     public function controlar($dados)
     {
         try {
-            $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
-            $this->data = !empty($dados['dataExcecao']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataExcecao']))) : '';
+            $this->codigo = !empty($dados['cdExcecao']) ? filter_input(INPUT_POST, 'cdExcecao', FILTER_SANITIZE_NUMBER_INT) : 0;
+            $this->data = !empty($dados['dataExcecao']) ? \App\Helppers\DateFormat::ConverteBRtoDB(htmlspecialchars($dados['dataExcecao'], ENT_QUOTES, "UTF-8")) : '';
             $this->dataFinal = !empty($dados['dataFinal']) ? date("Y-m-d", strtotime(str_replace('/', '-', $dados['dataFinal']))) : '';
             $this->tpExcecao = isset($dados['tipoExcecao']) ? $dados['tipoExcecao'] : '';
             $this->funcionarios_selecionados = isset($dados['to']) ? ($dados['to']) : '';
@@ -55,22 +55,27 @@ class Excecoes
             if (empty($this->data) || empty($this->tpExcecao) || (empty($this->funcionarios_selecionados) && !isset($this->codigo))) {
                 throw new Exception("Erro ao processar a operação, tente novamente mais tarde!");
             }
+            if(!empty($this->dataFinal) && $this->dataFinal < $this->data){
+                throw new Exception("A data final não pode ser inferior a data inicial");
+            }
+
+            $cad = new \App\Models\Excecoes;
+
 
             if (empty($this->codigo)) {
 
                 $conn = \App\Conn\Conn::getConn(true);
                 $insert = new \App\Conn\Insert($conn);
 
-                $cad = new \App\Models\Excecoes;
                 $cad->setData($this->data);
                 $cad->setDataFinal($this->dataFinal);
                 $cad->setTipoExcecao($this->tpExcecao);
 
                 foreach ($this->funcionarios_selecionados as $funcionario) {
 
-                    $verificaDuplicidade = $cad->verificaDuplicidade(intval($funcionario), $this->data, $this->dataFinal);
+                    $verificaDuplicidade = $cad->verificaDuplicidade($this->data, $this->dataFinal, intval($funcionario));
                     if ($verificaDuplicidade) {
-                        throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário");
+                        throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário: <b>".$verificaDuplicidade[0]['NM_FUNCIONARIO']."</b>");
                     }
 
                     $cad->setFuncionario(intval($funcionario));
@@ -85,14 +90,13 @@ class Excecoes
                 $response = '';
             } else {
 
-                $cad = new \App\Models\Excecoes;
                 $cad->setCodigo($this->codigo);
                 $cad->setData($this->data);
                 $cad->setDataFinal($this->dataFinal);
                 $cad->setTipoExcecao($this->tpExcecao);
 
-                $verificaDuplicidade = $cad->generalSearch("E.CD_EXCECAO", false, true);
-                if ($verificaDuplicidade[0]["CD_EXCECAO"] != $this->codigo) {
+                $verificaDuplicidade = $cad->verificaDuplicidade($this->data, $this->dataFinal, $this->funcionarios_selecionados[0]);
+                if ($verificaDuplicidade && $verificaDuplicidade[0]["CD_EXCECAO"] != $this->codigo) {
                     throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário");
                 }
 
@@ -120,7 +124,7 @@ class Excecoes
     {
 
         try {
-            $this->codigo = isset($dados['cdExcecao']) ? $dados['cdExcecao'] : '';
+            $this->codigo = isset($dados['cdExcecao']) ? filter_input(INPUT_POST, 'cdExcecao', FILTER_SANITIZE_NUMBER_INT) : 0;
 
             if (empty($this->codigo)) {
                 throw new Exception("Erro ao processar requisição. Tente novamente!");

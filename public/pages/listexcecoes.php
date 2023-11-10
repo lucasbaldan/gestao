@@ -143,7 +143,7 @@ include("./footer_menu.php");
             </div>
             <button type="submit" class="ui positive right labeled icon button" id="cadSubmit">
                 Salvar
-                <i class="checkmark icon"></i>
+                <i class="paper plane icon"></i>
             </button>
         </div>
         <!-- </div> -->
