@@ -156,8 +156,7 @@ $(document).ready(function () {
         success: function (response) {
           console.log(response);
           if (
-            response.status === "inserido" ||
-            response.status === "alterado"
+            response.status === true
           ) {
             $("#myTable").DataTable().clear().draw();
 
@@ -170,7 +169,7 @@ $(document).ready(function () {
               $("#myTable").DataTable().ajax.reload();
             }, 1000);
           }
-          if (response.status === "erro") {
+          else {
             response.response.includes("Cadastrado")
               ? toastAtencao(response.response)
               : toastErro(response.response);

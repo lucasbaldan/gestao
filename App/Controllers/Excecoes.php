@@ -90,12 +90,8 @@ class Excecoes
                     }
                 }
                 $insert->Commit();
-                http_response_code(200);
-                $status = 'inserido';
-                $response = '';
-
             } else {
-                
+
                 $cad->setCodigo($this->codigo);
                 $cad->setData($this->data);
                 $cad->setDataFinal($this->dataFinal);
@@ -108,16 +104,16 @@ class Excecoes
 
                 $cad->alterar();
 
-                if ($cad->getResult()) {
-                    $status = 'alterado';
-                    $response = '';
-                } else {
+                if (!$cad->getResult()) {
                     $status = 'erro';
                     $response = $cad->getMessage();
                 }
             }
+            http_response_code(200);
+            $status = true;
+            $response = '';
         } catch (Exception $th) {
-            $status = 'erro';
+            $status = false;
             $response = $th->getMessage();
         }
 
