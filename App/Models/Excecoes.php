@@ -82,9 +82,9 @@ class Excecoes
             $read->ExeRead("EXCECOES", "WHERE CD_EXCECAO = :C", "C=$this->codigo");
             $dadosCadastro = $read->getResult()[0] ?? [];
             if ($dadosCadastro) {
-                $dadosupdate = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao];
                 $conn = \App\Conn\Conn::getConn(true);
                 $update = new \App\Conn\Update($conn);
+                $dadosupdate = ["DATA_INICIAL" => $this->data, "DATA_FINAL" => $this->dataFinal, "CD_TIPO_EXCECAO" => $this->tpExcecao];
                 $update->ExeUpdate("EXCECOES", $dadosupdate, "WHERE CD_EXCECAO =:C", "C=$this->codigo");
 
                 $atualizado = !empty($update->getResult());
@@ -97,7 +97,7 @@ class Excecoes
                     $this->Message = $update->getMessage();
                 }
             } else {
-                throw new Exception("Parece que esse registro não existe mais na base de dados!");
+                throw new Exception("Parece que esse registro não existe mais na base de dados!", 500);
             }
         } catch (Exception $th) {
             $update->Rollback();
