@@ -39,7 +39,7 @@ class Excecoes
             $status = true;
             $response = $lista;
         } catch (Exception $th) {
-            http_response_code(500);
+            http_response_code($th->getCode());
             $status = false;
             $response = $th->getMessage();
         }
@@ -65,10 +65,10 @@ class Excecoes
             }
 
             $cad = new \App\Models\Excecoes;
-            $conn = \App\Conn\Conn::getConn(true);
 
 
             if (empty($this->codigo)) {
+                $conn = \App\Conn\Conn::getConn(true);
                 $insert = new \App\Conn\Insert($conn);
 
                 $cad->setData($this->data);
@@ -99,20 +99,20 @@ class Excecoes
 
                 $verificaDuplicidade = $cad->verificaDuplicidade($this->data, $this->dataFinal, $this->funcionarios_selecionados[0]);
                 if ($verificaDuplicidade && $verificaDuplicidade[0]["CD_EXCECAO"] != $this->codigo) {
-                    throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário");
+                    throw new Exception("Já existe uma exceção Cadastrada entre as datas informadas para o funcionário", 400);
                 }
 
                 $cad->alterar();
 
                 if (!$cad->getResult()) {
-                    $status = 'erro';
-                    $response = $cad->getMessage();
+                    throw new Exception($cad->getMessage(), 500);
                 }
             }
             http_response_code(200);
             $status = true;
             $response = '';
         } catch (Exception $th) {
+            http_response_code($th->getCode());
             $status = false;
             $response = $th->getMessage();
         }
@@ -129,22 +129,20 @@ class Excecoes
             $this->codigo = isset($dados['cdExcecao']) ? filter_input(INPUT_POST, 'cdExcecao', FILTER_SANITIZE_NUMBER_INT) : 0;
 
             if (empty($this->codigo)) {
-                throw new Exception("Erro ao processar requisição. Tente novamente!");
+                throw new Exception("Erro ao processar requisição. Tente novamente!", 500);
             }
 
             $cad = new \App\Models\Excecoes;
             $cad->setCodigo($this->codigo);
             $cad->excluir();
-            if ($cad->getResult()) {
-                $status = 'excluido';
-                $response = '';
-            } else {
-                $status = 'erro';
-                $response = $cad->getMessage();
+            if (!$cad->getResult()) {
+                throw new Exception($cad->getMessage(), 500);
             }
+            $status = true;
+            $response = '';
         } catch (Exception $th) {
-            $status = 'erro';
-            $respose = $th->getMessage();
+            $status = false;
+            $response = $th->getMessage();
         }
 
         $response = json_encode(["status" => $status, "response" => $response]);

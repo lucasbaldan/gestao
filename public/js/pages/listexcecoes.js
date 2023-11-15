@@ -12,7 +12,7 @@ $(document).ready(function () {
       },
       dataSrc: "response",
       error: function (xhr) {
-          window.location.href = "generalError.php";
+        window.location.href = "generalError.php";
       },
     },
     columns: [
@@ -111,14 +111,12 @@ $(document).ready(function () {
       } else {
         $("#preencherData").hide();
       }
-      if(new Date($("#dataExcecao").val()) > new Date($("#dataFinal").val())){
+      if (new Date($("#dataExcecao").val()) > new Date($("#dataFinal").val())) {
         $("#preencherDataFinal").show();
         pararEnvio = true;
-      }
-      else{
+      } else {
         $("#preencherDataFinal").hide();
       }
-
 
       if (
         $("#select-tipoExcecao").val() === null ||
@@ -138,7 +136,7 @@ $(document).ready(function () {
 
       if (pararEnvio) {
         toastAtencao("Atenção ao preencher o Cadastro!");
-        $("#CADmodal").modal('refresh');
+        $("#CADmodal").modal("refresh");
         return false;
       }
 
@@ -152,12 +150,11 @@ $(document).ready(function () {
         beforeSend: function () {
           $("#cadSubmit").addClass("loading disabled");
           $("#fechaModalCAD").addClass("disabled");
+          $(".ui.form :input, .ui.form select").prop("disabled", true);
         },
         success: function (response) {
           console.log(response);
-          if (
-            response.status === true
-          ) {
+          if (response.status === true) {
             $("#myTable").DataTable().clear().draw();
 
             setTimeout(function () {
@@ -168,24 +165,20 @@ $(document).ready(function () {
               toastSucesso();
               $("#myTable").DataTable().ajax.reload();
             }, 1000);
-          }
-          else {
-            response.response.includes("Cadastrado")
-              ? toastAtencao(response.response)
-              : toastErro(response.response);
-            $("#cadSubmit").removeClass("loading disabled");
-            $("#fechaModalCAD").removeClass("disabled");
+            $(".ui.form :input, .ui.form select").prop("disabled", false);
           }
         },
-        error: function(jqXHR, textStatus, errorThrown) {
-          // Aqui você pode acessar informações sobre o erro
-          console.log("Erro na requisição AJAX:");
-          console.log("Status: " + textStatus);
-          console.log("Erro lançado: " + errorThrown);
-  
-          // Exibe uma mensagem de alerta personalizada
-          alert("Ocorreu um erro ao processar a requisição. Tente novamente mais tarde!");
-      },
+        error: function (jqXHR) {
+          var response = JSON.parse(jqXHR.responseText);
+          if (jqXHR.status === 500) {
+            toastErro(response.response + "Tente novamente mais tarde!");
+          } else if (jqXHR.status === 400) {
+            toastAtencao(response.response);
+          }
+          $("#cadSubmit").removeClass("loading disabled");
+          $("#fechaModalCAD").removeClass("disabled");
+          $(".ui.form :input, .ui.form select").prop("disabled", false);
+        },
       });
     },
   });
@@ -224,19 +217,27 @@ function editarRegistro(idExcecao) {
       funcao: "listJSON",
     },
     success: function (data) {
-      console.log(data);
-      var Excecao = data['response'][0];
+      if (data.status === true) {
+        var Excecao = data["response"][0];
 
-      $("#cdExcecao").val(Excecao.CD_EXCECAO);
-      inputDataExcecao.calendar("set date", Excecao.DATA_INICIAL);
-      inputDataFinal.calendar("set date", Excecao.DATA_FINAL);
-      carregardadosTiposExcecoes(Excecao.CD_TIPO_EXCECAO);
-      carregarDadosFuncionario(Excecao.CD_FUNCIONARIO);
-      $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
-      $("#CADmodal").modal({ closable: false }).modal("show");
+        $("#cdExcecao").val(Excecao.CD_EXCECAO);
+        inputDataExcecao.calendar("set date", Excecao.DATA_INICIAL);
+        inputDataFinal.calendar("set date", Excecao.DATA_FINAL);
+        carregardadosTiposExcecoes(Excecao.CD_TIPO_EXCECAO);
+        carregarDadosFuncionario(Excecao.CD_FUNCIONARIO);
+        $("#dimmerCarregando")
+          .dimmer({ closable: false })
+          .removeClass("active");
+        $("#CADmodal").modal({ closable: false }).modal("show");
+      }
     },
-    error: function (xhr, status, error) {
-      window.location.href = "generalError.php";
+    error: function (jqXHR) {
+      var response = JSON.parse(jqXHR.responseText);
+      if (jqXHR.status === 400) {
+        toastAtencao(response.response + " Tente novamente mais tarde!");
+      } else {
+        window.location.href = "generalError.php";
+      }
     },
   });
 }
@@ -266,7 +267,7 @@ function excluirRegistro(idExcecao) {
         $("#fechaModalEXC").addClass("disabled");
       },
       success: function (response) {
-        if (response.status === "excluido") {
+        if (response.status === true) {
           $("#myTable").DataTable().clear().draw();
           setTimeout(function () {
             toastSucesso();
@@ -275,21 +276,24 @@ function excluirRegistro(idExcecao) {
             $("#confirmacaoExclusao").modal("hide");
             $("#myTable").DataTable().ajax.reload();
           }, 500);
-        } else if (response.status === "erro") {
-          response.response.includes("SQLSTATE[23000]")
-            ? toastAtencao(
-                "OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados."
-              )
-            : toastErro(resposta.response);
-          $("#botaoconfirmaExclusao").removeClass("loading disabled");
-          $("#fechaModalEXC").removeClass("disabled");
         } else {
           window.location.href = "generalError.php";
         }
       },
-      error: function (xhr, status, error) {
-        console.error(error);
-        alert("Erro ao Executar operação");
+      error: function (jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        if (jqXHR.status === 500) {
+          toastErro(response.response + " Tente novamente mais tarde!");
+        } else if (jqXHR.status === 400) {
+          response.response.includes("SQLSTATE[23000]")
+            ? toastAtencao(
+                "OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados."
+              )
+            : toastAtencao(response.response);
+        }
+
+        $("#botaoconfirmaExclusao").removeClass("loading disabled");
+        $("#fechaModalEXC").removeClass("disabled");
       },
     });
   }
@@ -313,11 +317,13 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
         var selectElement = document.getElementById("select-tipoExcecao");
         selectElement.appendChild(novaOpcao);
       },
-      error: function (xhr, status, error) {
-        console.error(error);
-        alert(
-          "Erro ao Buscar opção Tipo de Exceção Salva. Tente novamente mais tarde!"
-        );
+      error: function (jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        if (jqXHR.status === 400) {
+          toastAtencao(response.response + " Tente novamente mais tarde!");
+        } else {
+          window.location.href = "generalError.php";
+        }
       },
     });
   }
@@ -349,6 +355,14 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
         };
       },
       cache: true,
+      error: function (jqXHR, textStatus, errorThrown) {
+        var response = JSON.parse(jqXHR.responseText);
+        if (jqXHR.status === 400) {
+          toastAtencao(response.response + " Tente novamente mais tarde!");
+        } else {
+          window.location.href = "generalError.php";
+        }
+    }
     },
     //minimumInputLength: 1, // Pesquisa automática a partir do primeiro caractere
     tags: false,
@@ -396,14 +410,19 @@ function carregarDadosFuncionario(id = null) {
       $("#dimmerCarregando").removeClass("active");
     },
     error: function () {
-      alert("Erro ao Carregar os funcionários. Tente novamente mais Tarde!");
+      var response = JSON.parse(jqXHR.responseText);
+        if (jqXHR.status === 400) {
+          toastAtencao(response.response + " Tente novamente mais tarde!");
+        } else {
+          window.location.href = "generalError.php";
+        }
     },
   });
 }
 
-function limparOpcoesTipoExecao(){
+function limparOpcoesTipoExecao() {
   var selectElement = document.getElementById("select-tipoExcecao");
-    while (selectElement.options.length > 0) {
-      selectElement.remove(0);
-    }
+  while (selectElement.options.length > 0) {
+    selectElement.remove(0);
+  }
 }
