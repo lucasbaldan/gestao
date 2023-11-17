@@ -68,8 +68,9 @@ class Funcionarios
         try {
             $read = new \App\Conn\Read();
             if (empty($cdFuncionario)) {
-                $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO
-        FROM FUNCIONARIOS F");
+                $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO, S.NOME
+        FROM FUNCIONARIOS F
+        INNER JOIN SETORES S ON (S.CD_SETOR = F.CD_SETOR)");
             } else {
                 $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO, F.CD_SETOR
         FROM FUNCIONARIOS F WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");
@@ -269,28 +270,26 @@ class Funcionarios
         try {
             $conn = \App\Conn\Conn::getConn(true);
             $delete = new \App\Conn\Delete($conn);
-            $delete->ExeDelete("FUNCIONARIOS", "WHERE CD_FUNCIONARIO=:C", "C=$this->codigo");
+            
+            $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
+            
+            if ($delete->getResult()[0]) {
+                
+                $delete->ExeDelete("FUNCIONARIOS", "WHERE CD_FUNCIONARIO=:C", "C=$this->codigo");
 
-            if ($delete->getResult()[0] != false) {
-
-                $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
-
-                if ($delete->getResult()[0] != false) {
-                    $delete->Commit();
-                    $this->Result = true;
-                } else {
-                    $delete->Rollback();
-                    $this->Result = false;
-                    $this->Message = "Erro ao excluir os vínculos funcionais do funcionário. Operação Cancelada.";
+                if (!$delete->getResult()[0]) {
+                    throw new Exception("Erro ao Excluir Funcionário!  <br>" . $delete->getResult()[1], 500);
                 }
+
             } else {
-                $delete->Rollback();
-                $this->Result = false;
-                $this->Message = "Erro ao excluir o Registro do funionário";
+                throw new Exception("Erro ao Excluir vínculos Funcionais do Funcionário", 500);
             }
+            $delete->Commit();
+            $this->Result = true;
         } catch (Exception $th) {
             $delete->Rollback();
             $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 

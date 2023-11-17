@@ -11,6 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['funcao'])) {
     $method = $_POST['funcao'];
     $Funcionario = new Funcionarios;
     $Funcionario->$method($_POST);
+} else {
+    header("Location: /gestao/public/pages/generalError.php");
+    exit;
+    die;
 }
 
 class Funcionarios
@@ -20,17 +24,6 @@ class Funcionarios
     private $setor;
     private $vinculosFuncionais;
 
-    public function list()
-    {
-
-        try {
-            $pegalista = new \App\Models\Funcionarios;
-            $lista = $pegalista->listar();
-            return $lista;
-        } catch (Exception $th) {
-            return false;
-        }
-    }
 
     public function listRelFuncionario($dados)
     {
@@ -54,10 +47,17 @@ class Funcionarios
 
             $pegalista = new \App\Models\Funcionarios;
             $lista = $pegalista->listar($this->codigo);
-            echo json_encode($lista);
+            $status = true;
+            $response = $lista;
+            http_response_code(200);
         } catch (Exception $th) {
-            return json_encode(array('error' => "Erro ao executar operação."));
+            $status = false;
+            $response = "Tente novamente mais Tarde!  <br>" . $th->getMessage();
+            http_response_code(500);
         }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function listFuncionalJSON($dados)
@@ -180,21 +180,31 @@ class Funcionarios
             $this->codigo = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
 
             if (empty($this->codigo)) {
-                throw new Exception("Erro");
+                throw new Exception("Erro ao processar a Exclusão requisitada", 500);
             }
 
             $cad = new \App\Models\Funcionarios;
             $cad->setCodigo($this->codigo);
             $cad->excluir();
-            if ($cad->getResult() == true) {
-                echo 'excluido';
-            } else {
-                echo 'erro';
+            if (!$cad->getResult()) {
+                throw new Exception($cad->getMessage(), 500);
             }
+            $status = true;
+            $response = '';
+            http_response_code(200);
+
         } catch (Exception $th) {
-            echo 'erro';
+            $status = true;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
         }
+
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
+
     }
+
 
     //MÉTODOS AUXILIARES
 
