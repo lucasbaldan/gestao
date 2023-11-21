@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
 
 <body>
 
-<div class="ui page dimmer" id="operacaoSucesso">
+  <div class="ui page dimmer" id="operacaoSucesso">
     <div class="center">
       <h2 class="ui inverted icon header">
         <i class="green check icon"></i>
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         <div class="sub header">Operação efetuada com êxito.</div>
       </h2>
     </div>
-</div>
+  </div>
 
 
   <div class="ui container">
@@ -45,67 +45,99 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
     <div class="ui form">
       <div class="ui bottom attached tab segment active" data-tab="funcionario-geral">
         <h3>Cadastros Gerais do Funcionário</h3>
-        <input type="hidden" id="cdFuncionario" name="cdFuncionario">
-        <div class="ui fluid label">
-          Nome do Funcionário⠀⠀⠀
-          <div class="ui fluid icon input">
-            <input type="text" style="border-color: red;" id="nomeFuncionario">
-            <i class="icon keyboard outline"></i>
-          </div>
+
+        <div class="disabled field">
+          <label>Código</label>
+          <input type="text" name="cdFuncionario" id="cdFuncionario" placeholder="Código gerado automaticamente ao inserir" readonly>
         </div>
-        <br><br>
-        <div class="ui fluid label">
-          Setor⠀⠀⠀
-          <div class="ui fluid input">
-            <select id="select-setor" name="selectSetor" class="select2" style="border-color: red;" required></select>
+
+        <div class="two fields">
+          <div class="required field">
+            <label>Nome:</label>
+            <div class="ui input">
+              <input type="text" name="nomeFuncionario" id="nomeFuncionario" placeholder="Nome do Funcionário...">
+            </div>
+            <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
+              Preencha o campo NOME com mais de 3 caracteres
+            </div>
+          </div>
+
+          <br>
+
+          <div class="required field">
+            <label>Setor:</label>
+            <div class="ui input">
+              <select id="select-setor" name="selectSetor" class="select2" style="border-color: red;" required></select>
+            </div>
+            <div class="ui pointing red basic label" id="preencherSetor" style="display: none;">
+              Selecione o campo SETOR
+            </div>
           </div>
         </div>
       </div>
+
+
       <div class="ui bottom attached tab segment" data-tab="funcionario-funcionais">
         <h3>Cadastros Funcionais do Funcionário</h3>
-        <input type="hidden" id="cdVinculoFuncional" name="cdVinculoFuncional">
-        <div class="ui label">
-          Matrícula⠀⠀
-          <div class="ui input">
-            <input type="text" id="matricula" style="border-color: red;">
+        <input type="hidden" id="cdVinculoFuncional" name="cdVinculoFuncional" readonly>
+
+        <div class="three fields">
+          <div class="required field">
+            <label>Matricula:</label>
+            <div class="ui input">
+              <input type="text" id="matricula" placeholder="">
+            </div>
+            <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
+              Preencha o campo NOME com mais de 3 caracteres
+            </div>
           </div>
-        </div>
-        <div class="ui label">
-          Data de início⠀⠀
-          <div class="ui input">
-            <input type="date" id="dataInicio" style="border-color: red;">
+
+          <div class="required field">
+            <label>Data de Admissão:</label>
+            <div class="ui input">
+              <input type="date" id="dataInicio">
+            </div>
+            <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
+              Preencha o campo NOME com mais de 3 caracteres
+            </div>
           </div>
-        </div>
-        <div class="ui label">
-          Data de Término⠀⠀
-          <div class="ui input">
-            <input type="date" id="dataTermino">
+
+          <div class="field">
+            <label>Data de Demissão:</label>
+            <div class="ui input">
+              <input type="date" id="dataTermino">
+            </div>
           </div>
+
         </div>
 
-        <div class="ui label">
-          Faz horário de almoço?⠀⠀
-          <div class="ui input">
-            <select id="select-almoco" name="almoco" class="select2" style="border-color: red;" required>
+        <div class="two fields">
+
+          <div class="required field">
+            <label>Faz Horário de Almoço?</label>
+            <select id="select-almoco" class="ui fluid dropdown" name="almoco">
               <option value="">⠀⠀⠀</option>
               <option value="Sim">Sim</option>
               <option value="Não">Não</option>
             </select>
+            <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
+              Preencha o campo NOME com mais de 3 caracteres
+            </div>
+          </div>
+
+          <div class="required field">
+            <label>Função</label>
+            <div class="ui input">
+              <select id="select-funcao" name="funcao-funcionario" style="width: 100%;" required>
+              </select>
+            </div>
+            <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
+              Preencha o campo NOME com mais de 3 caracteres
+            </div>
           </div>
         </div>
 
-        <br><br>
-
-
-        <div class="ui label">
-          Funcão⠀⠀
-          <div class="ui input">
-            <select id="select-funcao" name="funcao-funcionario" class="select2" style="border-color: red;" required>
-            </select>
-          </div>
-        </div>
-
-        <br><br>
+        <br>
 
         <div class="ui large label">
           Dias de Trabalho - Semanal</div>
@@ -137,15 +169,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
 
         <br><br>
 
-        <div class="ui fluid label">
-          Descrição do horário de Trabalho⠀⠀⠀
-          <div class="ui fluid icon input">
-            <input type="text" id="descricaoHorario" style="border-color: red;">
+        <div class="field">
+            <label>Descrição do horário de Trabalho:</label>
+            <div class="ui fluid icon input">
+            <input type="text" id="descricaoHorario">
             <i class="icon keyboard outline"></i>
+            </div>
           </div>
-        </div>
 
-        <br><br>
+        <br>
         <button class="ui right labeled icon green button" id="addfuncional">
           <i class="plus square outline icon"></i>
           Adicionar / Alterar
@@ -183,17 +215,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           <i class="icon reply"></i>
           Cancelar
         </button></a>
-
-    </div>
-
-    <div id="hiddenDiv" class="hidden">
-      <div class="ui negative message">
-        <i class="close icon"></i>
-        <div class="header">
-          <i class="exclamation triangle icon" style="color: #fff;"></i>
-        </div>
-        <p><b>Erro ao Efetuar Operação!</b></p>
-      </div>
     </div>
 
   </div>

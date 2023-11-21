@@ -385,8 +385,9 @@ function carregarDadosFuncionario(id = null) {
       $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
     },
     success: function (data) {
-      const dadosFuncionarios = JSON.parse(data);
-      const selectFuncionarios = id == null ? $("#search") : $("#search_to");
+      console.log(data);
+      var dadosFuncionarios = data.response;
+      var selectFuncionarios = id == null ? $("#search") : $("#search_to");
 
       dadosFuncionarios.forEach((funcionario) => {
         const option = $("<option>")

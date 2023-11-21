@@ -1,8 +1,5 @@
 
     var editando = false;
-    $(".ui.negative.message").hide();
-    $(".ui.positive.message").hide();
-
 
     $(document).ready(async function() {
 
@@ -12,16 +9,14 @@
       $('#tabnav .item')
         .tab();
 
+      $('#select-almoco').dropdown();
+
       var dadosTabelaFuncional = [];
 
       if (typeof codigoFuncionario !== 'undefined' && codigoFuncionario !== null) {
         carregarDadosGeraisFuncionario(codigoFuncionario);
         dadosTabelaFuncional = await carregarDadosFuncionaisFuncionario(codigoFuncionario);
       }
-
-      $("#select-almoco").select2({
-        minimumResultsForSearch: -1
-      });
 
       var table = $('#funcionalTable').DataTable({
         pageLength: 50,
