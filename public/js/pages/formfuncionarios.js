@@ -1,7 +1,7 @@
 
     var editando = false;
 
-    $(document).ready(async function() {
+    $(document).ready( function() {
 
       carregardadosSetores();
       carregardadosFuncoes();
@@ -15,7 +15,7 @@
 
       if (typeof codigoFuncionario !== 'undefined' && codigoFuncionario !== null) {
         carregarDadosGeraisFuncionario(codigoFuncionario);
-        dadosTabelaFuncional = await carregarDadosFuncionaisFuncionario(codigoFuncionario);
+        dadosTabelaFuncional = carregarDadosFuncionaisFuncionario(codigoFuncionario);
       }
 
       var table = $('#funcionalTable').DataTable({

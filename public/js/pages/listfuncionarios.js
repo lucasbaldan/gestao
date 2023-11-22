@@ -20,9 +20,7 @@ $(document).ready(function () {
       {
         render: function (data, type, row) {
           var editarBtn =
-            "<button class='ui mini icon button blue' onclick='editarRegistro(" +
-            row.CD_FUNCIONARIO +
-            ")'><i class='pencil alternate icon'></i></button>";
+            "<form action='./formfuncionarios.php' method='POST'><input type='hidden' name='cdFuncionario' value='"+row.CD_FUNCIONARIO+"' readonly required><button class='ui mini icon button blue' type='submit'><i class='pencil alternate icon'></i></button></form>";
           var excluirBtn =
             "<button class='ui mini icon button red' onclick='excluirRegistro(" +
             row.CD_FUNCIONARIO +
@@ -146,5 +144,9 @@ function excluirRegistro(idFuncionario) {
         $("#fechaModalEXC").removeClass("disabled");
       },
     });
+  }
+
+  function editarRegistro(idFuncionario){
+
   }
 }

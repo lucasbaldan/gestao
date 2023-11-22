@@ -34,10 +34,17 @@ class Funcionarios
 
             $pegalista = new \App\Models\Funcionarios;
             $lista = $pegalista->listarTelaRelatorio($this->codigo, $dataSelect, $setor);
-            echo json_encode($lista);
+            $status = true;
+            $response = $lista;
+            http_response_code(200);
         } catch (Exception $th) {
-            return json_encode('erro');
+            $status = false;
+            $response = "Tente novamente mais Tarde! <br>" . $th->getMessage();
+            http_response_code(500);
         }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function listJSON($dados)
@@ -95,82 +102,90 @@ class Funcionarios
 
 
 
-            echo json_encode($lista);
+            $status = true;
+            $response = $lista;
+            http_response_code(200);
         } catch (Exception $th) {
-            return json_encode(array('error' => "Erro ao executar operação."));
+            $status = false;
+            $response = "Tente novamente mais Tarde!  <br>" . $th->getMessage();
+            http_response_code(500);
         }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function controlar($dados)
     {
 
         try {
-
             $infoFuncionario = json_decode($dados['dados'], true);
+
             $this->vinculosFuncionais = isset($infoFuncionario['vinculosFuncionais']) ? $infoFuncionario['vinculosFuncionais'] : '';
             $this->codigo = isset($infoFuncionario['cdFuncionario']) ? $infoFuncionario['cdFuncionario'] : '';
             $this->nome = isset($infoFuncionario['nmFuncionario']) ? $infoFuncionario['nmFuncionario'] : '';
             $this->setor = isset($infoFuncionario['setorFuncionario']) ? $infoFuncionario['setorFuncionario'] : '';
 
-            if (empty($this->nome) || empty($this->setor)) {
-                throw new Exception("OS CAMPOS NOME OU SETOR NÃO PODEM SER SALVOS COM INFORMAÇÕES NULAS");
+            if (empty($this->nome)) {
+                throw new Exception("Preencha do campo NOME!", 400);
+            }
+            if (empty($this->setor)) {
+                throw new Exception("Selecione o campo Setor!", 400);
             }
 
             $conn = \App\Conn\Conn::getConn(true);
 
             if (empty($this->codigo)) {
-                $insert = new \App\Conn\Insert($conn);
+                $op = new \App\Conn\Insert($conn);
 
 
                 $cad = new \App\Models\Funcionarios;
                 $cad->setNome($this->nome);
                 $cad->setSetor($this->setor);
-                $cad->inserirFuncionario($insert);
-                $resultadoInsertFuncionario = $cad->getResult();
-                if ($resultadoInsertFuncionario == false) {
-                    $insert->Rollback();
-                    throw new Exception("ERRO AO CADASTRAR FUNCIONÁRIO");
-                } else {
+                $cad->inserirFuncionario($op);
 
-                    $idFuncionario = $insert->getLastInsert();
-                    try {
-                        $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $idFuncionario, $insert);
-                    } catch (Exception $th) {
-                        echo 'erro';
-                    }
+                if (!$cad->getResult()) {
+                    throw new Exception("Erro ao cadastrar Funcionário" . $cad->getMessage(), 500);
+                }
 
-                    $insert->Commit();
-                    echo 'inserido';
+                $idFuncionarioInserido = $op->getLastInsert();
+                try {
+                    $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $idFuncionarioInserido, $op);
+                } catch (Exception $th) {
+                    throw new Exception($th->getMessage(), $th->getCode());
                 }
             } else {
-                $update = new \App\Conn\Update($conn);
+                $op = new \App\Conn\Update($conn);
 
                 $cad = new \App\Models\Funcionarios;
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
                 $cad->setSetor($this->setor);
-                $cad->alterarFuncionario($update);
-                $resultadoUpdateFuncionario = $cad->getResult();
-                if ($resultadoUpdateFuncionario == false) {
-                    $update->Rollback();
-                    throw new Exception("ERRO AO CADASTRAR FUNCIONÁRIO");
-                } else {
+                $cad->alterarFuncionario($op);
 
-                    try {
-                        $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $this->codigo, null, $update);
-                        $update->Commit();
-                        echo 'alterado';
-                    } catch (Exception $th) {
-                        $update->Rollback();
-                        echo 'erro';
-                    }
+                if (!$cad->getResult()) {
+                    throw new Exception("Erro ao atualizar Funcionário " . $cad->getMessage(), 500);
+                }
+
+                try {
+                    $this->controlarVinculosFuncionais($conn, $cad, $this->vinculosFuncionais, $this->codigo, null, $op);
+                } catch (Exception $th) {
+                    throw new Exception($th->getMessage(), $th->getCode());
                 }
             }
+            $conn->commit();
+            $status = true;
+            $response = '';
+            http_response_code(200);
         } catch (Exception $th) {
-
-            echo 'erro';
+            $op->Rollback();
+            $status = false;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
         }
-
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function excluir($dados)
@@ -192,7 +207,6 @@ class Funcionarios
             $status = true;
             $response = '';
             http_response_code(200);
-
         } catch (Exception $th) {
             $status = true;
             $response = $th->getMessage();
@@ -202,7 +216,6 @@ class Funcionarios
         $response = json_encode(["status" => $status, "response" => $response]);
         header('Content-Type: application/json');
         echo $response;
-
     }
 
 
@@ -233,39 +246,39 @@ class Funcionarios
 
                 // A EXCLUSÃO FOGE A REGRA DAS VALIDAÇÕES DOS DADOS
 
-                if(!($codigoFuncional && $idFuncao == "EXC")){
-                //DATA VALIDATIONS
-                if ($dataInicio == "undefined/undefined/" || $dataInicio == null) {
-                    throw new Exception("DATA INICIAL NÃO PODE SER NULA");
-                }
-                if ($idFuncao == "" || $idFuncao == null) {
-                    throw new Exception("INFORMAÇÃO DE FUNÇÃO INCORRETA");
-                }
-                if ($diasTrabalhoSemana == [] || $diasTrabalhoSemana == null) {
-                    throw new Exception("INFORMAÇÃO DE DIAS TRABALHaDOS INCORRETA");
-                }
+                if (!($codigoFuncional && $idFuncao == "EXC")) {
+                    //DATA VALIDATIONS
+                    if ($dataInicio == "undefined/undefined/" || $dataInicio == null) {
+                        throw new Exception("DATA INICIAL NÃO PODE SER NULA");
+                    }
+                    if ($idFuncao == "" || $idFuncao == null) {
+                        throw new Exception("INFORMAÇÃO DE FUNÇÃO INCORRETA");
+                    }
+                    if ($diasTrabalhoSemana == [] || $diasTrabalhoSemana == null) {
+                        throw new Exception("INFORMAÇÃO DE DIAS TRABALHaDOS INCORRETA");
+                    }
 
-                $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
-                $dataInicio = $data_datetime->format('Y-m-d');
+                    $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
+                    $dataInicio = $data_datetime->format('Y-m-d');
 
-                if ($dataFinal != "-") {
-                    $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
-                    $dataFinal = $data_datetime->format('Y-m-d');
-                } else {
-                    $dataFinal = null;
+                    if ($dataFinal != "-") {
+                        $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
+                        $dataFinal = $data_datetime->format('Y-m-d');
+                    } else {
+                        $dataFinal = null;
+                    }
+
+                    if (!empty($diasTrabalhoSemana)) {
+
+                        $cad->setSemana($semana = [
+                            in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
+                            in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
+                            in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
+                            in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
+                            in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
+                        ]);
+                    }
                 }
-
-                if (!empty($diasTrabalhoSemana)) {
-
-                    $cad->setSemana($semana = [
-                        in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
-                        in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
-                        in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
-                        in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
-                        in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
-                    ]);
-                }
-            }
 
                 $cad->setCodigo($codigoFuncional);
                 $cad->setMatricula($matricula);
@@ -277,35 +290,25 @@ class Funcionarios
 
                 if (!$codigoFuncional && $idFuncao != "EXC") {
                     $cad->inserirVinculosFuncionais($insert, $idFuncionario);
-                    $resultadoInsertVinculosFuncionais = $cad->getResult();
-
-                    if ($resultadoInsertVinculosFuncionais == false) {
-                        $insert->Rollback();
-                        throw new Exception("ERRO AO CADASTRAR VÍNCULOS FUNCIONAIS");
+                   if(!$cad->getResult()){
+                        throw new Exception("Erro ao inserir Vínculo Funcional ".$cad->getMessage(), 500);
                     }
                 }
                 if ($codigoFuncional && $idFuncao != "EXC") {
                     $cad->alterarVinculosFuncionais($update);
-                    $resultadoUpdateVinculosFuncionais = $cad->getResult();
-
-                    if ($resultadoUpdateVinculosFuncionais == false) {
-                        $update->Rollback();
-                        throw new Exception("ERRO AO ALTERAR VÍNCULOS FUNCIONAIS");
+                    if (!$cad->getResult()) {
+                        throw new Exception("Ero ao alterar Vínculo Funcional ".$cad->getMessage(), 500);
                     }
                 }
                 if ($codigoFuncional && $idFuncao == "EXC") {
                     $cad->excluirVinculosFuncionais($delete);
-                    $resultadoDeleteVinculosFuncionais = $cad->getResult();
-
-                    if ($resultadoDeleteVinculosFuncionais == false) {
-                        $delete->Rollback();
-                        throw new Exception("ERRO AO DELETAR VÍNCULOS FUNCIONAIS");
+                    if (!$cad->getResult()) {
+                        throw new Exception("Erro ao excluir vínculos Funcionais ".$cad->getMessage(), 500);
                     }
                 }
             }
         } catch (Exception $th) {
-            echo 'erro';
-            exit;
+            throw new Exception($th->getMessage(), $th->getCode());
         }
     }
 }
