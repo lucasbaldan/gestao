@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 25/10/2023 às 04:53
+-- Tempo de geração: 23/11/2023 às 01:40
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -35,6 +35,15 @@ CREATE TABLE `excecoes` (
   `CD_TIPO_EXCECAO` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Despejando dados para a tabela `excecoes`
+--
+
+INSERT INTO `excecoes` (`CD_EXCECAO`, `DATA_INICIAL`, `DATA_FINAL`, `CD_FUNCIONARIO`, `CD_TIPO_EXCECAO`) VALUES
+(156, '2023-11-01', '2023-11-30', 15, 99),
+(157, '2023-11-01', '2023-11-30', 16, 99),
+(159, '2023-11-01', '2023-11-30', 17, 99);
+
 -- --------------------------------------------------------
 
 --
@@ -52,9 +61,13 @@ CREATE TABLE `funcionarios` (
 --
 
 INSERT INTO `funcionarios` (`CD_FUNCIONARIO`, `NM_FUNCIONARIO`, `CD_SETOR`) VALUES
-(10, 'Lucas Faé Baldan', 92),
 (15, 'Douglas do meme', 73),
-(16, 'Eliandra B Faé Baldan', 73);
+(16, 'Eliandra B Faé Baldan', 73),
+(17, 'teste de funcioanrio', 73),
+(19, 'Lucas', 73),
+(20, 'Lucas', 73),
+(21, 'Lucas', 73),
+(22, 'Lucas', 73);
 
 -- --------------------------------------------------------
 
@@ -72,7 +85,7 @@ CREATE TABLE `funcoes` (
 --
 
 INSERT INTO `funcoes` (`CD_FUNCAO`, `NM_FUNCAO`) VALUES
-(7, 'ESSE É O REGISTRO DE CÓDIGO 9'),
+(7, 'ESSE É O REGISTRO DE CÓDIGO 10'),
 (14, 'inserindo dados de função12'),
 (19, 'inserindo dados de função1');
 
@@ -116,8 +129,9 @@ INSERT INTO `setores` (`CD_SETOR`, `NOME`) VALUES
 (73, 'Centro de Mídia'),
 (76, 'Escrituração'),
 (77, 'Escrituração'),
-(91, 'contabilidade'),
-(92, 'alfabeto');
+(91, 'alfabeto'),
+(92, 'alfabeto'),
+(93, 'coordenação de cursos');
 
 -- --------------------------------------------------------
 
@@ -135,9 +149,9 @@ CREATE TABLE `tipo_excecoes` (
 --
 
 INSERT INTO `tipo_excecoes` (`CD_TIPO_EXCECAO`, `NM_TIPO_EXCECAO`) VALUES
-(97, 'eae1'),
-(98, 'ead'),
-(99, 'eae');
+(97, 'ATESTADO MÉDICO'),
+(98, 'FERIADO MUNICIPAL'),
+(99, 'FÉRIAS');
 
 -- --------------------------------------------------------
 
@@ -208,7 +222,11 @@ CREATE TABLE `vinculos_funcionais_funcionarios` (
 
 INSERT INTO `vinculos_funcionais_funcionarios` (`CD_VINCULO_FUNCIONAL`, `MATRICULA`, `DATA_INICIAL`, `DATA_FINAL`, `ALMOCO`, `SEG`, `TER`, `QUA`, `QUI`, `SEX`, `SAB`, `DOM`, `DESC_HR_TRABALHO`, `CD_FUNCAO`, `CD_FUNCIONARIO`) VALUES
 (21, 32158, '2023-10-09', '2023-10-25', 1, 1, 1, 1, 1, 1, NULL, NULL, '111', 7, 16),
-(22, 23421, '2023-10-18', NULL, 0, 1, 1, 0, 0, 0, NULL, NULL, '23r', 14, 15);
+(22, 23421, '2023-10-18', NULL, 0, 1, 1, 0, 0, 0, NULL, NULL, '23r', 14, 15),
+(23, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 19),
+(24, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 20),
+(25, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 21),
+(26, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 22);
 
 --
 -- Índices para tabelas despejadas
@@ -219,13 +237,15 @@ INSERT INTO `vinculos_funcionais_funcionarios` (`CD_VINCULO_FUNCIONAL`, `MATRICU
 --
 ALTER TABLE `excecoes`
   ADD PRIMARY KEY (`CD_EXCECAO`),
-  ADD KEY `EXCECOES_TIPOSEXCECOES` (`CD_TIPO_EXCECAO`);
+  ADD KEY `EXCECOES_TIPOSEXCECOES` (`CD_TIPO_EXCECAO`),
+  ADD KEY `EXCECOES_FUNCIONARIOS` (`CD_FUNCIONARIO`);
 
 --
 -- Índices de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  ADD PRIMARY KEY (`CD_FUNCIONARIO`);
+  ADD PRIMARY KEY (`CD_FUNCIONARIO`),
+  ADD KEY `FUNCIONARIOS_FUNCOES` (`CD_SETOR`);
 
 --
 -- Índices de tabela `funcoes`
@@ -270,7 +290,8 @@ ALTER TABLE `usuarios`
 --
 ALTER TABLE `vinculos_funcionais_funcionarios`
   ADD PRIMARY KEY (`CD_VINCULO_FUNCIONAL`),
-  ADD KEY `funcoes_vinculosfuncionais` (`CD_FUNCAO`);
+  ADD KEY `funcoes_vinculosfuncionais` (`CD_FUNCAO`),
+  ADD KEY `FUNCIONAIS_FUCIONARIO` (`CD_FUNCIONARIO`);
 
 --
 -- AUTO_INCREMENT para tabelas despejadas
@@ -280,13 +301,13 @@ ALTER TABLE `vinculos_funcionais_funcionarios`
 -- AUTO_INCREMENT de tabela `excecoes`
 --
 ALTER TABLE `excecoes`
-  MODIFY `CD_EXCECAO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `CD_EXCECAO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=166;
 
 --
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `CD_FUNCIONARIO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `CD_FUNCIONARIO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de tabela `funcoes`
@@ -304,7 +325,7 @@ ALTER TABLE `pessoas`
 -- AUTO_INCREMENT de tabela `setores`
 --
 ALTER TABLE `setores`
-  MODIFY `CD_SETOR` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `CD_SETOR` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT de tabela `tipo_excecoes`
@@ -328,7 +349,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `vinculos_funcionais_funcionarios`
 --
 ALTER TABLE `vinculos_funcionais_funcionarios`
-  MODIFY `CD_VINCULO_FUNCIONAL` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `CD_VINCULO_FUNCIONAL` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Restrições para tabelas despejadas
@@ -338,7 +359,14 @@ ALTER TABLE `vinculos_funcionais_funcionarios`
 -- Restrições para tabelas `excecoes`
 --
 ALTER TABLE `excecoes`
+  ADD CONSTRAINT `EXCECOES_FUNCIONARIOS` FOREIGN KEY (`CD_FUNCIONARIO`) REFERENCES `funcionarios` (`CD_FUNCIONARIO`) ON UPDATE CASCADE,
   ADD CONSTRAINT `EXCECOES_TIPOSEXCECOES` FOREIGN KEY (`CD_TIPO_EXCECAO`) REFERENCES `tipo_excecoes` (`CD_TIPO_EXCECAO`) ON UPDATE CASCADE;
+
+--
+-- Restrições para tabelas `funcionarios`
+--
+ALTER TABLE `funcionarios`
+  ADD CONSTRAINT `FUNCIONARIOS_FUNCOES` FOREIGN KEY (`CD_SETOR`) REFERENCES `setores` (`CD_SETOR`) ON UPDATE CASCADE;
 
 --
 -- Restrições para tabelas `pessoas`
@@ -350,6 +378,7 @@ ALTER TABLE `pessoas`
 -- Restrições para tabelas `vinculos_funcionais_funcionarios`
 --
 ALTER TABLE `vinculos_funcionais_funcionarios`
+  ADD CONSTRAINT `FUNCIONAIS_FUCIONARIO` FOREIGN KEY (`CD_FUNCIONARIO`) REFERENCES `funcionarios` (`CD_FUNCIONARIO`) ON UPDATE CASCADE,
   ADD CONSTRAINT `funcoes_vinculosfuncionais` FOREIGN KEY (`CD_FUNCAO`) REFERENCES `funcoes` (`CD_FUNCAO`) ON UPDATE CASCADE;
 COMMIT;
 
