@@ -6,7 +6,7 @@ include_once("./footer_menu.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
   $cdFuncionario = $_POST['cdFuncionario'];
-  echo "<script>var codigoFuncionario = " . json_encode($cdFuncionario) . ";</script>";
+  echo "<script>var codigoFuncionario = " . $cdFuncionario . ";</script>";
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['cdFuncionario'])) {
   echo "ERRO AO CARREGAR PÁGINA";
   exit;

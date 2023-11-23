@@ -77,7 +77,7 @@ class Funcionarios
             }
             return $read->getResult();
         } catch (Exception $th) {
-            header("Location: /gestao/public/pages/generalError.php");
+            throw new Exception($th->getMessage(), 500);
         }
     }
 
@@ -103,7 +103,7 @@ class Funcionarios
             $read->FullRead($query, $params);
             return $read->getResult();
         } catch (Exception $th) {
-            header("Location: /gestao/public/pages/generalError.php");
+            throw new Exception($th->getMessage(), 500);
         }
     }
 
@@ -118,7 +118,7 @@ class Funcionarios
                              WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario&DIV=$botoesTabela");
             return $read->getResult();
         } catch (Exception $th) {
-            header("Location: /gestao/public/pages/generalError.php");
+            throw new Exception($th->getMessage(), 500);
         }
     }
 
@@ -140,12 +140,12 @@ class Funcionarios
                     //$this->Message = "Os dados do usuário go - $this->NomeLogin</strong> foram atualizados com sucesso";
                     //$update->Commit();
                 } else {
-                    $this->Result = false;
+                    throw new Exception("Erro ao atualizar Funcionário. " . $update->getMessage(), 500);
                     //$this->Message = "Não foi possível atualizar os dados usuário <strong>$this->Codigo - $this->NomeLogin</strong>. <br><small>" . \App\Helppers\Formats::TratamentoMensagemErro($update->getError()) . "</small>";
                     //$update->Rollback();
                 }
             } else {
-                throw new Exception("ERRO AO ENCONTRAR REGISTRO PARA ATUALIZAÇÃO NA BASE DE DADOS.");
+                throw new Exception("Ops! Parece que o registro não existe mais na base de dados!", 400);
             }
         } catch (Exception $th) {
             $update->Rollback();
@@ -162,13 +162,14 @@ class Funcionarios
             $insert->ExeInsert("FUNCIONARIOS", $dadosinsert);
 
             if (!$insert->getResult()) {
-                $this->Result = false;
-            } else {
-                $this->Result = true;
+                throw new Exception("Erro ao inserir Funcionário" . $insert->getMessage(), 500);
             }
+
+            $this->Result = true;
         } catch (Exception $th) {
             $insert->Rollback();
             $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 
@@ -193,13 +194,12 @@ class Funcionarios
             $insert->ExeInsert("VINCULOS_FUNCIONAIS_FUNCIONARIOS", $dadosinsert);
 
             if (!$insert->getResult()) {
-                $this->Result = false;
-            } else {
-                $this->Result = true;
+                throw new Exception("Erro ao inserir Vínculos Funcionais" . $insert->getMessage(), 500);
             }
+            $this->Result = true;
         } catch (Exception $th) {
-            $insert->Rollback();
             $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 
@@ -231,13 +231,12 @@ class Funcionarios
                 if ($atualizado) {
                     $this->Result = true;
                 } else {
-                    $this->Result = false;
+                    throw new Exception("Erro ao alterar Vínculos Funcionais " .$update->getMessage() , 500);
                 }
             } else {
-                throw new Exception("ERRO AO ENCONTRAR REGISTRO PARA ATUALIZAÇÃO NA BASE DE DADOS.");
+                throw new Exception("Ops! Parece que esse registro não existe mais na base de dados!", 500);
             }
         } catch (Exception $th) {
-            $update->Rollback();
             $this->Result = false;
             $this->Message = $th->getMessage();
         }
@@ -250,19 +249,15 @@ class Funcionarios
 
             $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_VINCULO_FUNCIONAL=:C", "C=$this->codigo");
 
-            if ($delete->getRowCount() > 0) {
-                $this->Result = true;
-            } else {
-                $this->Result = false;
+            if (!$delete->getResult[0]) {
+                throw new Exception("Erro ao excluir Vínculo Funcional", 500);
             }
+            $this->Result = true;
         } catch (Exception $th) {
+            $this->Message = $th->getMessage();
             $this->Result = false;
-            $delete->Rollback();
         }
     }
-
-
-
 
     public function excluir()
     {
@@ -270,17 +265,16 @@ class Funcionarios
         try {
             $conn = \App\Conn\Conn::getConn(true);
             $delete = new \App\Conn\Delete($conn);
-            
+
             $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
-            
+
             if ($delete->getResult()[0]) {
-                
+
                 $delete->ExeDelete("FUNCIONARIOS", "WHERE CD_FUNCIONARIO=:C", "C=$this->codigo");
 
                 if (!$delete->getResult()[0]) {
                     throw new Exception("Erro ao Excluir Funcionário!  <br>" . $delete->getResult()[1], 500);
                 }
-
             } else {
                 throw new Exception("Erro ao Excluir vínculos Funcionais do Funcionário", 500);
             }

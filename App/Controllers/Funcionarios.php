@@ -178,7 +178,7 @@ class Funcionarios
             $response = '';
             http_response_code(200);
         } catch (Exception $th) {
-            $op->Rollback();
+            $conn->rollBack();
             $status = false;
             $response = $th->getMessage();
             http_response_code($th->getCode());
@@ -208,7 +208,7 @@ class Funcionarios
             $response = '';
             http_response_code(200);
         } catch (Exception $th) {
-            $status = true;
+            $status = false;
             $response = $th->getMessage();
             http_response_code($th->getCode());
         }
