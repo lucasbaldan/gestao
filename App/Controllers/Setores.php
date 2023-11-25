@@ -19,14 +19,25 @@ class Setores
 
     public function listSetoresJSON($dados)
     {
-         try {
-             $this->codigo = isset($dados['cdSetor']) ? filter_input(INPUT_POST, 'cdSetor', FILTER_SANITIZE_NUMBER_INT) : 0;
-              $pegalistaDeSetores = new \App\Models\Setores;
-              $listaDeSetores = $pegalistaDeSetores->listarSetores($this->codigo);
-              echo json_encode($listaDeSetores);
-         } catch (Exception $th) {
-             return json_encode(array('error' => "Erro ao executar operação."));
-         }
+        try {
+            $this->codigo = isset($dados['cdSetor']) ? filter_input(INPUT_POST, 'cdSetor', FILTER_SANITIZE_NUMBER_INT) : 0;
+            $stringPesquisa = isset($dados['stringPesquisa']) ? htmlspecialchars($dados['stringPesquisa'], ENT_QUOTES, "UTF-8") : null;
+            $pegalistaDeSetores = new \App\Models\Setores;
+            $pegalistaDeSetores->generalSearch($this->codigo, null, $stringPesquisa);
+            if (!$pegalistaDeSetores->getResult()) {
+                throw new Exception("Erro ao obter consulta de Setores " . $pegalistaDeSetores->getMessage(), 500);
+            }
+            $status = true;
+            $response = $pegalistaDeSetores->getContent();
+            http_response_code(200);
+        } catch (Exception $th) {
+            $status = false;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
+        }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function controlarSetores($dados)
@@ -49,7 +60,7 @@ class Setores
                 $cad = new \App\Models\Setores;
                 $cad->setNome($this->nome);
 
-                $duplicado = $cad->listarSetores(null, $this->nome);
+                $duplicado = $cad->generalSearch(null, $this->nome);
                 if ($duplicado) {
                     throw new Exception("Registro já Cadastrado!");
                 }
@@ -59,7 +70,7 @@ class Setores
                     $response = '';
                 } else {
                     $status = 'erro';
-                    $response = 'Erro ao executar a operação na base de dados <br> Erro : '. $cad->getMessage();
+                    $response = 'Erro ao executar a operação na base de dados <br> Erro : ' . $cad->getMessage();
                 }
             } else {
 
@@ -71,7 +82,7 @@ class Setores
                 $cad->setCodigo($this->codigo);
                 $cad->setNome($this->nome);
 
-                $duplicado = $cad->listarSetores(null, $this->nome);
+                $duplicado = $cad->generalSearch(null, $this->nome);
                 if ($duplicado && $duplicado[0]['CD_SETOR'] != $this->codigo) {
                     throw new Exception("Registro já Cadastrado!");
                 }
@@ -82,12 +93,12 @@ class Setores
                     $response = '';
                 } else {
                     $status = 'erro';
-                    $response = 'Erro ao executar a operação na base de dados <br> Erro : '. $cad->getMessage();
+                    $response = 'Erro ao executar a operação na base de dados <br> Erro : ' . $cad->getMessage();
                 }
             }
         } catch (Exception $th) {
-         $status = 'erro';
-         $response = $th->getMessage();
+            $status = 'erro';
+            $response = $th->getMessage();
         }
 
         $response = json_encode(array("status" => $status, "response" => $response));

@@ -10,6 +10,7 @@ class Setores
     private $nome;
     private $Message;
     private $Result;
+    private $Content;
 
     public function setCodigo($cd)
     {
@@ -19,24 +20,52 @@ class Setores
     {
         $this->nome = $nome;
     }
+    public function getMessage()
+    {
+        return $this->Message;
+    }
 
-    public function listarSetores($cdSetor = null, $nmSetor = null)
+    public function getResult()
+    {
+        return $this->Result;
+    }
+    public function getContent()
+    {
+        return $this->Content;
+    }
+
+    public function generalSearch($cdSetor = null, $nmSetor = null, $stringPesquisa = null)
     {
         try {
+            $limiteSql = 100;
             $read = new \App\Conn\Read();
-            if (empty($nmSetor) && empty($cdSetor)) {
-                $read->FullRead("SELECT S.CD_SETOR, S.NOME
-        FROM SETORES S");
-            } else if (empty($cdSetor)) {
-                $read->FullRead("SELECT S.CD_SETOR, S.NOME
-        FROM SETORES S WHERE S.NOME =:C", "C=$nmSetor");
-            } else {
-                $read->FullRead("SELECT S.CD_SETOR, S.NOME
-        FROM SETORES S WHERE S.CD_SETOR =:C", "C=$cdSetor");
+            $parseString = "LIMIT=$limiteSql";
+            $sql = "SELECT * FROM
+            SETORES S
+            WHERE S.CD_SETOR IS NOT NULL ";
+
+            if($cdSetor){
+                $sql .= " AND S.CD_SETOR = :CD";
+                $parseString .= "&CD=$cdSetor";
             }
-            return $read->getResult();
+            if($nmSetor){
+                $sql .= "AND S.NOME = :NM";
+                $parseString .= "&NM=$nmSetor";
+            }
+            if($stringPesquisa){
+                $sql .= "AND S.NOME LIKE '%$stringPesquisa%'";
+                //$parseString .= "&PESQ=$stringPesquisa"; 
+            }
+
+            $sql .= " LIMIT :LIMIT";
+
+            $read->FullRead($sql, $parseString);
+            
+            $this->Content = $read->getResult();
+            $this->Result = true;
         } catch (Exception $th) {
-            header("Location: /gestao/public/pages/generalError.php");
+            $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 
@@ -117,15 +146,5 @@ class Setores
             $this->Result = false;
             $this->Message = $th->getMessage();
         }
-    }
-
-    public function getMessage()
-    {
-        return $this->Message;
-    }
-
-    public function getResult()
-    {
-        return $this->Result;
     }
 }

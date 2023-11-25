@@ -153,7 +153,6 @@ $(document).ready(function () {
           $(".ui.form :input, .ui.form select").prop("disabled", true);
         },
         success: function (response) {
-          console.log(response);
           if (response.status === true) {
             $("#myTable").DataTable().clear().draw();
 
@@ -341,7 +340,6 @@ function carregardadosTiposExcecoes(tipoExcecaoSalvoNoBanco = null) {
         };
       },
       processResults: function (data) {
-        console.log(data);
         // Mapear os campos do JSON para os campos específicos do Select2
         var mappedData = data.map(function (item) {
           return {
@@ -385,7 +383,6 @@ function carregarDadosFuncionario(id = null) {
       $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
     },
     success: function (data) {
-      console.log(data);
       var dadosFuncionarios = data.response;
       var selectFuncionarios = id == null ? $("#search") : $("#search_to");
 
