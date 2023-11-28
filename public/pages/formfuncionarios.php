@@ -39,11 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
     <br>
     <div class="ui top attached tabular menu" id="tabnav">
       <a class="item active" data-tab="funcionario-geral">Geral</a>
-      <a class="item" data-tab="funcionario-funcionais">Vínculos Funcionais</a>
+    <a class="<?php if(!$cdFuncionario){echo "item disabled";} else{echo "item";}?>" data-tab="funcionario-funcionais">Vínculos Funcionais</a>
     </div>
 
     <div class="ui form">
       <div class="ui bottom attached tab segment active" data-tab="funcionario-geral">
+        <form action="./../../App/Controllers/Funcionarios.php" method="POST" id="form-CAD-funcionario">
+          <input type="hidden" name="funcao" value="controlar" readonly required>
         <h3>Cadastros Gerais do Funcionário</h3>
 
         <div class="disabled field">
@@ -74,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
             </div>
           </div>
         </div>
+      </form>
       </div>
 
 

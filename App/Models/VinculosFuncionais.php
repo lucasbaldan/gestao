@@ -4,11 +4,9 @@ namespace App\Models;
 
 use Exception;
 
-class Funcionarios
+class VinculosFuncionais
 {
     private $codigo;
-    private $nome;
-    private $setor;
     private $matricula;
     private $dataInicio;
     private $dataFinal;
@@ -19,17 +17,21 @@ class Funcionarios
     private $Message;
     private $Result;
 
+    public function __construct($diasTrabalhoSemana = null, $descHorario = null, $idFuncao = null, $almoco = null, $matricula =  null, $dataInicio, $dataFinal = null, $codigo = null)
+    {
+        $this->matricula = $matricula;
+        $this->dataInicio = $dataInicio;
+        $this->dataFinal = $dataFinal;
+        $this->almoco = $almoco;
+        $this->idFuncao = $idFuncao;
+        $this->descHorario = $descHorario;
+        $this->diasSemana = $diasTrabalhoSemana;
+        $this->codigo = $codigo;
+    }
+
     public function setCodigo($cd)
     {
         $this->codigo = $cd;
-    }
-    public function setNome($nome)
-    {
-        $this->nome = $nome;
-    }
-    public function setSetor($setor)
-    {
-        $this->setor = $setor;
     }
     public function setMatricula($matricula)
     {
@@ -59,26 +61,13 @@ class Funcionarios
     {
         $this->diasSemana = $semana;
     }
-
-
-
-
-    public function listar($cdFuncionario = null)
+    public function getMessage()
     {
-        try {
-            $read = new \App\Conn\Read();
-            if (empty($cdFuncionario)) {
-                $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO, S.NOME
-        FROM FUNCIONARIOS F
-        INNER JOIN SETORES S ON (S.CD_SETOR = F.CD_SETOR)");
-            } else {
-                $read->FullRead("SELECT F.CD_FUNCIONARIO, F.NM_FUNCIONARIO, F.CD_SETOR
-        FROM FUNCIONARIOS F WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");
-            }
-            return $read->getResult();
-        } catch (Exception $th) {
-            throw new Exception($th->getMessage(), 500);
-        }
+        return $this->Message;
+    }
+    public function getResult()
+    {
+        return $this->Result;
     }
 
     public function listarTelaRelatorio($cdFuncionario = null, $dataSelect, $cdSetor = null)
@@ -122,55 +111,6 @@ class Funcionarios
         }
     }
 
-    public function alterarFuncionario($update)
-    {
-
-        try {
-            $read = new \App\Conn\Read();
-            $read->ExeRead("FUNCIONARIOS", "WHERE CD_FUNCIONARIO = :C", "C=$this->codigo");
-            $dadosCadastro = $read->getResult()[0] ?? [];
-            if ($dadosCadastro) {
-                $dadosupdate = ["NM_FUNCIONARIO" => $this->nome, "CD_SETOR" => $this->setor];
-
-                $update->ExeUpdate("FUNCIONARIOS", $dadosupdate, "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
-
-                $atualizado = !empty($update->getResult());
-                if ($atualizado) {
-                    $this->Result = true;
-                    //$this->Message = "Os dados do usuário go - $this->NomeLogin</strong> foram atualizados com sucesso";
-                    //$update->Commit();
-                } else {
-                    throw new Exception("Erro ao atualizar Funcionário. " . $update->getMessage(), 500);
-                    //$this->Message = "Não foi possível atualizar os dados usuário <strong>$this->Codigo - $this->NomeLogin</strong>. <br><small>" . \App\Helppers\Formats::TratamentoMensagemErro($update->getError()) . "</small>";
-                    //$update->Rollback();
-                }
-            } else {
-                throw new Exception("Ops! Parece que o registro não existe mais na base de dados!", 400);
-            }
-        } catch (Exception $th) {
-            $this->Result = false;
-            $this->Message = $th->getMessage();
-        }
-    }
-
-    public function inserirFuncionario($insert)
-    {
-
-        try {
-            $dadosinsert = ["NM_FUNCIONARIO" => $this->nome, "CD_SETOR" => $this->setor];
-            $insert->ExeInsert("FUNCIONARIOS", $dadosinsert);
-
-            if (!$insert->getResult()) {
-                throw new Exception("Erro ao inserir Funcionário" . $insert->getMessage(), 500);
-            }
-
-            $this->Result = true;
-        } catch (Exception $th) {
-            $insert->Rollback();
-            $this->Result = false;
-            $this->Message = $th->getMessage();
-        }
-    }
 
     public function inserirVinculosFuncionais($insert, $cdFuncionario)
     {
@@ -258,34 +198,6 @@ class Funcionarios
         }
     }
 
-    public function excluir()
-    {
-
-        try {
-            $conn = \App\Conn\Conn::getConn(true);
-            $delete = new \App\Conn\Delete($conn);
-
-            $delete->ExeDelete("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_FUNCIONARIO =:C", "C=$this->codigo");
-
-            if ($delete->getResult()[0]) {
-
-                $delete->ExeDelete("FUNCIONARIOS", "WHERE CD_FUNCIONARIO=:C", "C=$this->codigo");
-
-                if (!$delete->getResult()[0]) {
-                    throw new Exception("Erro ao Excluir Funcionário!  <br>" . $delete->getResult()[1], 500);
-                }
-            } else {
-                throw new Exception("Erro ao Excluir vínculos Funcionais do Funcionário", 500);
-            }
-            $delete->Commit();
-            $this->Result = true;
-        } catch (Exception $th) {
-            $delete->Rollback();
-            $this->Result = false;
-            $this->Message = $th->getMessage();
-        }
-    }
-
     public static function gerarRelatorio($mesRelatorio, $codigoFuncionario)
     {
         // $mesRelatorio = $_POST['mesRelatorio'];
@@ -302,16 +214,5 @@ class Funcionarios
         AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)
         ORDER BY V.MATRICULA", "C=$codigoFuncionario&MREL=$mesRelatorio");
         return $read->getResult();
-    }
-
-
-    public function getMessage()
-    {
-        return $this->Message;
-    }
-
-    public function getResult()
-    {
-        return $this->Result;
     }
 }

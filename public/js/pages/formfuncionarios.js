@@ -2,7 +2,7 @@ var editando = false;
 $(document).ready(function () {
 
   carregardadosSetores();
-  carregardadosFuncoes();
+  //carregardadosFuncoes();
 
   $("#tabnav .item").tab();
 
@@ -13,6 +13,45 @@ $(document).ready(function () {
   if (typeof codigoFuncionario !== "undefined" && codigoFuncionario !== null) {
     carregarDadosGeraisFuncionario(codigoFuncionario);
   }
+
+
+  $('#salvarFunc').click(function () {
+    $('#form-CAD-funcionario').submit();
+  });
+
+  $("#form-CAD-funcionario").form({
+    onSuccess: function (event, fields) {
+      event.preventDefault();
+
+      if (
+        $("#nomeFuncionario").val().trim() === "" ||
+        $("#nomeFuncionario").val().trim().length < 3
+      ) {
+        $("#preencherNome").show();
+        return false;
+      }
+
+      var formData = $("#form-CAD-funcionario").serialize();
+
+      // Envia a requisição AJAX
+      $.ajax({
+        type: "POST",
+        url: "./../../App/Controllers/Funcionarios.php",
+        data: formData,
+        beforeSend: function () {
+        },
+        success: function (response) {
+          console.log(response);
+        },
+        error: function () {
+          alert(
+            "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
+          );
+        },
+      });
+    },
+  });
+
 });
 
 
@@ -82,9 +121,9 @@ function carregardadosSetores() {
         if (jqXHR.status === 400) {
           toastAtencao(response.response + " Tente novamente mais tarde!");
         } else {
-         // window.location.href = "generalError.php";
+          // window.location.href = "generalError.php";
         }
-    }
+      }
     },
     //minimumInputLength: 1, // Pesquisa automática a partir do primeiro caractere
     tags: false,
