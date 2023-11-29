@@ -26,6 +26,26 @@ class VinculosFuncionais
     private $almoco;
     private $idFuncao;
     private $descHorario;
+    private $codigoFuncionario;
+
+    public function listJSON($dados)
+    {
+        try {
+            $this->codigoFuncionario = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
+
+            $lista = \App\Models\VinculosFuncionais::listarFuncional($this->codigoFuncionario);
+            $status = true;
+            $response = $lista;
+            http_response_code(200);
+        } catch (Exception $th) {
+            $status = false;
+            $response = "Tente novamente mais Tarde!  <br>" . $th->getMessage();
+            http_response_code(500);
+        }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
+    }
 
     public function controlar($conn, $cad, $vinculosFuncionais, $idFuncionario, $insert = null, $update = null)
     {

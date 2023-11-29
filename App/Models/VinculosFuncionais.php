@@ -17,7 +17,7 @@ class VinculosFuncionais
     private $Message;
     private $Result;
 
-    public function __construct($diasTrabalhoSemana = null, $descHorario = null, $idFuncao = null, $almoco = null, $matricula =  null, $dataInicio, $dataFinal = null, $codigo = null)
+    public function __construct($diasTrabalhoSemana = null, $descHorario = null, $idFuncao = null, $almoco = null, $matricula =  null, $dataInicio = null, $dataFinal = null, $codigo = null)
     {
         $this->matricula = $matricula;
         $this->dataInicio = $dataInicio;
@@ -96,16 +96,18 @@ class VinculosFuncionais
         }
     }
 
-    public function listarFuncional($cdFuncionario = null)
+    public static function listarFuncional($cdFuncionario = null)
     {
         try {
-            $botoesTabela = "<button class='small ui icon blue button'><i class='icon pencil alternate'></i></button>        <button class='small ui icon red button'><i class='icon trash alternate outline'></i></button>";
+            // $botoesTabela = "<button class='small ui icon blue button'><i class='icon pencil alternate'></i></button>        <button class='small ui icon red button'><i class='icon trash alternate outline'></i></button>";
             $read = new \App\Conn\Read();
-            $read->FullRead("SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA, DATE_FORMAT(F.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(F.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.ALMOCO, F.DESC_HR_TRABALHO, F.SEG, F.TER, F.QUA, F.QUI, F.SEX, F.CD_FUNCAO, :DIV AS ACOES , FUN.NM_FUNCAO
+            $read->FullRead("SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA, DATE_FORMAT(F.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(F.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.ALMOCO, F.DESC_HR_TRABALHO, F.SEG, F.TER, F.QUA, F.QUI, F.SEX, F.CD_FUNCAO, FUN.NM_FUNCAO
                              FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS F
                              INNER JOIN FUNCOES FUN ON (FUN.CD_FUNCAO = F.CD_FUNCAO) 
-                             WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario&DIV=$botoesTabela");
+                             WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");
+            
             return $read->getResult();
+            //return self::estruturarOBJ($read->getResult());
         } catch (Exception $th) {
             throw new Exception($th->getMessage(), 500);
         }
@@ -170,7 +172,7 @@ class VinculosFuncionais
                 if ($atualizado) {
                     $this->Result = true;
                 } else {
-                    throw new Exception("Erro ao alterar Vínculos Funcionais " .$update->getMessage() , 500);
+                    throw new Exception("Erro ao alterar Vínculos Funcionais " . $update->getMessage(), 500);
                 }
             } else {
                 throw new Exception("Ops! Parece que esse registro não existe mais na base de dados!", 500);
@@ -214,5 +216,27 @@ class VinculosFuncionais
         AND (DATE_FORMAT(DATA_FINAL, '%Y-%m') >= :MREL OR DATA_FINAL IS NULL)
         ORDER BY V.MATRICULA", "C=$codigoFuncionario&MREL=$mesRelatorio");
         return $read->getResult();
+    }
+
+    private static function estruturarOBJ($objSQL)
+    {
+
+        $arrayObj = [];
+
+        foreach ($objSQL as $obj) {
+            $ObjvinculoFuncioanal = new VinculosFuncionais();
+            $ObjvinculoFuncioanal->setMatricula($obj["MATRICULA"]);
+            $ObjvinculoFuncioanal->setDataInicio($obj["DATA_INICIAL"]);
+            $ObjvinculoFuncioanal->setDataFinal($obj["DATA_FINAL"]);
+            $ObjvinculoFuncioanal->setAlmoco($obj["ALMOCO"]);
+            $ObjvinculoFuncioanal->setFuncao($obj["CD_FUNCAO"]);
+            $ObjvinculoFuncioanal->setDescHorario($obj["DESC_HR_TRABALHO"]);
+            $ObjvinculoFuncioanal->setCodigo(["CD_VINCULO_FUNCIONAL"]);
+            //$this->diasSemana = $obj;
+
+            $arrayObj[] = $ObjvinculoFuncioanal;
+            $ObjvinculoFuncioanal = null;
+        }
+        return $arrayObj;
     }
 }

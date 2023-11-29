@@ -1,14 +1,12 @@
-var editando = false;
+var selectsetor; 
 $(document).ready(function () {
 
+  carregardadosFuncoes();
   carregardadosSetores();
-  //carregardadosFuncoes();
 
   $("#tabnav .item").tab();
 
   $("#select-almoco").dropdown();
-
-  var dadosTabelaFuncional = [];
 
   if (typeof codigoFuncionario !== "undefined" && codigoFuncionario !== null) {
     carregarDadosGeraisFuncionario(codigoFuncionario);
@@ -52,6 +50,57 @@ $(document).ready(function () {
     },
   });
 
+
+  var table = $("#funcionalTable").DataTable({
+    processing: true,
+    ajax: {
+      type: "POST",
+      url: "./../../App/Controllers/VinculosFuncionais.php",
+      data: {
+        funcao: "listJSON",
+        cdFuncionario: codigoFuncionario,
+      },
+      dataSrc: "response",
+      success: function(data){
+        console.log(data);
+      },
+      error: function (xhr) {
+        //window.location.href = "generalError.php";
+      },
+    },
+    columns: [
+      { data: "CD_EXCECAO" },
+      { data: "NM_TIPO_EXCECAO" },
+      { data: "DATA_INICIAL" },
+      { data: "DATA_FINAL" },
+      { data: "NM_FUNCIONARIO" },
+      {
+        render: function (data, type, row) {
+          var editarBtn =
+            "<button class='ui mini icon button blue' onclick='editarRegistro(" +
+            row.CD_EXCECAO +
+            ")'><i class='pencil alternate icon'></i></button>";
+          var excluirBtn =
+            "<button class='ui mini icon button red' onclick='excluirRegistro(" +
+            row.CD_EXCECAO +
+            ")'><i class='trash alternate icon'></i></button>";
+          return editarBtn + excluirBtn;
+        },
+      },
+    ],
+
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.13.5/i18n/pt-BR.json",
+    },
+    order: [[0, "desc"]],
+    columnDefs: [
+      {
+        targets: "_all",
+        className: "dt-center",
+      },
+    ],
+  });
+
 });
 
 
@@ -89,7 +138,7 @@ async function carregardadosFuncoes(FuncaoSalvoNoBanco = null) {
 }
 
 function carregardadosSetores() {
-  $("#select-setor").select2({
+  selectsetor = $("#select-setor").select2({
     ajax: {
       url: "./../../App/Controllers/Setores.php",
       type: "POST",
@@ -146,34 +195,12 @@ function carregarDadosGeraisFuncionario(idFuncionario) {
       setTimeout(function () {
         $("#cdFuncionario").val(data[0].CD_FUNCIONARIO);
         $("#nomeFuncionario").val(data[0].NM_FUNCIONARIO);
-        $("#select-setor").val(data[0].CD_SETOR).trigger("change.select2");
-      }, 150);
+        selectsetor.val(data[0].CD_SETOR).trigger("change.select2");
+      }, 300);
     },
     error: function (xhr, status, error) {
       // Lide com erros, se necessário
       alert("Erro ao carregar dados do funcionário: " + error);
     },
-  });
-}
-
-function carregarDadosFuncionaisFuncionario(idFuncionario) {
-  return new Promise(function (resolve, reject) {
-    $.ajax({
-      url: "./../../App/Controllers/Funcionarios.php",
-      method: "POST",
-      data: {
-        cdFuncionario: idFuncionario,
-        funcao: "listFuncionalJSON",
-      },
-      dataType: "json",
-      success: function (data) {
-        resolve(data.response); // Resolvendo a Promise com os dados recebidos
-      },
-      error: function (xhr, status, error) {
-        reject(
-          "Erro ao carregar Vínculos funcionais! Tente novamente mais tarde"
-        ); // Rejeitando a Promise em caso de erro
-      },
-    });
   });
 }
