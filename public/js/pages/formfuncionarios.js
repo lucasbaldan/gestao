@@ -61,28 +61,31 @@ $(document).ready(function () {
         cdFuncionario: codigoFuncionario,
       },
       dataSrc: "response",
-      success: function(data){
-        console.log(data);
-      },
+      // success: function(data){
+      //   console.log(data);
+      // },
       error: function (xhr) {
-        //window.location.href = "generalError.php";
+        window.location.href = "generalError.php";
       },
     },
     columns: [
-      { data: "CD_EXCECAO" },
-      { data: "NM_TIPO_EXCECAO" },
+      { data: "CD_VINCULO_FUNCIONAL" },
+      { data: "MATRICULA" },
       { data: "DATA_INICIAL" },
       { data: "DATA_FINAL" },
-      { data: "NM_FUNCIONARIO" },
+      { data: "ALMOCO" },
+      { data: "NM_FUNCAO" },
+      { data: "DIASSEMANA" },
+      { data: "DESC_HR_TRABALHO" },
       {
         render: function (data, type, row) {
           var editarBtn =
             "<button class='ui mini icon button blue' onclick='editarRegistro(" +
-            row.CD_EXCECAO +
+            row.CD_VINCULO_FUNCIONAL +
             ")'><i class='pencil alternate icon'></i></button>";
           var excluirBtn =
             "<button class='ui mini icon button red' onclick='excluirRegistro(" +
-            row.CD_EXCECAO +
+            row.CD_VINCULO_FUNCIONAL +
             ")'><i class='trash alternate icon'></i></button>";
           return editarBtn + excluirBtn;
         },
@@ -101,6 +104,10 @@ $(document).ready(function () {
     ],
   });
 
+});
+
+$("#addfuncional").click(function(){
+  
 });
 
 

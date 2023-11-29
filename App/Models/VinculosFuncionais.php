@@ -101,7 +101,7 @@ class VinculosFuncionais
         try {
             // $botoesTabela = "<button class='small ui icon blue button'><i class='icon pencil alternate'></i></button>        <button class='small ui icon red button'><i class='icon trash alternate outline'></i></button>";
             $read = new \App\Conn\Read();
-            $read->FullRead("SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA, DATE_FORMAT(F.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(F.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.ALMOCO, F.DESC_HR_TRABALHO, F.SEG, F.TER, F.QUA, F.QUI, F.SEX, F.CD_FUNCAO, FUN.NM_FUNCAO
+            $read->FullRead("SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA, DATE_FORMAT(F.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, DATE_FORMAT(F.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, F.ALMOCO, F.DESC_HR_TRABALHO, CONCAT(F.SEG, F.TER, F.QUA, F.QUI, F.SEX) AS DIASSEMANA, F.CD_FUNCAO, FUN.NM_FUNCAO
                              FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS F
                              INNER JOIN FUNCOES FUN ON (FUN.CD_FUNCAO = F.CD_FUNCAO) 
                              WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");

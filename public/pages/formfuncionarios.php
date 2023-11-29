@@ -82,13 +82,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
 
       <div class="ui bottom attached tab segment" data-tab="funcionario-funcionais">
         <h3>Cadastros Funcionais do Funcionário</h3>
+        <form action="./../../App/Controllers/VinculosFuncionais.php" method="POST" id="formVinculoFuncional">
+        <input type="hidden" name="funcao" value="controlar" readonly required>
         <input type="hidden" id="cdVinculoFuncional" name="cdVinculoFuncional" readonly>
+        <input type="hidden" id="cdFuncionario" name="cdFuncionario" value="<?php if($cdFuncionario){echo $cdFuncionario;} else echo "";?>" readonly>
 
         <div class="three fields">
           <div class="required field">
             <label>Matricula:</label>
             <div class="ui input">
-              <input type="text" id="matricula" placeholder="">
+              <input type="text" id="matricula" name="matricula" placeholder="">
             </div>
             <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
               Preencha o campo NOME com mais de 3 caracteres
@@ -98,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           <div class="required field">
             <label>Data de Admissão:</label>
             <div class="ui input">
-              <input type="date" id="dataInicio">
+              <input type="date" id="dataInicio" name="dataAdmissao">
             </div>
             <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
               Preencha o campo NOME com mais de 3 caracteres
@@ -108,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           <div class="field">
             <label>Data de Demissão:</label>
             <div class="ui input">
-              <input type="date" id="dataTermino">
+              <input type="date" id="dataTermino" name="dataDemissao">
             </div>
           </div>
 
@@ -131,7 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           <div class="required field">
             <label>Função</label>
             <div class="ui input">
-              <select id="select-funcao" name="funcao-funcionario" style="width: 100%;" required>
+              <select id="select-funcao" name="funcao" style="width: 100%;">
               </select>
             </div>
             <div class="ui pointing red basic label" id="preencherNome" style="display: none;">
@@ -175,30 +178,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         <div class="field">
             <label>Descrição do horário de Trabalho:</label>
             <div class="ui fluid icon input">
-            <input type="text" id="descricaoHorario">
+            <input type="text" id="descricaoHorario" name="descHorario">
             <i class="icon keyboard outline"></i>
             </div>
           </div>
 
         <br>
-        <button class="ui right labeled icon green button" id="addfuncional">
+        <button class="ui right labeled icon green button" id="addfuncional" type="submit">
           <i class="plus square outline icon"></i>
           Adicionar / Alterar
         </button>
+        </form>
 
         <table id="funcionalTable" class="ui blue celled table" style="min-width: 100%;">
           <thead>
             <tr>
+              <th>Codigo</th>
               <th>Matrícula</th>
               <th>Data Início</th>
               <th>Data Final</th>
               <th>Almoço?</th>
-              <th>idFunção</th>
               <th>Função</th>
               <th>Dias de Trabalho</th>
               <th>Descrição do horário</th>
               <th>Ações</th>
-              <th>codigo</th>
             </tr>
           </thead>
           <tbody>
