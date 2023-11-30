@@ -1,4 +1,4 @@
-var selectsetor; 
+var selectsetor;
 $(document).ready(function () {
 
   carregardadosFuncoes();
@@ -104,10 +104,47 @@ $(document).ready(function () {
     ],
   });
 
-});
+  $("#formVinculoFuncional").form({
+    onSuccess: function (event, fields) {
+      event.preventDefault(); // Impede o envio padrão do formulário
 
-$("#addfuncional").click(function(){
-  
+      var formData = $("#formVinculoFuncional").serialize();
+
+      $.ajax({
+        type: "POST",
+        url: "./../../App/Controllers/VinculosFuncionais.php",
+        data: formData,
+        beforeSend: function () {
+          console.log(formData);
+          $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
+        },
+        success: function (response) {
+          console.log(response);
+          if (response.status === true) {
+            $("#funcionalTable").DataTable().clear().draw();
+            toastSucesso();
+            setTimeout(function () {
+              $("#funcionalTable").DataTable().ajax.reload();
+              limparCamposVinculosFuncionais();
+              $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
+
+
+            }, 200);
+          }
+        },
+        error: function (jqXHR) {
+          var response = JSON.parse(jqXHR.responseText);
+          if (jqXHR.status === 500) {
+            toastErro(response.response + "Tente novamente mais tarde!");
+          } else if (jqXHR.status === 400) {
+            toastAtencao(response.response);
+          }
+          $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
+        },
+      });
+    },
+  });
+
 });
 
 
@@ -199,15 +236,27 @@ function carregarDadosGeraisFuncionario(idFuncionario) {
     dataType: "json",
     success: function (data) {
       data = data.response;
-      setTimeout(function () {
-        $("#cdFuncionario").val(data[0].CD_FUNCIONARIO);
-        $("#nomeFuncionario").val(data[0].NM_FUNCIONARIO);
-        selectsetor.val(data[0].CD_SETOR).trigger("change.select2");
-      }, 300);
+      $("#cdFuncionario").val(data[0].CD_FUNCIONARIO);
+      $("#nomeFuncionario").val(data[0].NM_FUNCIONARIO);
+      selectsetor.val(data[0].CD_SETOR).trigger("change");
     },
     error: function (xhr, status, error) {
       // Lide com erros, se necessário
       alert("Erro ao carregar dados do funcionário: " + error);
     },
   });
+}
+
+function limparCamposVinculosFuncionais() {
+  $('#matricula').val("");
+  $('#dataInicio').val("");
+  $('#dataTermino').val("");
+  $('#select-almoco').val("");
+  $('#select-funcao').val(null).trigger("change");
+  $('#SEG').prop("checked", false);
+  $('#TER').prop("checked", false);
+  $('#QUA').prop("checked", false);
+  $('#QUI').prop("checked", false);
+  $('#SEX').prop("checked", false);
+  $('#descricaoHorario').val("");
 }

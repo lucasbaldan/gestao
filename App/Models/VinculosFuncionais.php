@@ -14,19 +14,21 @@ class VinculosFuncionais
     private $idFuncao;
     private $descHorario;
     private $diasSemana;
+    private $idFuncionario;
     private $Message;
     private $Result;
 
-    public function __construct($diasTrabalhoSemana = null, $descHorario = null, $idFuncao = null, $almoco = null, $matricula =  null, $dataInicio = null, $dataFinal = null, $codigo = null)
+    public function __construct($dados)
     {
-        $this->matricula = $matricula;
-        $this->dataInicio = $dataInicio;
-        $this->dataFinal = $dataFinal;
-        $this->almoco = $almoco;
-        $this->idFuncao = $idFuncao;
-        $this->descHorario = $descHorario;
-        $this->diasSemana = $diasTrabalhoSemana;
-        $this->codigo = $codigo;
+        $this->codigo = !empty($dados['CODIGO']) ? $dados['CODIGO'] : '';
+        $this->matricula = !empty($dados['MATRICULA']) ? $dados['MATRICULA'] : '';
+        $this->dataInicio = !empty($dados['DATAINICIAL']) ? $dados['DATAINICIAL'] : '';
+        $this->dataFinal = !empty($dados['DATAFINAL']) ? $dados['DATAFINAL'] : '';
+        $this->almoco = !empty($dados['ALMOCO']) ? $dados['ALMOCO'] : 0;
+        $this->idFuncao = !empty($dados['IDFUNCAO']) ? $dados['IDFUNCAO'] : '';
+        $this->descHorario = !empty($dados['DESCHORARIO']) ? $dados['DESCHORARIO'] : '';
+        $this->diasSemana = !empty($dados['SEMANA']) ? $dados['SEMANA'] : '';
+        $this->idFuncionario = !empty($dados['FUNCIONARIO']) ? $dados['FUNCIONARIO'] : '';
     }
 
     public function setCodigo($cd)
@@ -114,8 +116,10 @@ class VinculosFuncionais
     }
 
 
-    public function inserirVinculosFuncionais($insert, $cdFuncionario)
+    public function inserir()
     {
+        $conn = \App\Conn\Conn::getConn(true);
+        $insert = new \App\Conn\Insert($conn);
 
         try {
             $dadosinsert = [
@@ -125,7 +129,7 @@ class VinculosFuncionais
                 "ALMOCO" => $this->almoco,
                 "DESC_HR_TRABALHO" => $this->descHorario,
                 "CD_FUNCAO" => $this->idFuncao,
-                "CD_FUNCIONARIO" => $cdFuncionario,
+                "CD_FUNCIONARIO" => $this->idFuncionario,
                 "SEG" => $this->diasSemana[0],
                 "TER" => $this->diasSemana[1],
                 "QUA" => $this->diasSemana[2],
@@ -138,7 +142,9 @@ class VinculosFuncionais
                 throw new Exception("Erro ao inserir Vínculos Funcionais" . $insert->getMessage(), 500);
             }
             $this->Result = true;
+            $insert->Commit();
         } catch (Exception $th) {
+            $insert->Rollback();
             $this->Result = false;
             $this->Message = $th->getMessage();
         }
@@ -218,25 +224,25 @@ class VinculosFuncionais
         return $read->getResult();
     }
 
-    private static function estruturarOBJ($objSQL)
-    {
+    // private static function estruturarOBJ($objSQL)
+    // {
 
-        $arrayObj = [];
+    //     $arrayObj = [];
 
-        foreach ($objSQL as $obj) {
-            $ObjvinculoFuncioanal = new VinculosFuncionais();
-            $ObjvinculoFuncioanal->setMatricula($obj["MATRICULA"]);
-            $ObjvinculoFuncioanal->setDataInicio($obj["DATA_INICIAL"]);
-            $ObjvinculoFuncioanal->setDataFinal($obj["DATA_FINAL"]);
-            $ObjvinculoFuncioanal->setAlmoco($obj["ALMOCO"]);
-            $ObjvinculoFuncioanal->setFuncao($obj["CD_FUNCAO"]);
-            $ObjvinculoFuncioanal->setDescHorario($obj["DESC_HR_TRABALHO"]);
-            $ObjvinculoFuncioanal->setCodigo(["CD_VINCULO_FUNCIONAL"]);
-            //$this->diasSemana = $obj;
+    //     foreach ($objSQL as $obj) {
+    //         $ObjvinculoFuncioanal = new VinculosFuncionais();
+    //         $ObjvinculoFuncioanal->setMatricula($obj["MATRICULA"]);
+    //         $ObjvinculoFuncioanal->setDataInicio($obj["DATA_INICIAL"]);
+    //         $ObjvinculoFuncioanal->setDataFinal($obj["DATA_FINAL"]);
+    //         $ObjvinculoFuncioanal->setAlmoco($obj["ALMOCO"]);
+    //         $ObjvinculoFuncioanal->setFuncao($obj["CD_FUNCAO"]);
+    //         $ObjvinculoFuncioanal->setDescHorario($obj["DESC_HR_TRABALHO"]);
+    //         $ObjvinculoFuncioanal->setCodigo(["CD_VINCULO_FUNCIONAL"]);
+    //         //$this->diasSemana = $obj;
 
-            $arrayObj[] = $ObjvinculoFuncioanal;
-            $ObjvinculoFuncioanal = null;
-        }
-        return $arrayObj;
-    }
+    //         $arrayObj[] = $ObjvinculoFuncioanal;
+    //         $ObjvinculoFuncioanal = null;
+    //     }
+    //     return $arrayObj;
+    // }
 }

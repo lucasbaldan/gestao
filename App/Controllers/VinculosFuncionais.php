@@ -27,6 +27,8 @@ class VinculosFuncionais
     private $idFuncao;
     private $descHorario;
     private $codigoFuncionario;
+    private $diasTrabalho;
+    private $cdFuncionario;
 
     public function listJSON($dados)
     {
@@ -47,94 +49,58 @@ class VinculosFuncionais
         echo $response;
     }
 
-    public function controlar($conn, $cad, $vinculosFuncionais, $idFuncionario, $insert = null, $update = null)
-    {
+     public function controlar($dados)
+      {
         try {
-            if (!$insert) {
-                $insert = new \App\Conn\Insert($conn);
-            }
-            if (!$update) {
-                $update = new \App\Conn\Update($conn);
-            }
-            $delete = new \App\Conn\Delete($conn);
 
-            foreach ($vinculosFuncionais as $vinculoFuncional) {
+            $this->codigo = !empty($dados['cdVinculoFuncional']) ? $dados['cdVinculoFuncional'] : '';
+            $this->matricula = isset($dados['matricula']) ? $dados['matricula'] : '';
+            $this->dataInicio = isset($dados["dataAdmissao"]) ? $dados["dataAdmissao"] : '';
+            $this->dataFinal = isset($dados["dataDemissao"]) ? $dados["dataDemissao"] : '';
+               $this->almoco = isset($dados["almoco"]) ? $dados["almoco"] : ''; 
+            //$this->almoco = $this->almoco == "Sim" ? 1 : 0;
+            $this->idFuncao = isset($dados["idFuncao"]) ? $dados["idFuncao"] : '';
+            $this->descHorario = isset($dados["descHorario"]) ? $dados["descHorario"] : '';
+            $segunda = isset($dados["SEG"]) ? 1 : 0;
+            $terca = isset($dados["TER"]) ? 1 : 0;
+            $quarta = isset($dados["QUA"]) ? 1 : 0;
+            $quinta = isset($dados["QUI"]) ? 1 : 0;
+            $sexta = isset($dados["SEX"]) ? 1 : 0;
+            $this->diasTrabalho = [$segunda, $terca, $quarta, $quinta, $sexta];
+            $this->cdFuncionario = isset($dados["cdFuncionario"]) ? $dados["cdFuncionario"] : '';
 
-                $codigoFuncional = isset($vinculoFuncional['CD_VINCULO_FUNCIONAL']) ? $vinculoFuncional['CD_VINCULO_FUNCIONAL'] : '';
-                $matricula = isset($vinculoFuncional['MATRICULA']) ? $vinculoFuncional['MATRICULA'] : '';
-                $dataInicio = isset($vinculoFuncional["DATA_INICIAL"]) ? $vinculoFuncional["DATA_INICIAL"] : '';
-                $dataFinal = isset($vinculoFuncional["DATA_FINAL"]) ? $vinculoFuncional["DATA_FINAL"] : '';
-                $almoco = isset($vinculoFuncional["ALMOCO"]) ? $vinculoFuncional["ALMOCO"] : '';
-                $almoco = $almoco == "Sim" ? 1 : 0;
-                $idFuncao = isset($vinculoFuncional["CD_FUNCAO"]) ? $vinculoFuncional["CD_FUNCAO"] : '';
-                $descHorario = isset($vinculoFuncional["DESC_HR_TRABALHO"]) ? $vinculoFuncional["DESC_HR_TRABALHO"] : '';
-                $diasTrabalhoSemana = isset($vinculoFuncional["DIASSEMANA"]) ? $vinculoFuncional["DIASSEMANA"] : '';
+            $dados = [
+             "CODIGO" =>  $this->codigo, 
+             "MATRICULA" =>  $this->matricula, 
+             "DATAINICIAL" => $this->dataInicio, 
+             "DATAFINAL" =>  $this->dataFinal, 
+             "ALMOCO" => $this->almoco, 
+             "IDFUNCAO" => $this->idFuncao,
+             "DESCHORARIO" => $this->descHorario,
+             "SEMANA" => $this->diasTrabalho,
+            "FUNCIONARIO" => $this->cdFuncionario];
 
-                // A EXCLUSÃO FOGE A REGRA DAS VALIDAÇÕES DOS DADOS
+            // VALIDAÇÕES SERVER SIDEE
 
-                if (!($codigoFuncional && $idFuncao == "EXC")) {
-                    //DATA VALIDATIONS
-                    if ($dataInicio == "undefined/undefined/" || $dataInicio == null) {
-                        throw new Exception("DATA INICIAL NÃO PODE SER NULA");
-                    }
-                    if ($idFuncao == "" || $idFuncao == null) {
-                        throw new Exception("INFORMAÇÃO DE FUNÇÃO INCORRETA");
-                    }
-                    if ($diasTrabalhoSemana == [] || $diasTrabalhoSemana == null) {
-                        throw new Exception("INFORMAÇÃO DE DIAS TRABALHaDOS INCORRETA");
-                    }
+            $cad = new \App\Models\VinculosFuncionais($dados);
 
-                    $data_datetime = DateTime::createFromFormat('d/m/Y', $dataInicio);
-                    $dataInicio = $data_datetime->format('Y-m-d');
+            if(empty($this->codigo)){
+                $cad->inserir();
 
-                    if ($dataFinal != "-") {
-                        $data_datetime = DateTime::createFromFormat('d/m/Y', $dataFinal);
-                        $dataFinal = $data_datetime->format('Y-m-d');
-                    } else {
-                        $dataFinal = null;
-                    }
-
-                    if (!empty($diasTrabalhoSemana)) {
-
-                        $cad->setSemana($semana = [
-                            in_array("SEG", $diasTrabalhoSemana) ? 1 : 0,
-                            in_array("TER", $diasTrabalhoSemana) ? 1 : 0,
-                            in_array("QUA", $diasTrabalhoSemana) ? 1 : 0,
-                            in_array("QUI", $diasTrabalhoSemana) ? 1 : 0,
-                            in_array("SEX", $diasTrabalhoSemana) ? 1 : 0
-                        ]);
-                    }
-                }
-
-                $cad->setCodigo($codigoFuncional);
-                $cad->setMatricula($matricula);
-                $cad->setDataInicio($dataInicio);
-                $cad->setDataFinal($dataFinal);
-                $cad->setAlmoco($almoco);
-                $cad->setFuncao($idFuncao);
-                $cad->setDescHorario($descHorario);
-
-                if (!$codigoFuncional && $idFuncao != "EXC") {
-                    $cad->inserirVinculosFuncionais($insert, $idFuncionario);
-                   if(!$cad->getResult()){
-                        throw new Exception("Erro ao inserir Vínculo Funcional ".$cad->getMessage(), 500);
-                    }
-                }
-                if ($codigoFuncional && $idFuncao != "EXC") {
-                    $cad->alterarVinculosFuncionais($update);
-                    if (!$cad->getResult()) {
-                        throw new Exception("Ero ao alterar Vínculo Funcional ".$cad->getMessage(), 500);
-                    }
-                }
-                if ($codigoFuncional && $idFuncao == "EXC") {
-                    $cad->excluirVinculosFuncionais($delete);
-                    if (!$cad->getResult()) {
-                        throw new Exception("Erro ao excluir vínculos Funcionais ".$cad->getMessage(), 500);
-                    }
+                if(!$cad->getResult()){
+                    throw new Exception($cad->getMessage(), 500);
                 }
             }
+            $status = true;
+            $response = '';
+            http_response_code(200);
         } catch (Exception $th) {
-            throw new Exception($th->getMessage(), $th->getCode());
+            $status = false;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
         }
-    }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
+     }
 }
