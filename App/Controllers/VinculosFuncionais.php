@@ -49,15 +49,15 @@ class VinculosFuncionais
         echo $response;
     }
 
-     public function controlar($dados)
-      {
+    public function controlar($dados)
+    {
         try {
 
             $this->codigo = !empty($dados['cdVinculoFuncional']) ? $dados['cdVinculoFuncional'] : '';
             $this->matricula = isset($dados['matricula']) ? $dados['matricula'] : '';
             $this->dataInicio = isset($dados["dataAdmissao"]) ? $dados["dataAdmissao"] : '';
             $this->dataFinal = isset($dados["dataDemissao"]) ? $dados["dataDemissao"] : '';
-               $this->almoco = isset($dados["almoco"]) ? $dados["almoco"] : ''; 
+            $this->almoco = isset($dados["almoco"]) ? $dados["almoco"] : '';
             //$this->almoco = $this->almoco == "Sim" ? 1 : 0;
             $this->idFuncao = isset($dados["idFuncao"]) ? $dados["idFuncao"] : '';
             $this->descHorario = isset($dados["descHorario"]) ? $dados["descHorario"] : '';
@@ -70,24 +70,25 @@ class VinculosFuncionais
             $this->cdFuncionario = isset($dados["cdFuncionario"]) ? $dados["cdFuncionario"] : '';
 
             $dados = [
-             "CODIGO" =>  $this->codigo, 
-             "MATRICULA" =>  $this->matricula, 
-             "DATAINICIAL" => $this->dataInicio, 
-             "DATAFINAL" =>  $this->dataFinal, 
-             "ALMOCO" => $this->almoco, 
-             "IDFUNCAO" => $this->idFuncao,
-             "DESCHORARIO" => $this->descHorario,
-             "SEMANA" => $this->diasTrabalho,
-            "FUNCIONARIO" => $this->cdFuncionario];
+                "CODIGO" =>  $this->codigo,
+                "MATRICULA" =>  $this->matricula,
+                "DATAINICIAL" => $this->dataInicio,
+                "DATAFINAL" =>  $this->dataFinal,
+                "ALMOCO" => $this->almoco,
+                "IDFUNCAO" => $this->idFuncao,
+                "DESCHORARIO" => $this->descHorario,
+                "SEMANA" => $this->diasTrabalho,
+                "FUNCIONARIO" => $this->cdFuncionario
+            ];
 
             // VALIDAÇÕES SERVER SIDEE
 
             $cad = new \App\Models\VinculosFuncionais($dados);
 
-            if(empty($this->codigo)){
+            if (empty($this->codigo)) {
                 $cad->inserir();
 
-                if(!$cad->getResult()){
+                if (!$cad->getResult()) {
                     throw new Exception($cad->getMessage(), 500);
                 }
             }
@@ -102,5 +103,32 @@ class VinculosFuncionais
         $response = json_encode(["status" => $status, "response" => $response]);
         header('Content-Type: application/json');
         echo $response;
-     }
+    }
+
+    public function excluir($dados)
+    {
+        try {
+            $this->codigo = isset($dados['cdVinculoFuncional']) ? $dados['cdVinculoFuncional'] : '';
+
+            if (empty($this->codigo)) {
+                throw new Exception("Erro ao processar código nulo na ação desejada! Tente novamente mais tarde!");
+            }
+            $delete = new \App\Models\VinculosFuncionais($dados = ["CODIGO" => $this->codigo]);
+            $delete->excluir();
+
+            if (!$delete->getResult()) {
+                throw new Exception("Erro ao excluir vinculo Funcional, Motivo " . $delete->getMessage(), 500);
+            }
+            $status = true;
+            $response = '';
+            http_response_code(200);
+        } catch (Exception $th) {
+            $status = false;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
+        }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
+    }
 }

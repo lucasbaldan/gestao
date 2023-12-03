@@ -223,6 +223,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         </button></a>
     </div>
 
+    <div id="confirmacaoExclusao" class="ui modal">
+    <div class="header" style="background-color: orange; color: white;">Confirmação</div>
+    <div class="content">
+        <div class="ui icon message">
+            <i class="attention icon"></i>
+            <div class="content">
+                <div class="header">Atenção</div>
+                <p>Você tem certeza que deseja excluir este registro do sistema?</p>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div id="fechaModalEXC" class="ui inverted red cancel button">Cancelar</div>
+        <div id="botaoconfirmaExclusao" class="ui positive green button">Concordo <i class="trash icon"></i></div>
+    </div>
+</div>
+
   </div>
 
   <script src="../js/default/toast.js"></script>

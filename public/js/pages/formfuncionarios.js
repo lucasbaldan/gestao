@@ -127,8 +127,6 @@ $(document).ready(function () {
               $("#funcionalTable").DataTable().ajax.reload();
               limparCamposVinculosFuncionais();
               $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
-
-
             }, 200);
           }
         },
@@ -245,6 +243,63 @@ function carregarDadosGeraisFuncionario(idFuncionario) {
       alert("Erro ao carregar dados do funcionário: " + error);
     },
   });
+}
+
+function excluirRegistro(idVinculoFuncional) {
+  $("#confirmacaoExclusao")
+    .modal({
+      closable: false,
+      onApprove: function () {
+        confirmadoExclusao(idVinculoFuncional);
+        return false;
+      },
+    })
+    .modal("show");
+
+  function confirmadoExclusao() {
+    $.ajax({
+      type: "POST",
+      url: "./../../App/Controllers/VinculosFuncionais.php",
+      data: {
+        cdVinculoFuncional: idVinculoFuncional,
+        funcao: "excluir",
+      },
+      beforeSend: function () {
+        $("#botaoconfirmaExclusao").addClass("loading disabled");
+        $("#fechaModalEXC").addClass("disabled");
+      },
+      success: function (response) {
+        if (response.status === true) {
+          $("#funcionalTable").DataTable().clear().draw();
+          setTimeout(function () {
+            toastSucesso();
+            $("#botaoconfirmaExclusao").removeClass("loading disabled");
+            $("#fechaModalEXC").removeClass("disabled");
+            $("#confirmacaoExclusao").modal("hide");
+            $("#funcionalTable").DataTable().ajax.reload();
+          }, 500);
+        } else {
+          window.location.href = "generalError.php";
+        }
+      },
+      error: function (jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        if (jqXHR.status === 500) {
+          toastErro(response.response + " Tente novamente mais tarde!");
+        } else if (jqXHR.status === 400) {
+          response.response.includes("SQLSTATE[23000]")
+            ? toastAtencao(
+                "OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados."
+              )
+            : toastAtencao(response.response);
+        } else {
+          window.location.href = "generalError.php";
+        }
+        $("#botaoconfirmaExclusao").removeClass("loading disabled");
+        $("#fechaModalEXC").removeClass("disabled");
+      },
+    });
+  }
 }
 
 function limparCamposVinculosFuncionais() {
