@@ -98,33 +98,53 @@ class VinculosFuncionais
         }
     }
 
-    public static function listarFuncional($cdFuncionario = null)
+    public static function listarFuncional($cdFuncionario = null, $cdVinculoFuncional = null)
     {
         try {
             // $botoesTabela = "<button class='small ui icon blue button'><i class='icon pencil alternate'></i></button>        <button class='small ui icon red button'><i class='icon trash alternate outline'></i></button>";
             $read = new \App\Conn\Read();
-            $read->FullRead("SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA, 
-                             DATE_FORMAT(F.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, 
-                             DATE_FORMAT(F.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, 
-                             F.ALMOCO, 
-                             F.DESC_HR_TRABALHO, 
-                             
-                             
-                             CONCAT(
-                                CASE WHEN F.SEG = 1 THEN 'SEGUNDA </br> ' ELSE '' END,
-                                CASE WHEN F.TER = 1 THEN 'TERÇA </br>' ELSE '' END,
-                                CASE WHEN F.QUA = 1 THEN 'QUARTA </br> ' ELSE '' END,
-                                CASE WHEN F.QUI = 1 THEN 'QUINTA </br> ' ELSE '' END,
-                                CASE WHEN F.SEX = 1 THEN 'SEXTA </br> ' ELSE '' END) 
-                                AS DIASSEMANA,
-                             
-                             
-                             F.CD_FUNCAO, 
-                             FUN.NM_FUNCAO
-                             FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS F
-                             INNER JOIN FUNCOES FUN ON (FUN.CD_FUNCAO = F.CD_FUNCAO) 
-                             WHERE F.CD_FUNCIONARIO =:C", "C=$cdFuncionario");
 
+            $limit = 100;
+            $parseString = "LIMIT=$limit";
+            $query = "SELECT F.CD_VINCULO_FUNCIONAL, F.MATRICULA,";
+
+            if ($cdVinculoFuncional) {
+                $query .= "F.DATA_INICIAL, F.DATA_FINAL, F.ALMOCO, F.DESC_HR_TRABALHO, F.SEG, F.TER, F.QUA, F.QUI, F.SEX, ";
+            } else {
+                $query .= " DATE_FORMAT(F.DATA_INICIAL, '%d/%m/%Y') AS DATA_INICIAL, 
+                DATE_FORMAT(F.DATA_FINAL, '%d/%m/%Y') AS DATA_FINAL, 
+                F.ALMOCO, 
+                F.DESC_HR_TRABALHO, 
+                 
+                CONCAT(
+                   CASE WHEN F.SEG = 1 THEN 'SEGUNDA </br> ' ELSE '' END,
+                   CASE WHEN F.TER = 1 THEN 'TERÇA </br>' ELSE '' END,
+                   CASE WHEN F.QUA = 1 THEN 'QUARTA </br> ' ELSE '' END,
+                   CASE WHEN F.QUI = 1 THEN 'QUINTA </br> ' ELSE '' END,
+                   CASE WHEN F.SEX = 1 THEN 'SEXTA </br> ' ELSE '' END) 
+                   AS DIASSEMANA,";
+            }
+
+
+            $query .= "
+                            FUN.CD_FUNCAO,
+                            FUN.NM_FUNCAO
+                            FROM VINCULOS_FUNCIONAIS_FUNCIONARIOS F
+                            INNER JOIN FUNCOES FUN ON (FUN.CD_FUNCAO = F.CD_FUNCAO)
+                            WHERE F.CD_VINCULO_FUNCIONAL IS NOT NULL ";
+
+            if ($cdFuncionario) {
+                $query .= " AND F.CD_FUNCIONARIO =:CF ";
+                $parseString .= "&CF=$cdFuncionario";
+            }
+            if ($cdVinculoFuncional) {
+                $query .= " AND F.CD_VINCULO_FUNCIONAL =:CD ";
+                $parseString .= "&CD=$cdVinculoFuncional";
+            }
+
+            $query .= "LIMIT :LIMIT";
+
+            $read->FullRead($query, $parseString);
             return $read->getResult();
             //return self::estruturarOBJ($read->getResult());
         } catch (Exception $th) {

@@ -54,7 +54,6 @@ class Setores
             }
             if($stringPesquisa){
                 $sql .= "AND S.NOME LIKE '%$stringPesquisa%'";
-                //$parseString .= "&PESQ=$stringPesquisa"; 
             }
 
             $sql .= " LIMIT :LIMIT";

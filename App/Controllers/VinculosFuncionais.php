@@ -33,9 +33,10 @@ class VinculosFuncionais
     public function listJSON($dados)
     {
         try {
-            $this->codigoFuncionario = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : '';
+            $this->codigo = isset($dados['cdVinculoFuncional']) ? $dados['cdVinculoFuncional'] : null;
+            $this->codigoFuncionario = isset($dados['cdFuncionario']) ? $dados['cdFuncionario'] : null;
 
-            $lista = \App\Models\VinculosFuncionais::listarFuncional($this->codigoFuncionario);
+            $lista = \App\Models\VinculosFuncionais::listarFuncional($this->codigoFuncionario, $this->codigo);
             $status = true;
             $response = $lista;
             http_response_code(200);

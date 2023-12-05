@@ -1,4 +1,4 @@
-.ui.red.celled.table thead, .ui.red.celled.table tbody{
+.ui.red.celled.table thead, .ui.red.celled.table tbody, .ui.blue.celled.table{
     text-align: center;
 }
 
@@ -29,19 +29,6 @@
     justify-content: center;
     margin-bottom: 10px;
 }
-.responsive-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-  
-  /* Estilo para o cabeçalho da coluna */
-  th {
-    white-space: nowrap;
-  }
 
   .header.editModal{
     background-color: black;

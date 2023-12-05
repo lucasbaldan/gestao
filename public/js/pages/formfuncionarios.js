@@ -1,6 +1,5 @@
 var selectsetor;
 $(document).ready(function () {
-
   carregardadosFuncoes();
   carregardadosSetores();
 
@@ -12,9 +11,8 @@ $(document).ready(function () {
     carregarDadosGeraisFuncionario(codigoFuncionario);
   }
 
-
-  $('#salvarFunc').click(function () {
-    $('#form-CAD-funcionario').submit();
+  $("#salvarFunc").click(function () {
+    $("#form-CAD-funcionario").submit();
   });
 
   $("#form-CAD-funcionario").form({
@@ -36,11 +34,8 @@ $(document).ready(function () {
         type: "POST",
         url: "./../../App/Controllers/Funcionarios.php",
         data: formData,
-        beforeSend: function () {
-        },
-        success: function (response) {
-          console.log(response);
-        },
+        beforeSend: function () {},
+        success: function (response) {},
         error: function () {
           alert(
             "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
@@ -50,9 +45,12 @@ $(document).ready(function () {
     },
   });
 
-
   var table = $("#funcionalTable").DataTable({
     processing: true,
+    paging: false, // Remove a paginação
+    lengthChange: false,
+    pageLength: 100,
+    info: false,
     ajax: {
       type: "POST",
       url: "./../../App/Controllers/VinculosFuncionais.php",
@@ -115,18 +113,18 @@ $(document).ready(function () {
         url: "./../../App/Controllers/VinculosFuncionais.php",
         data: formData,
         beforeSend: function () {
-          console.log(formData);
           $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
         },
         success: function (response) {
-          console.log(response);
           if (response.status === true) {
             $("#funcionalTable").DataTable().clear().draw();
             toastSucesso();
             setTimeout(function () {
               $("#funcionalTable").DataTable().ajax.reload();
               limparCamposVinculosFuncionais();
-              $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
+              $("#dimmerCarregando")
+                .dimmer({ closable: false })
+                .removeClass("active");
             }, 200);
           }
         },
@@ -137,14 +135,14 @@ $(document).ready(function () {
           } else if (jqXHR.status === 400) {
             toastAtencao(response.response);
           }
-          $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
+          $("#dimmerCarregando")
+            .dimmer({ closable: false })
+            .removeClass("active");
         },
       });
     },
   });
-
 });
-
 
 async function carregardadosFuncoes(FuncaoSalvoNoBanco = null) {
   let options = [];
@@ -194,7 +192,7 @@ function carregardadosSetores() {
       },
       processResults: function (data) {
         // Mapear os campos do JSON para os campos específicos do Select2
-        var mappedData = (data.response).map(function (item) {
+        var mappedData = data.response.map(function (item) {
           return {
             id: item.CD_SETOR,
             text: item.NOME,
@@ -207,14 +205,13 @@ function carregardadosSetores() {
       },
       cache: true,
       error: function (jqXHR, textStatus, errorThrown) {
-        console.log(jqXHR);
         var response = JSON.parse(jqXHR.responseText);
         if (jqXHR.status === 400) {
           toastAtencao(response.response + " Tente novamente mais tarde!");
         } else {
           // window.location.href = "generalError.php";
         }
-      }
+      },
     },
     //minimumInputLength: 1, // Pesquisa automática a partir do primeiro caractere
     tags: false,
@@ -241,6 +238,58 @@ function carregarDadosGeraisFuncionario(idFuncionario) {
     error: function (xhr, status, error) {
       // Lide com erros, se necessário
       alert("Erro ao carregar dados do funcionário: " + error);
+    },
+  });
+}
+
+function editarRegistro(codigoFuncionario) {
+  $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
+
+  $.ajax({
+    type: "POST",
+    url: "./../../App/Controllers/VinculosFuncionais.php",
+    data: {
+      cdVinculoFuncional: codigoFuncionario,
+      funcao: "listJSON",
+    },
+    success: function (data) {
+      console.log(data);
+      if (data.status === true) {
+        var VinculoFuncional = data["response"][0];
+
+        $("#cdVinculoFuncional").val(VinculoFuncional.CD_VINCULO_FUNCIONAL);
+        $("#matricula").val(VinculoFuncional.MATRICULA);
+        $("#dataInicio").val(VinculoFuncional.DATA_INICIAL);
+        $("#dataTermino").val(VinculoFuncional.DATA_FINAL);
+        $('#select-almoco').dropdown('set selected', VinculoFuncional.ALMOCO);
+        
+        var novaOpcao = document.createElement("option");
+        novaOpcao.value = VinculoFuncional.CD_FUNCAO;
+        novaOpcao.text = VinculoFuncional.NM_FUNCAO;
+        var selectElement = document.getElementById("select-funcao");
+        selectElement.appendChild(novaOpcao);
+
+        VinculoFuncional.SEG == 1 ? $('#SEG').prop('checked', true): null;
+        VinculoFuncional.TER == 1 ? $('#TER').prop('checked', true): null;
+        VinculoFuncional.QUA == 1 ? $('#QUA').prop('checked', true): null;
+        VinculoFuncional.QUI == 1 ? $('#QUI').prop('checked', true): null;
+        VinculoFuncional.SEX == 1 ? $('#SEX').prop('checked', true): null;
+
+        $("#descricaoHorario").val(VinculoFuncional.DESC_HR_TRABALHO);
+
+        $("#dimmerCarregando")
+          .dimmer({ closable: false })
+          .removeClass("active");
+        $("#CADmodal").modal({ closable: false }).modal("show");
+      }
+    },
+    error: function (jqXHR) {
+      var response = JSON.parse(jqXHR.responseText);
+      if (jqXHR.status === 400) {
+        toastAtencao(response.response + " Tente novamente mais tarde!");
+      } else {
+        window.location.href = "generalError.php";
+      }
     },
   });
 }
@@ -303,15 +352,15 @@ function excluirRegistro(idVinculoFuncional) {
 }
 
 function limparCamposVinculosFuncionais() {
-  $('#matricula').val("");
-  $('#dataInicio').val("");
-  $('#dataTermino').val("");
-  $('#select-almoco').val("");
-  $('#select-funcao').val(null).trigger("change");
-  $('#SEG').prop("checked", false);
-  $('#TER').prop("checked", false);
-  $('#QUA').prop("checked", false);
-  $('#QUI').prop("checked", false);
-  $('#SEX').prop("checked", false);
-  $('#descricaoHorario').val("");
+  $("#matricula").val("");
+  $("#dataInicio").val("");
+  $("#dataTermino").val("");
+  $("#select-almoco").val("");
+  $("#select-funcao").val(null).trigger("change");
+  $("#SEG").prop("checked", false);
+  $("#TER").prop("checked", false);
+  $("#QUA").prop("checked", false);
+  $("#QUI").prop("checked", false);
+  $("#SEX").prop("checked", false);
+  $("#descricaoHorario").val("");
 }

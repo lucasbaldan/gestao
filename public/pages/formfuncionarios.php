@@ -190,7 +190,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
         </button>
         </form>
 
-        <table id="funcionalTable" class="ui blue celled table" style="min-width: 100%;">
+        <table id="funcionalTable" class="ui blue celled table" style="width: 100%">
           <thead>
             <tr>
               <th>Codigo</th>
