@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
     <br>
     <div class="ui top attached tabular menu" id="tabnav">
       <a class="item active" data-tab="funcionario-geral">Geral</a>
-    <a class="<?php if(!$cdFuncionario){echo "item disabled";} else{echo "item";}?>" data-tab="funcionario-funcionais">Vínculos Funcionais</a>
+    <a class="<?php if(!$cdFuncionario){echo "item disabled";} else{echo "item";}?>" data-tab="funcionario-funcionais" id="tab1">Vínculos Funcionais</a>
     </div>
 
     <div class="ui form">
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
           <div class="required field">
             <label>Setor:</label>
             <div class="ui input">
-              <select id="select-setor" name="selectSetor" class="select2" style="border-color: red;" required></select>
+              <select id="select-setor" name="selectSetor" class="select2" style="border-color: red;"></select>
             </div>
             <div class="ui pointing red basic label" id="preencherSetor" style="display: none;">
               Selecione o campo SETOR
@@ -183,10 +183,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cdFuncionario'])) {
             </div>
           </div>
 
-        <br>
         <button class="ui right labeled icon green button" id="addfuncional" type="submit">
-          <i class="plus square outline icon"></i>
-          Adicionar / Alterar
+        <i class="plus square outline icon"></i>
+          <span id="btnAdicionar">Adicionar</span>
         </button>
         </form>
 

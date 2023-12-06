@@ -83,15 +83,16 @@ class VinculosFuncionais
             ];
 
             // VALIDAÇÕES SERVER SIDEE
-
             $cad = new \App\Models\VinculosFuncionais($dados);
 
             if (empty($this->codigo)) {
                 $cad->inserir();
+            } else {
+                $cad->alterar();
+            }
 
-                if (!$cad->getResult()) {
-                    throw new Exception($cad->getMessage(), 500);
-                }
+            if (!$cad->getResult()) {
+                throw new Exception($cad->getMessage(), 500);
             }
             $status = true;
             $response = '';

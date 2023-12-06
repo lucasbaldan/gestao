@@ -10,6 +10,7 @@ class Funcoes
     private $nome;
     private $Message;
     private $Result;
+    private $Content;
 
     public function setCodigo($cd)
     {
@@ -19,25 +20,44 @@ class Funcoes
     {
         $this->nome = $nome;
     }
+    public function getMessage()
+    {
+        return $this->Message;
+    }
+    public function getResult()
+    {
+        return $this->Result;
+    }
+    public function getContent(){
+        return $this->Content;
+    }
 
-    public function listar($cdFuncao = null, $nmFuncao = null)
+    public function listar($cdFuncao = null, $stringPesquisa = null)
     {
         try {
+            $limit = 100;
             $read = new \App\Conn\Read();
-            if (empty($cdFuncao) && empty($nmFuncao)) {
-                $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
-        FROM FUNCOES F");
-            } else if(isset($nmFuncao)) {
-                $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
-        FROM FUNCOES F WHERE F.NM_FUNCAO =:C", "C=$nmFuncao");
+
+            $parseString = "LIMIT=$limit";
+            $query = "SELECT * FROM FUNCOES F
+                      WHERE F.CD_FUNCAO IS NOT NULL ";
+
+            if($cdFuncao){
+                $query .=" AND F.CD_FUNCAO = :CD";
+                $parseString .="&CD=$cdFuncao";
             }
-            else{
-                $read->FullRead("SELECT F.CD_FUNCAO, F.NM_FUNCAO
-                FROM FUNCOES F WHERE F.CD_FUNCAO =:C", "C=$cdFuncao");  
+            if($stringPesquisa){
+                $query .= " AND F.NM_FUNCAO LIKE '%$stringPesquisa%' ";
             }
-            return $read->getResult();
+
+            $query .= " LIMIT :LIMIT";
+
+            $read->FullRead($query, $parseString);
+            $this->Content = $read->getResult();
+            $this->Result = true;
         } catch (Exception $th) {
-            header("Location: /gestao/public/pages/generalError.php");
+            $this->Result = false;
+            $this->Message = $th->getMessage();
         }
     }
 
@@ -117,15 +137,5 @@ class Funcoes
             $this->Result = false;
             $this->Message = 'Erro ao executar operação!';
         }
-    }
-
-    public function getMessage()
-    {
-        return $this->Message;
-    }
-
-    public function getResult()
-    {
-        return $this->Result;
     }
 }

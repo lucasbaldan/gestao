@@ -187,11 +187,12 @@ class VinculosFuncionais
         }
     }
 
-    public function alterarVinculosFuncionais($update)
+    public function alterar()
     {
 
         try {
-            $read = new \App\Conn\Read();
+            $conn = \App\Conn\Conn::getConn(true);
+            $read = new \App\Conn\Read($conn);
             $read->ExeRead("VINCULOS_FUNCIONAIS_FUNCIONARIOS", "WHERE CD_VINCULO_FUNCIONAL = :C", "C=$this->codigo");
             $dadosCadastro = $read->getResult()[0] ?? [];
             if ($dadosCadastro) {
@@ -209,18 +210,22 @@ class VinculosFuncionais
                     "SEX" => $this->diasSemana[4]
                 ];
 
+                $update = new \App\Conn\Update($conn);
+
                 $update->ExeUpdate("VINCULOS_FUNCIONAIS_FUNCIONARIOS", $dadosupdate, "WHERE CD_VINCULO_FUNCIONAL =:C", "C=$this->codigo");
 
                 $atualizado = !empty($update->getResult());
                 if ($atualizado) {
+                    $update->Commit();
                     $this->Result = true;
                 } else {
                     throw new Exception("Erro ao alterar Vínculos Funcionais " . $update->getMessage(), 500);
                 }
             } else {
-                throw new Exception("Ops! Parece que esse registro não existe mais na base de dados!", 500);
+                throw new Exception("Ops! Parece que esse registro não existe mais na base de dados!", 400);
             }
         } catch (Exception $th) {
+            $update->Rollback();
             $this->Result = false;
             $this->Message = $th->getMessage();
         }

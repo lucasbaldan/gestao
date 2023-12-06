@@ -20,14 +20,25 @@ class Funcoes
     public function listJSON($dados)
     {
         try {
-            $this->codigo = isset($dados['cdFuncao']) ? $dados['cdFuncao'] : '';
+            $this->codigo = isset($dados['cdFuncao']) ? $dados['cdFuncao'] : null;
+            $stringPesquisa = isset($dados['stringPesquisa']) ? $dados['stringPesquisa'] : null;
 
-            $pegalista = new \App\Models\Funcoes;
-            $lista = $pegalista->listar($this->codigo);
-            echo json_encode($lista);
+            $Funcoes = new \App\Models\Funcoes;
+            $Funcoes->listar($this->codigo, $stringPesquisa);
+            if(!$Funcoes->getResult()){
+                throw new Exception("Erro ao executar consulta no banco de dados! </br> ".$Funcoes->getMessage(), 500);
+            }
+            $status = true;
+            $response = $Funcoes->getContent();
+            http_response_code(200);
         } catch (Exception $th) {
-            return json_encode(array('error' => "Erro ao executar operação."));
+            $status = false;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
         }
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
+        echo $response;
     }
 
     public function controlar($dados)
