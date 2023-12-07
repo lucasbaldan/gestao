@@ -111,7 +111,7 @@ $(document).ready(function () {
             }, 2000);
         }
       },
-        error: function () {
+        error: function (jqXHR) {
           var response = JSON.parse(jqXHR.responseText);
           if (jqXHR.status === 500) {
             toastErro(response.response + "</br><b>Tente novamente mais tarde!<b>");

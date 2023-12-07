@@ -12,14 +12,14 @@ class Setores
     private $Result;
     private $Content;
 
-    public function setCodigo($cd)
+
+    public function __construct($dados)
     {
-        $this->codigo = $cd;
+        $this->codigo = !empty($dados['CODIGO']) ? $dados['CODIGO'] : null;
+        $this->nome = !empty($dados['NOME_SETOR']) ? $dados['NOME_SETOR'] : null;
     }
-    public function setNome($nome)
-    {
-        $this->nome = $nome;
-    }
+
+
     public function getMessage()
     {
         return $this->Message;
@@ -40,26 +40,26 @@ class Setores
             $limiteSql = 100;
             $read = new \App\Conn\Read();
             $parseString = "LIMIT=$limiteSql";
-            $sql = "SELECT * FROM
+            $sql = "SELECT S.CD_SETOR, S.NOME FROM
             SETORES S
             WHERE S.CD_SETOR IS NOT NULL ";
 
-            if($cdSetor){
+            if ($cdSetor) {
                 $sql .= " AND S.CD_SETOR = :CD";
                 $parseString .= "&CD=$cdSetor";
             }
-            if($nmSetor){
+            if ($nmSetor) {
                 $sql .= "AND S.NOME = :NM";
                 $parseString .= "&NM=$nmSetor";
             }
-            if($stringPesquisa){
+            if ($stringPesquisa) {
                 $sql .= "AND S.NOME LIKE '%$stringPesquisa%'";
             }
 
             $sql .= " LIMIT :LIMIT";
 
             $read->FullRead($sql, $parseString);
-            
+
             $this->Content = $read->getResult();
             $this->Result = true;
         } catch (Exception $th) {
@@ -72,12 +72,13 @@ class Setores
     {
 
         try {
-            $read = new \App\Conn\Read();
+            $conn = \App\Conn\Conn::getConn(true);
+            $read = new \App\Conn\Read($conn);
             $read->ExeRead("SETORES", "WHERE CD_SETOR = :C", "C=$this->codigo");
             $dadosCadastro = $read->getResult()[0] ?? [];
             if ($dadosCadastro) {
                 $dadosupdate = ["NOME" => $this->nome];
-                $conn = \App\Conn\Conn::getConn(true);
+
                 $update = new \App\Conn\Update($conn);
                 $update->ExeUpdate("SETORES", $dadosupdate, "WHERE CD_SETOR =:C", "C=$this->codigo");
 
@@ -91,7 +92,7 @@ class Setores
                     $this->Message = $update->getMessage();
                 }
             } else {
-                throw new Exception("O registro que foi solicitado alteração não foi encontrado na base de dados");
+                throw new Exception("O registro que foi solicitado alteração não foi encontrado na base de dados", 400);
             }
         } catch (Exception $th) {
             $update->Rollback();
@@ -110,9 +111,7 @@ class Setores
             $insert->ExeInsert("SETORES", $dadosinsert);
 
             if (!$insert->getResult()) {
-                $insert->Rollback();
-                $this->Result = false;
-                $this->Message = $insert->getMessage();
+                throw new Exception($insert->getMessage(), 500);
             } else {
                 $insert->Commit();
                 $this->Result = true;
@@ -132,16 +131,45 @@ class Setores
             $delete = new \App\Conn\Delete($conn);
             $delete->ExeDelete("SETORES", "WHERE CD_SETOR=:C", "C=$this->codigo");
 
-            if ($delete->getResult()[0] == true) {
-                $delete->Commit();
-                $this->Result = true;
-            } else {
-                $delete->Rollback();
-                $this->Result = false;
-                $this->Message = $delete->getResult()[1];
+            if (!$delete->getResult()[0]) {
+                throw new Exception($delete->getResult()[1], 500);
             }
+            $delete->Commit();
+            $this->Result = true;
         } catch (Exception $th) {
             $delete->Rollback();
+            $this->Result = false;
+            $this->Message = $th->getMessage();
+        }
+    }
+
+    public function dataTable($draw){
+        try {
+            $read = new \App\Conn\Read();
+            
+            $read->FullRead("SELECT S.CD_SETOR, S.NOME FROM SETORES S");
+            $consultas = $read->getResult();
+
+            foreach($consultas as $consulta){
+
+            $coluna = [];
+            $coluna[] = $consulta["CD_SETOR"];
+            $coluna[] = $consulta["NOME"];
+            $coluna[] = "<button class='ui mini icon button blue' onclick='editarRegistro(".$consulta["CD_SETOR"].")'><i class='pencil alternate icon'></i></button>
+            <button class='ui mini icon button red' onclick='excluirRegistro(".$consulta["CD_SETOR"].")'><i class='trash alternate icon'></i></button>";
+            $data[] = $coluna; 
+        }
+
+        $return = [
+            "draw" => intval($draw),
+            "recordsTotal" => $read->getRowCount(),
+            "recordsFiltered" => $read->getRowCount(),
+            "data" => $data
+        ];
+
+            $this->Content = $return;
+            $this->Result = true;
+        } catch (Exception $th) {
             $this->Result = false;
             $this->Message = $th->getMessage();
         }
