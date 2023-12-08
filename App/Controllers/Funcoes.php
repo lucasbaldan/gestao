@@ -23,10 +23,10 @@ class Funcoes
             $this->codigo = isset($dados['cdFuncao']) ? $dados['cdFuncao'] : null;
             $stringPesquisa = isset($dados['stringPesquisa']) ? $dados['stringPesquisa'] : null;
 
-            $Funcoes = new \App\Models\Funcoes;
+            $Funcoes = new \App\Models\Funcoes(null);
             $Funcoes->listar($this->codigo, $stringPesquisa);
-            if(!$Funcoes->getResult()){
-                throw new Exception("Erro ao executar consulta no banco de dados! </br> ".$Funcoes->getMessage(), 500);
+            if (!$Funcoes->getResult()) {
+                throw new Exception("Erro ao executar consulta no banco de dados! </br> " . $Funcoes->getMessage(), 500);
             }
             $status = true;
             $response = $Funcoes->getContent();
@@ -48,53 +48,36 @@ class Funcoes
             $this->codigo = isset($dados['cdFuncao']) ? $dados['cdFuncao'] : '';
             $this->nome = isset($dados['nameFuncao']) ? $dados['nameFuncao'] : '';
 
+            if (empty($this->nome)) {
+                throw new Exception("Preencha o campo Nome");
+            }
+
+            $cad = new \App\Models\Funcoes(["CODIGO" => $this->codigo, "NOME_FUNCAO" => $this->nome]);
+
             if (empty($this->codigo)) {
-                if(empty($this->nome)){
-                    throw new Exception("Preencha o campo Nome");
-                }
-
-                $cad = new \App\Models\Funcoes;
-                $cad->setNome($this->nome);
-
-                $duplicado = $cad->listar(null, $this->nome);
-                if ($duplicado) {
-                    throw new Exception("Registro já Cadastrado!");
-                }
 
                 $cad->inserir();
-                if ($cad->getResult() == true) {
-                    $status = 'inserido';
-                } else {
-                    $status = 'erro';
+                if (!$cad->getResult()) {
+                    throw new Exception($cad->getMessage(), 500);
                 }
             } else {
-                if(empty($this->nome)){
-                    throw new Exception("Preencha o campo Nome");
-                }
-
-                $cad = new \App\Models\Funcoes;
-                $cad->setCodigo($this->codigo);
-                $cad->setNome($this->nome);
-
-                $duplicado = $cad->listar(null, $this->nome);
-                if ($duplicado && $duplicado[0]['CD_FUNCAO'] != $this->codigo) {
-                    throw new Exception("Registro já Cadastrado!");
-                }
 
                 $cad->alterar();
-                if ($cad->getResult() == true) {
-                    $status = 'alterado';
-                } else {
-                    $status =  'erro';
+                if (!$cad->getResult()) {
+                    throw new Exception($cad->getResult(), 500);
                 }
             }
-            $response = null;
+            $status = true;
+            $response = '';
+            http_response_code(200);
         } catch (Exception $th) {
-            $status = 'erro';
+            $status = false;
             $response = $th->getMessage();
+            http_response_code($th->getCode());
         }
 
-        $response = json_encode(array("status" => $status, "response" => $response));
+        $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
         echo $response;
     }
 
@@ -105,26 +88,25 @@ class Funcoes
             $this->codigo = isset($dados['cdFuncao']) ? $dados['cdFuncao'] : '';
 
             if (empty($this->codigo)) {
-                throw new Exception("Erro");
+                throw new Exception("Erro ao processar exclusão com Função de código nulo");
             }
 
-            $cad = new \App\Models\Funcoes;
-            $cad->setCodigo($this->codigo);
+            $cad = new \App\Models\Funcoes(["CODIGO" => $this->codigo]);
             $cad->excluir();
-            if ($cad->getResult() == true) {
-                $status = 'excluido';
-                $response = '';
-            } else {
-                $status = 'erro';
-                $response = $cad->getMessage();
+            if (!$cad->getResult()) {
+                throw new Exception($cad->getResult(), 500);
             }
-        } catch (Exception $th) {
-            $status = 'erro operação';
+            $status = true;
             $response = '';
+            http_response_code(200);
+        } catch (Exception $th) {
+            $status = false;
+            $response = $th->getMessage();
+            http_response_code($th->getCode());
         }
 
         $response = json_encode(["status" => $status, "response" => $response]);
+        header('Content-Type: application/json');
         echo $response;
-
     }
 }

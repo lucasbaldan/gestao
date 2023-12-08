@@ -73,4 +73,6 @@ include_once("./footer_menu.php");
   </form>
 </div>
 
+
+<script src="./../js/local_componentes/multiselect.min.js"></script>
 <script src="./../js/pages/relatoriofolhaponto.js"></script>

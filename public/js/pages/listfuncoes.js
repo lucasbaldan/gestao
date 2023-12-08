@@ -7,9 +7,9 @@ $(document).ready(function () {
       data: {
         funcao: "listJSON",
       },
-      dataSrc: "",
+      dataSrc: "response",
       error: function () {
-        window.location.href = "generalError.php"; 
+        window.location.href = "generalError.php";
       },
     },
     columns: [
@@ -107,37 +107,32 @@ $(document).ready(function () {
           $("#fechaModalCAD").addClass("disabled");
         },
         success: function (response) {
-          response = JSON.parse(response);
-          if (
-            response.status === "inserido" ||
-            response.status === "alterado"
-          ) {
+          if (response.status == true) {
             $("#myTable").DataTable().clear().draw();
-            // Agendar a remoção da mensagem após 4 segundos
             setTimeout(function () {
               $("#CADmodal").modal("hide");
-              $("#cadSubmit").removeClass(
-                "loading disabled"
-              );
+              $("#cadSubmit").removeClass("loading disabled");
               $("#fechaModalCAD").removeClass("disabled");
               toastSucesso();
               $("#myTable").DataTable().ajax.reload();
             }, 1000);
-
-          } else if (response.status === "erro") {
-            toastErro(response.response);
-            $("#cadSubmit").removeClass(
-              "loading disabled"
-            );
-            $("#fechaModalCAD").removeClass("disabled");
           } else {
             window.location.href = "generalError.php";
           }
         },
-        error: function () {
-          alert(
-            "Ocorreu um erro ao processar a requisição. Tente novamente mais Tarde!"
-          );
+        error: function (jqXHR) {
+          var response = JSON.parse(jqXHR.responseText);
+          if (jqXHR.status === 500) {
+            toastErro(
+              response.response + "</br><b>Tente novamente mais tarde!<b>"
+            );
+          } else if (jqXHR.status === 400) {
+            toastAtencao(response.response);
+          } else {
+            window.location.href = "generalError.php";
+          }
+          $("#cadSubmit").removeClass("loading disabled");
+          $("#fechaModalCAD").removeClass("disabled");
         },
       });
     },
@@ -159,7 +154,7 @@ $(document).ready(function () {
 });
 
 function editarRegistro(idFuncao) {
-  $(".ui.dimmer").dimmer({ closable: false, interactive: false, duration: 5 }).dimmer("show");
+  $("#dimmerCarregando").dimmer({ closable: false }).addClass("active");
   $("#cdFuncao").val("");
   $("#nameTipoExcecao").val("");
   $("#preencherNome").hide();
@@ -172,13 +167,11 @@ function editarRegistro(idFuncao) {
       funcao: "listJSON",
     },
     success: function (data) {
-      var funcao = JSON.parse(data)[0];
+      var funcao = data.response[0];
 
       $("#nameFuncao").val(funcao.NM_FUNCAO);
       $("#cdFuncao").val(funcao.CD_FUNCAO);
-      $(".ui.dimmer")
-        .dimmer({ closable: false, interactive: false, duration: 5 })
-        .dimmer("hide");
+      $("#dimmerCarregando").dimmer({ closable: false }).removeClass("active");
       setTimeout(function () {
         $("#CADmodal").modal({ closable: false }).modal("show");
       }, 60);
@@ -191,16 +184,17 @@ function editarRegistro(idFuncao) {
 }
 
 function excluirRegistro(idFuncao) {
+  $("#confirmacaoExclusao")
+    .modal({
+      closable: false,
+      onApprove: function () {
+        confirmadoExclusao(idFuncao);
+        return false;
+      },
+    })
+    .modal("show");
 
-  $("#confirmacaoExclusao").modal({
-    closable: false,
-    onApprove: function() {
-      confirmadoExclusao(idFuncao);
-      return false;
-    },
-  }).modal("show");
-
-  function confirmadoExclusao() {
+  function confirmadoExclusao(idFuncao) {
     $.ajax({
       type: "POST",
       url: "./../../App/Controllers/Funcoes.php",
@@ -215,9 +209,7 @@ function excluirRegistro(idFuncao) {
       },
       success: function (response) {
 
-        response = JSON.parse(response);
-
-        if (response.status === "excluido") {
+        if (response.status == true) {
           $("#myTable").DataTable().clear().draw();
           setTimeout(function () {
             toastSucesso();
@@ -226,19 +218,21 @@ function excluirRegistro(idFuncao) {
             $("#confirmacaoExclusao").modal("hide");
             $("#myTable").DataTable().ajax.reload();
           }, 2000);
-        } else if (response.status === "erro") {
-          response.response.includes("SQLSTATE[23000]") ? toastAtencao('OPERAÇÃO NEGADA! <br> A ação compromete a integridade do banco de dados.') : toastErro(resposta.response);
-          $("#botaoconfirmaExclusao").removeClass("loading disabled");
-          $("#fechaModalEXC").removeClass("disabled");
-          
         } else {
           window.location.href = "generalError.php";
         }
-
       },
-      error: function (xhr, status, error) {
-        console.error(error);
-        alert("Erro ao Executar operação");
+      error: function (jqXHR) {
+        var response = JSON.parse(jqXHR.responseText);
+        if (jqXHR.status === 500) {
+          toastErro(
+            response.response + "</br><b>Tente novamente mais tarde!<b>"
+          );
+        } else if (jqXHR.status === 400) {
+          toastAtencao(response.response);
+        } else {
+          window.location.href = "generalError.php";
+        }
       },
     });
   }

@@ -54,8 +54,7 @@ $(document).ready(function() {
         cdSetor: cdSetor
       },
       success: function(data) {
-        console.log(data);
-        const dadosFuncionarios = JSON.parse(data);
+        const dadosFuncionarios = data.response;
         const selectFuncionarios = $("#search");
         selectFuncionarios.empty();
         $('#search_to').empty();
@@ -99,7 +98,7 @@ $(document).ready(function() {
         funcao: "listSetoresJSON",
       },
       success: function(data) {
-        const dadosSetores = JSON.parse(data);
+        const dadosSetores = data.response;
         options = dadosSetores.map((item) => ({
           id: item.CD_SETOR.toString(),
           text: item.NOME,
