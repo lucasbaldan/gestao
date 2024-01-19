@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 23/11/2023 às 01:40
+-- Tempo de geração: 08/12/2023 às 01:21
 -- Versão do servidor: 10.4.28-MariaDB
 -- Versão do PHP: 8.2.4
 
@@ -35,15 +35,6 @@ CREATE TABLE `excecoes` (
   `CD_TIPO_EXCECAO` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
---
--- Despejando dados para a tabela `excecoes`
---
-
-INSERT INTO `excecoes` (`CD_EXCECAO`, `DATA_INICIAL`, `DATA_FINAL`, `CD_FUNCIONARIO`, `CD_TIPO_EXCECAO`) VALUES
-(156, '2023-11-01', '2023-11-30', 15, 99),
-(157, '2023-11-01', '2023-11-30', 16, 99),
-(159, '2023-11-01', '2023-11-30', 17, 99);
-
 -- --------------------------------------------------------
 
 --
@@ -62,12 +53,7 @@ CREATE TABLE `funcionarios` (
 
 INSERT INTO `funcionarios` (`CD_FUNCIONARIO`, `NM_FUNCIONARIO`, `CD_SETOR`) VALUES
 (15, 'Douglas do meme', 73),
-(16, 'Eliandra B Faé Baldan', 73),
-(17, 'teste de funcioanrio', 73),
-(19, 'Lucas', 73),
-(20, 'Lucas', 73),
-(21, 'Lucas', 73),
-(22, 'Lucas', 73);
+(16, 'Eliandra B Faé Baldan', 73);
 
 -- --------------------------------------------------------
 
@@ -85,9 +71,9 @@ CREATE TABLE `funcoes` (
 --
 
 INSERT INTO `funcoes` (`CD_FUNCAO`, `NM_FUNCAO`) VALUES
-(7, 'ESSE É O REGISTRO DE CÓDIGO 10'),
-(14, 'inserindo dados de função12'),
-(19, 'inserindo dados de função1');
+(14, 'Lanterneiro'),
+(7, 'Massageador Profissional'),
+(19, 'Secretário');
 
 -- --------------------------------------------------------
 
@@ -127,11 +113,11 @@ CREATE TABLE `setores` (
 
 INSERT INTO `setores` (`CD_SETOR`, `NOME`) VALUES
 (73, 'Centro de Mídia'),
+(93, 'coordenação de cursos'),
+(105, 'dougas'),
 (76, 'Escrituração'),
-(77, 'Escrituração'),
-(91, 'alfabeto'),
-(92, 'alfabeto'),
-(93, 'coordenação de cursos');
+(104, 'mais um'),
+(103, 'teste de inserção');
 
 -- --------------------------------------------------------
 
@@ -221,12 +207,8 @@ CREATE TABLE `vinculos_funcionais_funcionarios` (
 --
 
 INSERT INTO `vinculos_funcionais_funcionarios` (`CD_VINCULO_FUNCIONAL`, `MATRICULA`, `DATA_INICIAL`, `DATA_FINAL`, `ALMOCO`, `SEG`, `TER`, `QUA`, `QUI`, `SEX`, `SAB`, `DOM`, `DESC_HR_TRABALHO`, `CD_FUNCAO`, `CD_FUNCIONARIO`) VALUES
-(21, 32158, '2023-10-09', '2023-10-25', 1, 1, 1, 1, 1, 1, NULL, NULL, '111', 7, 16),
 (22, 23421, '2023-10-18', NULL, 0, 1, 1, 0, 0, 0, NULL, NULL, '23r', 14, 15),
-(23, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 19),
-(24, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 20),
-(25, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 21),
-(26, 12, '2023-11-02', '2023-11-02', 0, 1, 0, 0, 0, 0, NULL, NULL, '12', 7, 22);
+(31, 123456789, '2021-11-01', NULL, 1, 1, 1, 1, 0, 0, NULL, NULL, 'Segunda a Quarta de 07h as 18h', 14, 16);
 
 --
 -- Índices para tabelas despejadas
@@ -251,7 +233,8 @@ ALTER TABLE `funcionarios`
 -- Índices de tabela `funcoes`
 --
 ALTER TABLE `funcoes`
-  ADD PRIMARY KEY (`CD_FUNCAO`);
+  ADD PRIMARY KEY (`CD_FUNCAO`),
+  ADD UNIQUE KEY `UNIQUE_FUNCAO` (`NM_FUNCAO`);
 
 --
 -- Índices de tabela `pessoas`
@@ -265,7 +248,8 @@ ALTER TABLE `pessoas`
 -- Índices de tabela `setores`
 --
 ALTER TABLE `setores`
-  ADD PRIMARY KEY (`CD_SETOR`);
+  ADD PRIMARY KEY (`CD_SETOR`),
+  ADD UNIQUE KEY `UNIQUE_SETOR` (`NOME`);
 
 --
 -- Índices de tabela `tipo_excecoes`
@@ -307,13 +291,13 @@ ALTER TABLE `excecoes`
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `CD_FUNCIONARIO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `CD_FUNCIONARIO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de tabela `funcoes`
 --
 ALTER TABLE `funcoes`
-  MODIFY `CD_FUNCAO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `CD_FUNCAO` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de tabela `pessoas`
@@ -325,7 +309,7 @@ ALTER TABLE `pessoas`
 -- AUTO_INCREMENT de tabela `setores`
 --
 ALTER TABLE `setores`
-  MODIFY `CD_SETOR` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
+  MODIFY `CD_SETOR` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=106;
 
 --
 -- AUTO_INCREMENT de tabela `tipo_excecoes`
@@ -349,7 +333,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `vinculos_funcionais_funcionarios`
 --
 ALTER TABLE `vinculos_funcionais_funcionarios`
-  MODIFY `CD_VINCULO_FUNCIONAL` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `CD_VINCULO_FUNCIONAL` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- Restrições para tabelas despejadas
